@@ -15,9 +15,9 @@ cd "$root/launcher"
 [ -f keystore.properties ] || { echo "Missing launcher/keystore.properties"; exit 1; }
 grep -q "versionName '$version'" app/build.gradle || { echo "app/build.gradle versionName != $version"; exit 1; }
 [ -z "$(git status --porcelain)" ] || { echo "Working tree not clean"; exit 1; }
-[ ! -d private-res ] || { echo "launcher/private-res/ exists: move it away so the public APK has no private assets"; exit 1; }
 
-./gradlew --no-daemon -q clean assembleRelease
+# -PpublicBuild: ignore launcher/private-res so the public APK has no personal overrides.
+./gradlew --no-daemon -q -PpublicBuild clean assembleRelease
 apk="$root/launcher/app/build/outputs/apk/release/app-release.apk"
 out="$root/launcher/app/build/A3Launcher-v$version.apk"
 cp "$apk" "$out"

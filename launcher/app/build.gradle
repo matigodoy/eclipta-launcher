@@ -44,7 +44,8 @@ android {
     // Local-only assets (your own logo animation, car photo) override the public ones. Git-ignored.
     // Build-type source sets win over main, so same-named resources replace instead of clashing.
     def privateRes = rootProject.file('private-res')
-    if (privateRes.exists()) {
+    // -PpublicBuild skips them (used by scripts/release.sh).
+    if (privateRes.exists() && !project.hasProperty('publicBuild')) {
         sourceSets {
             debug.res.srcDirs += privateRes
             release.res.srcDirs += privateRes
