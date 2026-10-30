@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">A3 Launcher</string>
+    <!-- Name in the greeting ("Buen día, <name>"). Empty = no name. Override it in launcher/private-res/values/. -->
+    <string name="greeting_name" translatable="false"></string>
+    <string name="car_title">Audi A3</string>
+    <string name="car_sub">Sportback · 2.0 TDI · 2008</string>
+    <string name="kmh">km/h</string>
+    <string name="speed_label">VELOCIDAD</string>
+    <string name="gps">GPS</string>
+    <string name="no_gps">Sin señal GPS</string>
+    <string name="now_playing">AHORA SUENA</string>
+    <string name="nothing_playing">Sin reproducción</string>
+    <string name="radio_fm">RADIO FM</string>
+    <string name="carplay">CarPlay</string>
+    <string name="carplay_sub">Reproduciendo desde el iPhone</string>
+    <string name="apps">Aplicaciones</string>
+    <string name="cd_home">Inicio</string>
+    <string name="cd_carplay">CarPlay</string>
+    <string name="cd_aa">Android Auto</string>
+    <string name="cd_radio">Radio</string>
+    <string name="cd_music">Música</string>
+    <string name="cd_apps">Apps</string>
+    <string name="cd_settings">Ajustes</string>
+    <string name="cd_close">Cerrar</string>
+    <string name="cd_prev">Anterior</string>
+    <string name="cd_play">Reproducir o pausar</string>
+    <string name="cd_next">Siguiente</string>
+    <string name="cannot_open">No se pudo abrir la app</string>
+</resources>

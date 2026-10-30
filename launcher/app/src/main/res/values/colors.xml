@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#FF060708</color>
+    <color name="splash_bg">#FF00010C</color>
+    <color name="accent">#FFE3263A</color>
+    <color name="text">#FFF1F2F4</color>
+    <color name="text2">#FFA3A9B1</color>
+    <color name="glass_fill">#0DFFFFFF</color>
+    <color name="glass_stroke">#1FFFFFFF</color>
+    <color name="glass_hi">#29FFFFFF</color>
+    <color name="track">#1AFFFFFF</color>
+    <color name="floor">#2EFFFFFF</color>
+</resources>

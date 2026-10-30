@@ -1,0 +1,63 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.mati.a3launcher'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.mati.a3launcher'
+        minSdk 28
+        // Deliberately low: manifest receivers keep getting JanCar's implicit broadcasts. Sideload only.
+        //noinspection ExpiredTargetSdkVersion
+        targetSdk 25
+        versionCode 3
+        versionName '0.1.2'
+    }
+
+    // Release signing comes from launcher/keystore.properties (git-ignored). Never commit the keystore.
+    def keystoreFile = rootProject.file('keystore.properties')
+    if (keystoreFile.exists()) {
+        def ks = new Properties()
+        keystoreFile.withInputStream { ks.load(it) }
+        signingConfigs {
+            release {
+                storeFile file(ks['storeFile'])
+                storePassword ks['storePassword']
+                keyAlias ks['keyAlias']
+                keyPassword ks['keyPassword']
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            if (keystoreFile.exists()) signingConfig signingConfigs.release
+        }
+    }
+
+    // Local-only assets (your own logo animation, car photo) override the public ones. Git-ignored.
+    // Build-type source sets win over main, so same-named resources replace instead of clashing.
+    def privateRes = rootProject.file('private-res')
+    if (privateRes.exists()) {
+        sourceSets {
+            debug.res.srcDirs += privateRes
+            release.res.srcDirs += privateRes
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}

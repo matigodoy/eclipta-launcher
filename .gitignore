@@ -1,0 +1,32 @@
+# Material propietario o regenerable (ver docs/02-conexion-adb.md)
+apks/
+decompiled/
+adb-dump/
+private/
+
+# Assets propios que no se publican (logos, animaciones, fotos de tu auto)
+launcher/private-res/
+
+# Firma de release: NUNCA versionar
+*.jks
+*.keystore
+keystore.properties
+launcher/keystore.properties
+
+# Build del launcher (los APKs van a GitHub Releases)
+launcher/.gradle/
+launcher/build/
+launcher/app/build/
+launcher/out/
+launcher/local.properties
+*.apk
+*.aab
+
+# Varios
+*.log
+.DS_Store
+.idea/
+*.iml
+
+# Notas locales para Claude Code (datos personales)
+CLAUDE.local.md
