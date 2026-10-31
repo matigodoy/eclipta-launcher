@@ -37,10 +37,10 @@ adb -s 172.20.10.2:5555 get-state   # device
 
 ```bash
 A exec-out screencap -p > adb-dump/captura.png                 # captura sin escribir en el equipo
-A shell cat /sdcard/Android/data/com.mati.a3launcher/files/a3l-log.txt   # log del launcher
-A shell dumpsys meminfo com.mati.a3launcher                     # memoria
-A shell top -b -n 1 | grep -E "PID|a3launcher"                  # CPU
-A shell dumpsys activity services com.jancar.services | grep -c a3launcher  # bindings activos
+A shell cat /sdcard/Android/data/ar.com.eclipta.launcher/files/launcher-log.txt   # log del launcher (solo builds debug)
+A shell dumpsys meminfo ar.com.eclipta.launcher                 # memoria
+A shell top -b -n 1 | grep -E "PID|eclipta"                     # CPU
+A shell dumpsys activity services com.jancar.services | grep -c eclipta  # bindings activos
 A shell dumpsys media_session
 A shell dumpsys activity broadcasts history | grep act=
 A shell logcat -d | grep JLOG                                   # logs de JanCar
@@ -51,17 +51,21 @@ A pull /vendor/app/<app>/<app>.apk apks/<pkg>/                  # copiar APK (le
 ## Instalar o actualizar el launcher
 
 ```bash
-A install -r -g A3Launcher-vX.Y.Z.apk   # bajado de Releases o compilado
+A install -r -g EcliptaLauncher-vX.Y.Z.apk   # bajado de Releases o compilado
 ```
 
-Para desinstalarlo: Ajustes > Apps > A3 Launcher > Desinstalar, o `A uninstall com.mati.a3launcher`.
-Para volver al launcher original sin desinstalar: Ajustes > Apps > A3 Launcher >
+Para desinstalarlo: Ajustes > Apps > Eclipta Launcher > Desinstalar, o `A uninstall ar.com.eclipta.launcher`.
+Para volver al launcher original sin desinstalar: Ajustes > Apps > Eclipta Launcher >
 "Abrir de forma predeterminada" > Borrar valores, y al tocar Inicio elegir el original.
+
+> **Si está el A3 Launcher viejo** (`com.mati.a3launcher`): el id nuevo es otra app, no una actualización. El viejo se
+> desinstala a mano, desde Ajustes > Apps, y los ajustes arrancan de cero.
 
 También se puede instalar con un pendrive: copiar la APK a la raíz, abrirla desde el administrador de
 archivos del estéreo (la instalación manual funciona). Detalle en el [README](../README.md#instalar).
 
-Volver a una versión anterior: `A install -r -d A3Launcher-v0.1.1.apk` (`-d` permite bajar el versionCode).
+Volver a una versión anterior: `A install -r -d EcliptaLauncher-vX.Y.Z.apk` (`-d` permite bajar el versionCode). Las
+versiones con el nombre viejo tienen el id viejo: se instalan al lado, no encima.
 
 ## Herramientas
 

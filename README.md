@@ -1,24 +1,26 @@
-# A3 Launcher
+# Eclipta Launcher
 
 Pantalla de inicio liviana y documentación abierta para estéreos Android chinos
 (placa **JanCar UJC201 / AutoChips AC8257**, Android 9), nacida en un **Audi A3 Sportback 8P**.
+Antes se llamaba A3 Launcher.
 
 *English: a lightweight, offline-only home screen for JanCar/AutoChips Android head units,
 plus reverse-engineered notes on their system APIs and CAN-bus decoders. Docs are in Spanish;
 contributions in English are welcome.*
 
-![A3 Launcher](design/preview-s3-rojo.png)
+![Eclipta Launcher](design/preview-s3-rojo.png)
 
-| MMI clásico | Modo noche |
+| Clásico | Modo noche |
 |---|---|
-| ![MMI](design/preview-mmi.png) | ![Noche](design/preview-noche.png) |
+| ![Clásico](design/preview-mmi.png) | ![Noche](design/preview-noche.png) |
 
 ## Qué hay acá
 
-- **`launcher/`**: A3 Launcher, una app HOME en Java puro (sin AndroidX), ~1 MB, que muestra hora,
-  fecha, velocidad GPS, lo que suena, la radio y accesos a CarPlay / Android Auto. Elegís modelo (A3 o S3 8P),
-  color, llantas, patente, saludo y diseño (liquid glass o MMI clásico), con modo noche. En español, inglés y
-  portugués. No corre nada en segundo plano para no quitarle recursos a CarPlay.
+- **`launcher/`**: Eclipta Launcher, una app HOME en Java puro (sin AndroidX), ~1 MB, que muestra hora,
+  fecha, velocidad GPS, lo que suena, la radio y accesos a CarPlay / Android Auto. Elegís modelo (A3 o S3 8P) o
+  ponés la foto y el nombre de tu auto, color, llantas, patente, saludo y diseño (liquid glass o Clásico), con modo
+  noche y avisos de mantenimiento por fecha. En español, inglés y portugués. No corre nada en segundo plano para no
+  quitarle recursos a CarPlay.
 - **`docs/`**: lo que se sabe de estas unidades, verificado por ADB en solo lectura:
   - [Hardware y firmware](docs/01-estereo-hardware.md)
   - [Conexión por ADB vía Wi-Fi](docs/02-conexion-adb.md)
@@ -39,10 +41,15 @@ que exporta el launcher.
 
 1. Bajá el APK de la última [release](../../releases/latest).
 2. Copialo a un pendrive, abrilo con el administrador de archivos del estéreo e instalalo
-   (o por ADB: `adb install -r -g A3Launcher-vX.Y.Z.apk`).
-3. Tocá Inicio, elegí **A3 Launcher** y **Siempre**. Aceptá el permiso de ubicación (velocidad y ciudad).
+   (o por ADB: `adb install -r -g EcliptaLauncher-vX.Y.Z.apk`).
+3. Tocá Inicio, elegí **Eclipta Launcher** y **Siempre**. Aceptá el permiso de ubicación (velocidad y ciudad).
 
-Para volver al launcher original: Ajustes > Apps > A3 Launcher > Desinstalar.
+Para volver al launcher original: Ajustes > Apps > Eclipta Launcher > Desinstalar.
+
+**Si venís del A3 Launcher:** cambió el id de la app (ahora `ar.com.eclipta.launcher`), así que no se actualiza encima:
+es una instalación nueva. Desinstalá el viejo a mano (Ajustes > Apps > A3 Launcher > Desinstalar). Los ajustes arrancan
+de cero; si tu versión exporta el perfil, exportalo antes e importalo después. La carpeta vieja `A3Launcher` del pendrive
+se sigue leyendo.
 
 > Instalás bajo tu propio riesgo. El launcher no modifica el sistema, pero el proyecto no tiene
 > relación con Audi, JanCar, AutoChips ni ningún fabricante.
@@ -62,21 +69,28 @@ implícitos de JanCar. Por eso la app no puede ir a Play Store; se instala a man
 
 ### Personalizar
 
-Desde la v0.2 casi todo se cambia en el estéreo: tocá el lápiz de la tarjeta del auto (saludo, patente,
-modelo, color, llantas, foto propia, diseño, modo noche, recordatorios, CarPlay al dar contacto). Para cambiar un acceso de la barra lateral, mantenelo apretado.
+Casi todo se cambia en el estéreo: tocá el lápiz de la tarjeta del auto y se abre un índice por secciones.
 
-### Personalizar tu build (animación, recursos)
+- **Mi auto** (modelo, color, llantas, foto propia, patente), **Apariencia** (diseño, acento, modo noche, saludo) y
+  **Barra lateral** (qué abre cada acceso; también se cambia manteniéndolo apretado en el inicio) muestran el auto al
+  lado de las opciones.
+- **Mantenimiento** (fechas y avisos), **Contacto y manejo** (animación, app que se abre al dar contacto, alerta de
+  vencimientos, aviso de velocidad), **Sistema** (idioma, copia de los ajustes, packs, diagnóstico) y **Acerca de**
+  (versión y códigos QR) ocupan toda la pantalla.
+
+Con una foto propia y un nombre de auto, el launcher deja de usar el logo, la animación y los datos del pack: sirve
+para cualquier auto.
+
+### Personalizar tu build (recursos)
 
 Sin tocar archivos versionados: creá `launcher/private-res/` (está en `.gitignore`) con la misma
 estructura que `res/` y la build usa esos recursos en lugar de los del repo. Por ejemplo:
 
 ```
 launcher/private-res/values/personal.xml      <string name="greeting_name">Tu nombre</string>
-launcher/private-res/drawable-nodpi/car_a3.png   foto de tu auto (sin fondo, ~460 px de ancho)
-launcher/private-res/raw/audi_sting.webp         animación al dar contacto (WebP animado)
 ```
 
-Si hacés un fork para otro auto, cambiá directamente los textos de `res/values/strings.xml`.
+Para otro auto no hace falta un fork: alcanza con un [pack](docs/08-packs.md) o con una foto propia y el nombre del auto.
 
 ## Contribuir
 

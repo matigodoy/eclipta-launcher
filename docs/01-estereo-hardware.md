@@ -58,7 +58,7 @@ Volcados locales (no publicados, tienen datos del equipo) en `adb-dump/`: `getpr
 | `com.txznet.*` | Asistente de voz, clima | |
 
 Apps de terceros instaladas por Mati: `de.szalkowski.activitylauncher`, `org.fdroid.fdroid`
-y ahora `com.mati.a3launcher`.
+y `com.mati.a3launcher`, el id viejo de este launcher (ahora `ar.com.eclipta.launcher`).
 
 ## Menús del fabricante y Ajustes de Android ocultos
 

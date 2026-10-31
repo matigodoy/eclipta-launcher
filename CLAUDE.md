@@ -1,6 +1,6 @@
-# A3 Launcher: guía para agentes (Claude Code y similares)
+# Eclipta Launcher: guía para agentes (Claude Code y similares)
 
-Launcher HOME liviano y documentación abierta para estéreos Android chinos con firmware **JanCar**
+**Eclipta Launcher** (id `ar.com.eclipta.launcher`): launcher HOME liviano y documentación abierta para estéreos Android chinos con firmware **JanCar**
 (placa UJC201 / AutoChips AC8257, **Android 9 real** aunque la interfaz diga 12/13). Proyecto
 comunitario: ver [README.md](README.md) y [CONTRIBUTING.md](CONTRIBUTING.md). La documentación está en
 español; los identificadores de código quedan en inglés.
@@ -34,13 +34,13 @@ Si tenés notas personales (IP del estéreo, nombre de tu hotspot, estado de tu 
 | `docs/05-launcher.md` | El launcher: build, código, versiones, rendimiento y pendientes |
 | `docs/06-diseno.md` | Decisiones de diseño, medidas y estilo |
 | `docs/07-logo-arranque.md` | Logo de arranque en frío (AutoChips metalogo) |
-| `docs/08-packs.md`, `docs/configurador/` | Formato de packs y perfil; configurador web estático |
+| `docs/08-packs.md`, `docs/configurador/` | Formato de packs (marca, logo y animación) y perfil; configurador web estático |
 | `docs/vehiculos/` | Datos de otros autos / unidades aportados por la comunidad (con plantilla) |
 | `docs/bitacora.md` | Línea de tiempo y correcciones |
 | `design/` | Capturas, foto del auto y animación (ver `design/README.md`) |
 | `launcher/` | Proyecto Android (Gradle). `launcher/private-res/` = overrides locales, no versionados |
 | `scripts/release.sh` | Build firmado + GitHub Release (`PRERELEASE=1` si no se probó en el auto) |
-| `scripts/measure.sh`, `make_pack.py`, `make_wheels.py`, `validate_packs.py` | Medir consumo; crear y validar packs |
+| `scripts/measure.sh`, `make_pack.py`, `make_wheels.py`, `validate_packs.py`, `make_qr.py` | Medir consumo; crear y validar packs; generar los QR de Acerca de (necesita `segno`) |
 | `apks/`, `decompiled/`, `private/` | Locales, **no versionados** (material propietario o personal) |
 
 ## Build

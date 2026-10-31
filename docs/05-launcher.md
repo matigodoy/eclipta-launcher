@@ -1,6 +1,7 @@
-# A3 Launcher
+# Eclipta Launcher
 
-App de inicio (HOME) propia, paquete `com.mati.a3launcher`, etiqueta "A3 Launcher".
+App de inicio (HOME) propia, id `ar.com.eclipta.launcher`, etiqueta "Eclipta Launcher". Antes se llamaba
+A3 Launcher (`com.mati.a3launcher`): el motivo está en la [bitácora](bitacora.md). Las filas viejas de abajo quedan como están.
 Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver el [README](../README.md#instalar).
 
 ## Versiones
@@ -13,6 +14,7 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 | 0.2.0 | 4 | Personalizar (saludo, patente, modelo A3/S3 8P, carrocería, motor, año, foto propia), CarPlay al contacto, animación opcional, barra lateral configurable. Release sin log ni permiso de internet y con R8 | Incluida en 0.4.0 |
 | 0.3.0 | 5 | Color y llantas por capas, patente sobre la foto, sombra; temas glass y MMI clásico, acentos, modo noche (siempre, atardecer, luces); aviso de velocidad; recordatorios; exportar e importar perfil y packs por pendrive; configurador web | Incluida en 0.4.0 |
 | 0.4.0 | 6 | Se adapta a otras pantallas apaisadas; funciona sin servicios JanCar (oculta la radio, GPS estándar, elegís las apps); inglés y portugués; exportar diagnóstico; menos memoria: sin doble GPS en JanCar, reloj interno más lento en reposo, libera bitmaps con CarPlay adelante | Prerelease: probada en emulador, falta el auto |
+| En desarrollo | 6 | Sin versión nueva: `versionName` sigue en 0.4.0. Nombre e id nuevos (instalación nueva, ajustes de cero, APK `EcliptaLauncher-vX.Y.Z.apk`, carpeta `EcliptaLauncher` en el pendrive, log `launcher-log.txt`); packs con `brand`, logo y animación afuera del código; foto propia con nombre para cualquier auto; ajustes por secciones; mantenimiento con aviso al arrancar; la app de contacto puede ser cualquiera (`accApp`); Acerca de con dos QR | **Sin publicar** |
 
 ## Build
 
@@ -22,24 +24,64 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 - Java puro, **sin AndroidX ni librerías externas**. Firma debug (v2).
 - Tamaño de la APK: unos 1,2 MB (la animación WebP ocupa 967 KB; cada pack, unos 40 KB).
 
-## Código (`launcher/app/src/main/java/com/mati/a3launcher/`)
+## Código (`launcher/app/src/main/java/ar/com/eclipta/launcher/`)
 
 | Archivo | Qué hace |
 |---|---|
 | `MainActivity` | HOME. Header (reloj, saludo, fecha, ciudad), barra lateral, tarjeta del auto + velocidad, "Ahora suena", radio. Todo se engancha en `onStart` y se suelta en `onStop` |
 | `JanCar` | Clientes Binder escritos a mano para IMedia/IMediaInfoCallback e ISystem/IGpsCallback (mismos descriptores y códigos que el SDK) |
 | `AppsActivity` | Cajón de apps, 6 columnas, carga en otro hilo |
-| `SplashActivity` | Animación de Audi (`res/raw/audi_sting.webp`, WebP animado de 800x600), una sola vez, se cierra sola, la salteás tocando, `taskAffinity=""` |
-| `AccReceiver` | Receiver del manifest para `com.jancar.services.action.acc` (y `QB_POWERON` desde la v0.1.2); antirrebote de 20 s |
+| `SplashActivity` | Animación del despertar, la de la marca (`Brand.sting`): una sola vez, se corta a los 4 s, se cierra sola, la salteás tocando, `taskAffinity=""` |
+| `AccReceiver` | Receiver del manifest para `com.jancar.services.action.acc` (y `QB_POWERON` desde la v0.1.2); antirrebote de 20 s; le pasa el despertar a `Startup` |
+| `Startup` | Cadena del despertar: animación, aviso de mantenimiento y app elegida (ver [abajo](#cadena-del-despertar)) |
+| `MaintenanceAlertActivity` | Aviso al arrancar con lo vencido; se cierra sola a los 30 s |
 | `Profile` | Preferencias del usuario (SharedPreferences) |
 | `Pack` | Pack de vehículo: `pack.json` + capas, en `assets/packs/` o `files/packs/`. Se lee solo cuando hace falta |
+| `Brand` | Logo y animación del pack: carpeta del pack importado, si no `assets/brands/<key>/`, si no la marca Eclipta y sin animación. En Java no hay ninguna marca |
 | `CarImage` | Hornea las capas en un solo PNG (`files/car_baked.png`) y carga lo que muestra el inicio |
-| `SettingsActivity` | Pantalla Personalizar; solo vive mientras está abierta. No se abre con el auto en movimiento |
+| `CarBaker` | Rehornea el auto en un hilo que existe solo mientras hay trabajo; junta pedidos y relee el perfil en cada pasada |
+| `SettingsActivity` | Índice de secciones (Personalizar), cada una es una página de esta activity; solo vive mientras está abierta. No se abre con el auto en movimiento |
+| `SettingsSection`, `SettingsForm`, `FlowLayout` | Base de una página; filas que explican cada opción, con el texto en un diálogo; chips que bajan de línea |
+| `CarSection`, `LookSection`, `RailSection` | Mi auto, Apariencia y Barra lateral: el auto al lado de las opciones |
+| `MaintenanceSection`, `DriveSection`, `SystemSection`, `AboutSection` | Mantenimiento, Contacto y manejo, Sistema y Acerca de: pantalla completa |
 | `BaseActivity`, `Theming`, `Sun` | Paleta del usuario antes de crear vistas; modo noche con cálculo solar offline |
-| `PaintMath`, `Reminders`, `CityName` | Cuentas puras (con tests en `app/src/test`) |
+| `Reminders` | Fechas de mantenimiento: catálogo, repetición, JSON y guardado aparte del perfil (con tests en `app/src/test`) |
+| `PaintMath`, `CityName` | Cuentas puras: tinte de la pintura; qué muestra la pastilla de ciudad (saltea códigos postales y el departamento "Capital") |
 | `Launch`, `Files`, `PlateFormat` | Abrir apps y resolver accesos; buscar archivos en pendrive; formato de patente |
 | `GlowBackground` | Fondo estático: #060708 + 3 óvalos con degradado radial |
-| `DebugLog` | Log a `/sdcard/Android/data/com.mati.a3launcher/files/a3l-log.txt`, como máximo 200 líneas por proceso; `ENABLED=false` para apagarlo |
+| `DebugLog` | Log a `/sdcard/Android/data/ar.com.eclipta.launcher/files/launcher-log.txt`, como máximo 200 líneas por proceso; solo en builds debug (`ENABLED = BuildConfig.DEBUG`) |
+
+Layouts de los ajustes: `settings_hub` (índice), `settings_split` (auto al lado), `settings_full` y `settings_about`.
+
+## Cadena del despertar
+
+`AccReceiver` avisa una vez por contacto y `Startup` hace el resto: animación, aviso de mantenimiento y, al final, la app
+elegida (`accApp`). Corre desde el broadcast o con el inicio visible; no queda nada en segundo plano.
+
+Se diseñó alrededor de lo que hace la unidad de referencia:
+
+- **Inicio se reinicia** cerca del apagado y unos 190 ms antes del broadcast de despertar. Por eso `MainActivity` espera 3 s
+  visible antes de mirar el aviso, y `Startup` no lo repite dentro de los 2 minutos.
+- **En un arranque real el reloj empieza en la fecha de compilación del firmware** y salta segundos después. Mientras la fecha no
+  supere por un día a la del firmware, el aviso queda pendiente, para no calcular vencimientos con un reloj falso.
+- **CarPlay puede arrancar solo** cuando se conecta el teléfono, y dejaría el aviso como un parpadeo imposible de contestar. Por eso
+  vuelve una vez por encima; si lo vuelven a tapar, se cierra. La tecla Inicio también lo hace volver una vez, porque Android
+  informa lo mismo para cualquier app que arranca y no se pueden distinguir.
+
+> **Nada de este flujo se probó todavía en el estéreo real, solo en el emulador.**
+
+## Mantenimiento
+
+Nueve ítems de catálogo (VTV/ITV, seguro, service, aceite y filtros, correa de distribución, frenos, neumáticos, batería, matafuego)
+y hasta 12 propios. **Solo fechas**, porque el auto no informa los kilómetros. Cada ítem tiene repetición en meses, nota y si avisa
+o no. La fecha más cercana se guarda aparte, así el caso común ni lee la lista. Sin alarmas: se mira al abrir el inicio o al despertar.
+
+El aviso lista lo que vence hoy o ya venció y vuelve en cada contacto hasta que lo marques como hecho:
+
+- **Ahora no**, Atrás o 30 s sin tocar nada lo cierran hasta el próximo arranque.
+- **Ya lo hice** calcula la próxima fecha desde hoy (o ninguna, si no se repite) y se puede deshacer.
+- Si se evalúa desde el inicio con el auto en movimiento, queda pendiente.
+- Al cerrarse sigue con la app elegida, si venía de la cadena del despertar y no hay otra app adelante.
 
 ## Diseño ("liquid glass")
 
@@ -50,7 +92,7 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 - Fuentes del sistema `sans-serif-light` / `sans-serif-medium` (Inter quedó afuera porque supera los 300 KB).
 - Medidas en dp a 1024x600: padding 14/16, header de 56, barra lateral de 56, tarjeta del auto de 520, columna derecha con
   el resto; separaciones de 12.
-- Header: logo de 4 aros (vector), hora `HH:mm` 34sp, "Buen día/Buenas tardes/Buenas noches" + nombre opcional (`greeting_name`),
+- Header: logo de marca (del pack, ver `Brand`), hora `HH:mm` 34sp, "Buen día/Buenas tardes/Buenas noches" + nombre opcional (`greeting_name`),
   fecha en español, pastilla con la ciudad (Geocoder, cacheada, se oculta si no hay).
 - Barra lateral: Inicio (rojo), CarPlay y Android Auto con **íconos reales** de las apps, Radio, Música; abajo
   Apps y Ajustes.
@@ -90,8 +132,8 @@ debug guardada, así que parte de la mejora viene de pasar a release con R8.
 ## Sin JanCar
 
 `JanCar.available()` decide: si no está, no hay radio ni "qué suena" (hace falta acceso a notificaciones, que no se pide), se usa
-el GPS estándar y un acceso cuya app falta abre el selector. Sin señal de contacto no hay animación ni CarPlay automático. Las
-pantallas verticales no están soportadas.
+el GPS estándar y un acceso cuya app falta abre el selector. Sin señal de contacto no hay animación ni app automática; el aviso de
+mantenimiento sale igual, porque `Startup.noteBoot` detecta los arranques reales. Las pantallas verticales no están soportadas.
 
 ## Resultados en el estéreo (sesión 2, v0.1.1)
 
@@ -107,19 +149,26 @@ pantallas verticales no están soportadas.
 
 - Fotos de los autos: `assets/packs/`, ver [packs](08-packs.md). La del A3 es un **3 puertas**, no un Sportback; la del S3 sí es
   Sportback. Las capas tienen la patente tapada.
-- Animación: `design/audi-logo-sting.gif` (800x600, 120 cuadros de 30 ms, fondo `#00010C`, 5,8 MB),
-  convertida con `gif2webp -q 80 -m 4 -mixed` → `res/raw/audi_sting.webp` (967 KB).
-- Log de diagnóstico: `/sdcard/Android/data/com.mati.a3launcher/files/a3l-log.txt`, que se apaga con `DebugLog.ENABLED`.
+- Marca: `assets/brands/audi/logo.webp` y `sting.webp`. La animación sale de `design/audi-logo-sting.gif` (800x600, 120 cuadros
+  de 30 ms, fondo `#00010C`, 5,8 MB), convertida con `gif2webp -q 80 -m 4 -mixed` (967 KB). Sacar esa carpeta no requiere tocar código.
+- QR de Acerca de: `scripts/make_qr.py` (necesita `segno`) genera `res/drawable/qr_portfolio.xml` (https://www.matigodoy.com.ar/)
+  y `qr_github.xml` (el repo). Se generan acá, nunca en el estéreo.
+- Log de diagnóstico: `/sdcard/Android/data/ar.com.eclipta.launcher/files/launcher-log.txt`, solo en builds debug.
 
 ## Pendientes conocidos
 
-- Instalar la última versión (firma de release: hay que desinstalar la de debug una vez).
+- Instalar la última versión: id nuevo y firma de release, así que hay que desinstalar a mano el A3 Launcher v0.1.1, y los ajustes arrancan de cero.
+- Probar en el estéreo la cadena del despertar y el aviso de mantenimiento.
 - Medir con CarPlay adelante (**todavía no se midió en segundo plano**).
+- Repetir las mediciones de arriba: la tabla es anterior a estos cambios.
+- Decidir si sacar los aros y la animación del público (`assets/brands/audi`).
+- Packs genéricos sin foto.
 - Nombre de la emisora (RDS) y presets vía IRadio, sin usar `open()`. No se hizo: no se puede probar sin el auto y tocar la radio a ciegas es riesgoso.
 - Confirmar en el auto si `getHeadLightStatus` cambia con las luces (modo noche experimental).
 - Packs de A3 8V y A4 B8: faltan fotos propias.
 - La temperatura exterior **no se puede** obtener con este protocolo CAN.
 - Conseguir una foto de un Sportback (5 puertas).
+- ~~Nombre neutro antes de sumar más modelos~~: hecho, Eclipta Launcher.
 
 ## Ideas para próximas versiones
 

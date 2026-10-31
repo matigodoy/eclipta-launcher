@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Configurador A3 Launcher</title>
+<title>Configurador Eclipta Launcher</title>
 <style>
 :root { --bg:#060708; --panel:#ffffff0d; --line:#ffffff1f; --fg:#f1f2f4; --muted:#a3a9b1; --accent:#e3263a; color-scheme:dark; }
 * { box-sizing:border-box; }
@@ -32,7 +32,7 @@ ol { color:var(--muted); padding-left:20px; }
 </head>
 <body>
 <main>
-  <h1>Configurador de A3 Launcher</h1>
+  <h1>Configurador de Eclipta Launcher</h1>
   <p class="sub">Elegí tu auto acá y pasalo al estéreo con un pendrive. Nada sale de tu navegador.</p>
   <div class="grid">
     <div class="card sticky">
@@ -57,8 +57,8 @@ ol { color:var(--muted); padding-left:20px; }
       <label class="check"><input type="checkbox" id="carplay"> Abrir CarPlay al dar contacto</label>
       <button class="go" id="save">Descargar perfil.json</button>
       <ol>
-        <li>Copiá <b>perfil.json</b> a un pendrive, en una carpeta llamada <b>A3Launcher</b>.</li>
-        <li>En el estéreo: lápiz de la tarjeta del auto, Copia y packs, <b>Importar perfil</b>.</li>
+        <li>Copiá <b>perfil.json</b> a un pendrive, en una carpeta llamada <b>EcliptaLauncher</b>.</li>
+        <li>En el estéreo: lápiz de la tarjeta del auto, Sistema, <b>Importar perfil</b>.</li>
       </ol>
     </div>
   </div>
@@ -101,7 +101,7 @@ function render(){
   const p=PACKS[s.pack];
   chips("pack",Object.entries(PACKS).map(([k,v])=>[k,v.title]),"pack");chips("paint",PAINTS,"paint");chips("wheels",WHEELS,"wheels");
   chips("body",["3 puertas","Sportback","Cabrio"].map(b=>[b,b]),"body");
-  chips("layout",[["glass","Liquid glass"],["mmi","MMI clásico"]],"layout");chips("accent",[["red","Rojo"],["blue","Azul"],["gray","Gris"]],"accent");
+  chips("layout",[["glass","Liquid glass"],["mmi","Clásico"]],"layout");chips("accent",[["red","Rojo"],["blue","Azul"],["gray","Gris"]],"accent");
   chips("night",[["off","Apagado"],["on","Siempre"],["sun","Al atardecer"],["lights","Con las luces"]],"night");
   $("engine").placeholder=p.engine;$("year").placeholder=p.year;
   $("title").textContent=p.title;

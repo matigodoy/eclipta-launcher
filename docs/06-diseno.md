@@ -13,13 +13,16 @@
 6. **Animación "Audi Logo Sting"** (800x600, unos 3,6 s, fondo `#00010C`) al **despertar** el estéreo (ACC on),
    no en el arranque en frío (ver [07-logo-arranque.md](07-logo-arranque.md)).
 7. Sin comandos al volante (el auto no los tiene).
+8. **Marca afuera del código**: el logo de los aros y la animación pasaron a `assets/brands/audi`. Cada pack nombra su marca y, sin
+   archivos de marca, se ve la marca Eclipta y no hay animación ([packs](08-packs.md)).
+9. El diseño "MMI clásico" ahora se llama **Clásico** en pantalla (el id interno sigue siendo `mmi`).
 
 ## Medidas (dp = px, 1024x600, densidad 160)
 
 - Padding: 14 arriba, 16 a los costados y abajo. Header de 56. Separación de 12. Cuerpo con el resto.
 - Cuerpo: barra lateral de 56 | tarjeta del auto de 520 | columna derecha con el resto (unos 392), separaciones de 12.
 - Barra lateral: botones circulares de 50, separados 10 (Inicio, CarPlay, Android Auto, Radio, Música | Apps, Ajustes).
-- Header: logo de 4 aros (46x18), hora 34sp light, saludo 15sp medium, fecha 12sp, pastilla de ciudad.
+- Header: logo de marca (46x18), hora 34sp light, saludo 15sp medium, fecha 12sp, pastilla de ciudad.
 - Tarjeta del auto: título 26sp, subtítulo 13sp, foto de 440 de ancho con brillo rojo ovalado y línea de piso,
   panel de velocidad (radio 18) con número de 60sp light y barra de 6dp de 0 a 200.
 - Columna derecha: "AHORA SUENA" (carátula 84, título 19sp, artista 14sp, barra de 4dp, botón play de 56) y
@@ -35,6 +38,21 @@
 | Acento | `#E3263A` |
 | Texto | `#F1F2F4` principal, `#A3A9B1` secundario |
 | Fuente | sistema (`sans-serif-light` / `-medium`); Inter se descartó por peso (> 300 KB) |
+
+## Ajustes
+
+Un índice con una tarjeta por sección, que dice para qué sirve.
+
+- **Mi auto, Apariencia y Barra lateral** personalizan el launcher: pantalla partida, con el auto al lado para ver el cambio.
+- **Mantenimiento, Contacto y manejo, Sistema y Acerca de** van a pantalla completa.
+- Cada opción lleva una línea que la explica. El texto se escribe en un diálogo, porque a 600 dp el teclado taparía un campo
+  en la página. Los chips bajan de línea para que ninguna opción quede fuera de la pantalla.
+
+## Aviso de mantenimiento
+
+Pantalla propia al arrancar, con lo vencido y un botón **Ya lo hice** de 56 dp por ítem. Nunca retiene a CarPlay más de un toque:
+**Ahora no** o 30 s sin respuesta lo cierran hasta el próximo arranque. Con todo contestado, el botón pasa a decir **Continuar**.
+Comportamiento en [05-launcher.md](05-launcher.md#cadena-del-despertar).
 
 ## Capturas
 

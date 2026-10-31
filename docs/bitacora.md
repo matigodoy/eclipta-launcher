@@ -37,6 +37,17 @@
 
 - v0.3: capas de pintura y llantas, temas y perfil. v0.4: otras pantallas, sin JanCar, idiomas. PSS visible de 40 a 20 MB en emulador.
 
+## 31/10/2026: de A3 Launcher a Eclipta Launcher (Mac, emulador)
+
+- **Cambio de nombre** a Eclipta Launcher, por dos motivos: bajar el riesgo de marca y preparar el proyecto para varios modelos.
+  Id `ar.com.eclipta.launcher` (antes `com.mati.a3launcher`), repo `matigodoy/eclipta-launcher`, carpeta `EcliptaLauncher` en el pendrive
+  (la vieja `A3Launcher` se sigue leyendo). El id nuevo es una instalación nueva: el A3 Launcher se desinstala a mano y los ajustes arrancan de cero.
+- **Varios modelos**: los packs nombran su `brand`; el logo y la animación salen del pack o de `assets/brands/<key>/`, y sin ellos se ve la marca
+  Eclipta. Una foto propia con nombre sirve para cualquier auto.
+- **Ajustes** por secciones. **Mantenimiento** con nueve ítems y hasta 12 propios, solo por fecha, con aviso al arrancar.
+  Acerca de con QR. El diseño "MMI clásico" pasa a mostrarse como "Clásico".
+- `versionName` sigue en 0.4.0 y no se publicó nada. Probado solo en emulador: la cadena del despertar falta probarla en el auto ([05-launcher.md](05-launcher.md#cadena-del-despertar)).
+
 ## Correcciones
 
 - "El auto no tiene caja CAN": **falso**, tiene un Simple Soft RP5-AD-001.

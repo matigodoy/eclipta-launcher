@@ -1,7 +1,7 @@
 # Cómo contribuir
 
 ¡Gracias por sumarte! Este proyecto documenta estéreos Android chinos (JanCar / AutoChips y
-similares) y mantiene **A3 Launcher**, una pantalla de inicio liviana pensada para no quitarle
+similares) y mantiene **Eclipta Launcher**, una pantalla de inicio liviana pensada para no quitarle
 recursos a CarPlay / Android Auto.
 
 ## Reglas de oro
@@ -20,7 +20,9 @@ recursos a CarPlay / Android Auto.
    (`exiftool -all= foto.jpg`).
 5. **Sin material de terceros.** No subas APKs, firmware ni código descompilado de fabricantes
    (JanCar, AutoChips, Simple Soft, etc.), ni logos o animaciones de marcas. Describí el
-   comportamiento con tus palabras y citá clase / método como referencia.
+   comportamiento con tus palabras y citá clase / método como referencia. La única excepción actual
+   es `assets/brands/audi`, por decisión del dueño del proyecto. `scripts/validate_packs.py` rechaza
+   `logo.webp` y `sting.webp` dentro de `assets/packs`.
 
 ## Aportar datos de otro auto o de otra unidad
 
@@ -50,8 +52,9 @@ foro). Esa distinción es lo que hace útil la documentación.
 ## Reportar problemas
 
 Abrí un issue con: unidad (placa y firmware), versión del launcher, qué esperabas, qué pasó y,
-si podés, el log de `/sdcard/Android/data/com.mati.a3launcher/files/a3l-log.txt` (revisalo antes
-de adjuntarlo: puede tener coordenadas GPS).
+si usás una build debug (las release no guardan log), el log de
+`/sdcard/Android/data/ar.com.eclipta.launcher/files/launcher-log.txt` (revisalo antes de adjuntarlo:
+puede tener coordenadas GPS).
 
 ## Licencia de los aportes
 
