@@ -16,6 +16,7 @@ import android.graphics.Typeface;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * The car picture. All layers are combined once when the profile changes ("baked") into a single
@@ -66,6 +67,9 @@ final class CarImage {
             } else {
                 Pack pack = Pack.load(c, p.pack);
                 out = pack.bitmap(c, "base.webp");
+                Pack.Option paint = pack.paint(p.paint);
+                if (paint != null && paint.color != 0) paint(out, pack.bitmap(c, "paint.webp"), paint.color, pack);
+                drawWheels(c, out, pack, p.wheels);
                 drawPlate(out, pack, p);
             }
             out = withShadow(out);
@@ -79,6 +83,52 @@ final class CarImage {
             DebugLog.log("bake error: " + t);
             return false;
         }
+    }
+
+    /**
+     * Recolors the body. Keeps the photo's shading through its luminance and adds a little
+     * white back on the highlights so dark paints still show reflections.
+     */
+    private static void paint(Bitmap car, Bitmap mask, int color, Pack pack) {
+        int w = car.getWidth(), h = car.getHeight();
+        Bitmap m = mask.getWidth() == w && mask.getHeight() == h ? mask : Bitmap.createScaledBitmap(mask, w, h, true);
+        int[] px = new int[w * h];
+        int[] mx = new int[w * h];
+        car.getPixels(px, 0, w, 0, 0, w, h);
+        m.getPixels(mx, 0, w, 0, 0, w, h);
+        PaintMath math = new PaintMath(color, pack.gain, pack.gamma, pack.spec);
+        for (int i = 0; i < px.length; i++) {
+            int amount = mx[i] & 0xFF;
+            if (amount == 0) continue;
+            px[i] = math.apply(px[i], amount);
+        }
+        car.setPixels(px, 0, w, 0, 0, w, h);
+        if (m != mask) m.recycle();
+        mask.recycle();
+    }
+
+    private static void drawWheels(Context c, Bitmap car, Pack pack, String wheelId) {
+        if (wheelId == null || wheelId.isEmpty() || "original".equals(wheelId) || pack.wheelCenters.length == 0) return;
+        Bitmap wheel = null;
+        try (InputStream in = c.getAssets().open("wheels/" + wheelId + ".webp")) {
+            wheel = BitmapFactory.decodeStream(in);
+        } catch (IOException e) {
+            DebugLog.log("wheel " + wheelId + " error: " + e);
+        }
+        if (wheel == null) return;
+        float k = car.getWidth() / pack.refWidth;
+        Canvas canvas = new Canvas(car);
+        Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG);
+        Matrix m = new Matrix();
+        for (float[] w : pack.wheelCenters) {
+            m.reset();
+            m.setTranslate(-wheel.getWidth() / 2f, -wheel.getHeight() / 2f);
+            m.postScale(w[2] * 2 * k / wheel.getWidth(), w[3] * 2 * k / wheel.getHeight());
+            m.postRotate(w[4]);
+            m.postTranslate(w[0] * k, w[1] * k);
+            canvas.drawBitmap(wheel, m, paint);
+        }
+        wheel.recycle();
     }
 
     /** Draws the plate into the pack's plate quad with the photo's perspective. */

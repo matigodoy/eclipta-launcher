@@ -10,7 +10,8 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 | 0.1 | 1 | Primera versión (foto recortada a mano) | Reemplazada |
 | 0.1.1 | 2 | Foto del auto sin fondo, de remove.bg | **Instalada en el estéreo** |
 | 0.1.2 | 3 | La animación también se dispara con `QB_POWERON`; el log solo guarda cambios de media; el nombre de archivo se limpia ("a_b.mp3" pasa a "a b") | Publicada |
-| 0.2.0 | 4 | Personalizar (saludo, patente, modelo A3/S3 8P, carrocería, motor, año, foto propia), CarPlay al contacto, animación opcional, barra lateral configurable. Release sin log ni permiso de internet y con R8 | Prerelease, probada en emulador |
+| 0.2.0 | 4 | Personalizar (saludo, patente, modelo A3/S3 8P, carrocería, motor, año, foto propia), CarPlay al contacto, animación opcional, barra lateral configurable. Release sin log ni permiso de internet y con R8 | Local, probada en emulador |
+| 0.3.0 | 5 | Color y llantas por capas, patente sobre la foto, sombra; temas glass y MMI clásico, acentos, modo noche (siempre, atardecer, luces); aviso de velocidad; recordatorios; exportar e importar perfil y packs por pendrive; configurador web | Local, probada en emulador |
 
 ## Build
 
@@ -33,6 +34,8 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 | `Pack` | Pack de vehículo: `pack.json` + capas, en `assets/packs/` o `files/packs/`. Se lee solo cuando hace falta |
 | `CarImage` | Hornea las capas en un solo PNG (`files/car_baked.png`) y carga lo que muestra el inicio |
 | `SettingsActivity` | Pantalla Personalizar; solo vive mientras está abierta. No se abre con el auto en movimiento |
+| `BaseActivity`, `Theming`, `Sun` | Paleta del usuario antes de crear vistas; modo noche con cálculo solar offline |
+| `PaintMath`, `Reminders` | Cuentas puras (con tests en `app/src/test`) |
 | `Launch`, `Files`, `PlateFormat` | Abrir apps y resolver accesos; buscar archivos en pendrive; formato de patente |
 | `GlowBackground` | Fondo estático: #060708 + 3 óvalos con degradado radial |
 | `DebugLog` | Log a `/sdcard/Android/data/com.mati.a3launcher/files/a3l-log.txt`, como máximo 200 líneas por proceso; `ENABLED=false` para apagarlo |

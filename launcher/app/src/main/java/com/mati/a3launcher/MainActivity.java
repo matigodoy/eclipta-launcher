@@ -1,7 +1,6 @@
 package com.mati.a3launcher;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +35,7 @@ import java.util.List;
 import java.util.Locale;
 
 /** HOME screen. All bindings, listeners and timers live only between onStart and onStop. */
-public class MainActivity extends Activity implements JanCar.MediaListener, JanCar.GpsListener {
+public class MainActivity extends BaseActivity implements JanCar.MediaListener, JanCar.GpsListener {
     private static final Locale ES = new Locale("es", "AR");
     private static final long GPS_STALE_MS = 10_000;
     private static final long GEOCODE_INTERVAL_MS = 10 * 60_000;
@@ -52,6 +51,18 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
     private final Handler main = new Handler(Looper.getMainLooper());
     private final JanCar.MediaLink mediaLink = new JanCar.MediaLink(this);
     private final JanCar.SystemLink systemLink = new JanCar.SystemLink(this);
+    private final JanCar.CarLink carLink = new JanCar.CarLink(new JanCar.LightsListener() {
+        @Override
+        public void onHeadlights(final boolean on) {
+            main.post(new Runnable() {
+                @Override
+                public void run() {
+                    prefs.edit().putBoolean(Theming.KEY_HEADLIGHTS, on).apply();
+                    checkNight();
+                }
+            });
+        }
+    });
     private final AccReceiver accReceiver = new AccReceiver();
     private SharedPreferences prefs;
     private Profile profile;
@@ -63,6 +74,7 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
 
     // views
     private TextView time, greeting, date, city, speed, noGps, title, artist, posText, durText;
+    private TextView reminderPill;
     private TextView radioFreq, radioUnit, radioBand, radioLabel;
     private View locationPill, artNote;
     private ImageView art;
@@ -71,6 +83,7 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
 
     // speed / gps (main thread)
     private int shownSpeed = -1;
+    private boolean speedOver;
     private long lastFixAt;
     private boolean noGpsShown;
     private double lastLat, lastLon;
@@ -133,8 +146,10 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
         DebugLog.init(this);
         DebugLog.log("MainActivity onCreate");
         density = getResources().getDisplayMetrics().density;
-        getWindow().setBackgroundDrawable(new GlowBackground(density));
-        setContentView(R.layout.activity_main);
+        profile = Profile.load(this);
+        boolean mmi = "mmi".equals(profile.layout);
+        getWindow().setBackgroundDrawable(new GlowBackground(this, !night && !mmi));
+        setContentView(mmi ? R.layout.activity_main_mmi : R.layout.activity_main);
         prefs = getSharedPreferences("a3l", MODE_PRIVATE);
         audio = (AudioManager) getSystemService(AUDIO_SERVICE);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -160,7 +175,7 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
         radioBand = findViewById(R.id.radioBand);
         radioLabel = findViewById(R.id.radioLabel);
 
-        profile = Profile.load(this);
+        reminderPill = findViewById(R.id.reminderPill);
         setupRail();
         setupMedia();
         showCar();
@@ -192,6 +207,8 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
         }
         mediaLink.bind(this);
         systemLink.bind(this);
+        if ("lights".equals(profile.night)) carLink.bind(this);
+        updateReminder();
         startLocation();
         lastFixAt = SystemClock.elapsedRealtime();
         main.post(ticker);
@@ -204,6 +221,7 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
         stopLocation();
         mediaLink.unbind(this);
         systemLink.unbind(this);
+        carLink.unbind(this);
         try {
             unregisterReceiver(clockReceiver);
         } catch (Throwable ignored) {
@@ -261,7 +279,37 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
 
     // ---------------------------------------------------------------- header
 
+    /** Follows the night setting once a minute, and only while visible. */
+    private void checkNight() {
+        if (started && Theming.isNight(this, profile) != night) recreate();
+    }
+
+    private void updateReminder() {
+        String[] names = {getString(R.string.due_vtv), getString(R.string.due_insurance), getString(R.string.due_service)};
+        String[] dates = {profile.dueVtv, profile.dueInsurance, profile.dueService};
+        int best = Reminders.DUE_NONE, which = -1;
+        long today = System.currentTimeMillis();
+        for (int i = 0; i < dates.length; i++) {
+            int d = Reminders.daysLeft(dates[i], today, java.util.TimeZone.getDefault());
+            if (d != Reminders.DUE_NONE && d <= Reminders.WARN_DAYS && d < best) {
+                best = d;
+                which = i;
+            }
+        }
+        if (which < 0) {
+            reminderPill.setVisibility(View.GONE);
+            return;
+        }
+        reminderPill.setText(best < 0 ? getString(R.string.due_overdue, names[which])
+                : best == 0 ? getString(R.string.due_today, names[which])
+                : getString(R.string.due_in_days, names[which], best));
+        reminderPill.setVisibility(View.VISIBLE);
+    }
+
     private void updateClock() {
+        if ("lights".equals(profile.night)) carLink.readHeadlights();
+        checkNight();
+        if (isFinishing()) return;
         Date now = new Date();
         time.setText(new SimpleDateFormat("HH:mm", ES).format(now));
         int h = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
@@ -281,6 +329,11 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
         if (lat == 0 && lon == 0) return;
         lastLat = lat;
         lastLon = lon;
+        if (!haveLatLon && "sun".equals(profile.night)) {
+            // City-level precision is plenty for sunset, and it stays on this device.
+            prefs.edit().putFloat(Theming.KEY_LAT, Math.round(lat * 10) / 10f)
+                    .putFloat(Theming.KEY_LON, Math.round(lon * 10) / 10f).apply();
+        }
         haveLatLon = true;
         maybeGeocode();
     }
@@ -358,11 +411,16 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
     }
 
     private void setupSlot(final int i) {
-        ImageButton b = findViewById(SLOT_IDS[i]);
+        View b = findViewById(SLOT_IDS[i]);
         final String flat = Launch.slot(profile, i);
-        b.setImageDrawable(Launch.icon(this, flat));
-        b.setScaleType(Launch.RADIO.equals(flat) || Launch.MUSIC.equals(flat)
-                ? ImageView.ScaleType.CENTER : ImageView.ScaleType.FIT_CENTER);
+        if (b instanceof ImageButton) {
+            ImageButton ib = (ImageButton) b;
+            ib.setImageDrawable(Launch.icon(this, flat));
+            ib.setScaleType(Launch.RADIO.equals(flat) || Launch.MUSIC.equals(flat)
+                    ? ImageView.ScaleType.CENTER : ImageView.ScaleType.FIT_CENTER);
+        } else {
+            ((TextView) b).setText(Launch.label(this, flat));
+        }
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -407,8 +465,13 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
         car.setImageBitmap(carBitmap);
         if (carBitmap != null) {
             // Floor line just under the wheels, whatever the photo's proportions.
-            float h = carBitmap.getHeight() * (440f * density / carBitmap.getWidth());
-            findViewById(R.id.floor).setTranslationY(h / 2 - 2 * density);
+            if (!"mmi".equals(profile.layout)) {
+                float h = carBitmap.getHeight() * (440f * density / carBitmap.getWidth());
+                findViewById(R.id.floor).setTranslationY(h / 2 - 2 * density);
+            } else {
+                findViewById(R.id.floor).setVisibility(View.GONE);
+            }
+            if (night) car.setAlpha(0.7f);
         }
     }
 
@@ -454,6 +517,11 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
         if (v == shownSpeed) return;
         shownSpeed = v;
         speed.setText(String.valueOf(v));
+        boolean over = profile.speedLimit > 0 && v > profile.speedLimit;
+        if (over != speedOver) {
+            speedOver = over;
+            speed.setTextColor(Theming.color(this, over ? R.attr.a3Accent : R.attr.a3Text));
+        }
         speedBar.setProgress(Math.min(200, v));
     }
 

@@ -1,8 +1,9 @@
 package com.mati.a3launcher;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -24,15 +25,18 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * "Personalizar". Only exists while open. Changes are saved right away and the car picture is
  * re-baked once, in the background, shortly after the last change.
  */
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends BaseActivity {
     private static final int REQ_STORAGE = 1;
     private static final long BAKE_DELAY_MS = 350;
+    private static final int ACT_PHOTO = 0, ACT_EXPORT = 1, ACT_IMPORT = 2, ACT_PACKS = 3;
 
     private interface OnChoice {
         void chosen(String id);
@@ -47,6 +51,7 @@ public class SettingsActivity extends Activity {
     private float dp;
     private volatile boolean destroyed;
     private int bakeGeneration;
+    private int pendingAction;
 
     private final Runnable bakeNow = new Runnable() {
         @Override
@@ -77,7 +82,7 @@ public class SettingsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         dp = getResources().getDisplayMetrics().density;
-        getWindow().setBackgroundDrawable(new GlowBackground(dp));
+        getWindow().setBackgroundDrawable(new GlowBackground(this, !night));
         setContentView(R.layout.activity_settings);
         profile = Profile.load(this);
         pack = Pack.load(this, profile.pack);
@@ -149,6 +154,8 @@ public class SettingsActivity extends Activity {
                 profile.engine = "";
                 profile.year = "";
                 profile.body = "";
+                profile.paint = "original";
+                profile.wheels = "original";
                 pack = Pack.load(SettingsActivity.this, id);
                 buildForm();
                 changed();
@@ -220,6 +227,80 @@ public class SettingsActivity extends Activity {
             }
         });
 
+        section(R.string.sec_look);
+        if (!profile.customPhoto) {
+            List<String> paintIds = new ArrayList<>(), paintNames = new ArrayList<>();
+            for (Pack.Option o : pack.paints) {
+                paintIds.add(o.id);
+                paintNames.add(o.name);
+            }
+            chips(R.string.f_paint, paintIds, paintNames, profile.paint, new OnChoice() {
+                @Override
+                public void chosen(String id) {
+                    profile.paint = id;
+                    changed();
+                }
+            });
+            List<String> wheelIds = new ArrayList<>(), wheelNames = new ArrayList<>();
+            for (Pack.Option o : pack.wheels) {
+                wheelIds.add(o.id);
+                wheelNames.add(o.name);
+            }
+            chips(R.string.f_wheels, wheelIds, wheelNames, profile.wheels, new OnChoice() {
+                @Override
+                public void chosen(String id) {
+                    profile.wheels = id;
+                    changed();
+                }
+            });
+        }
+        chips(R.string.f_layout, list(new String[]{"glass", "mmi"}),
+                strings(R.string.layout_glass, R.string.layout_mmi), profile.layout, new OnChoice() {
+                    @Override
+                    public void chosen(String id) {
+                        profile.layout = id;
+                        changed();
+                    }
+                });
+        chips(R.string.f_accent, list(new String[]{"red", "blue", "gray"}),
+                strings(R.string.accent_red, R.string.accent_blue, R.string.accent_gray), profile.accent, new OnChoice() {
+                    @Override
+                    public void chosen(String id) {
+                        profile.accent = id;
+                        changed();
+                        recreate();
+                    }
+                });
+        chips(R.string.f_night, list(new String[]{"off", "on", "sun", "lights"}),
+                strings(R.string.night_off, R.string.night_on, R.string.night_sun, R.string.night_lights),
+                profile.night, new OnChoice() {
+                    @Override
+                    public void chosen(String id) {
+                        profile.night = id;
+                        changed();
+                        recreate();
+                    }
+                });
+
+        section(R.string.sec_drive);
+        field(R.string.f_speed_limit, String.valueOf(profile.speedLimit), InputType.TYPE_CLASS_NUMBER, 3, new OnChoice() {
+            @Override
+            public void chosen(String v) {
+                try {
+                    profile.speedLimit = v.isEmpty() ? 0 : Integer.parseInt(v);
+                } catch (NumberFormatException e) {
+                    profile.speedLimit = 0;
+                }
+                changed();
+            }
+        });
+
+        section(R.string.sec_reminders);
+        hint(R.string.reminders_tip);
+        dateRow(R.string.due_vtv, 0);
+        dateRow(R.string.due_insurance, 1);
+        dateRow(R.string.due_service, 2);
+
         section(R.string.sec_start);
         check(R.string.f_splash, profile.splash, new OnChoice() {
             @Override
@@ -248,6 +329,137 @@ public class SettingsActivity extends Activity {
             }
         }));
         form.addView(rail);
+
+        section(R.string.sec_backup);
+        LinearLayout backup = row();
+        backup.addView(chip(getString(R.string.backup_export), false, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                withStorage(ACT_EXPORT);
+            }
+        }));
+        backup.addView(chip(getString(R.string.backup_import), false, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                withStorage(ACT_IMPORT);
+            }
+        }));
+        backup.addView(chip(getString(R.string.packs_import), false, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                withStorage(ACT_PACKS);
+            }
+        }));
+        form.addView(backup);
+    }
+
+    private List<String> strings(int... ids) {
+        List<String> out = new ArrayList<>();
+        for (int id : ids) out.add(getString(id));
+        return out;
+    }
+
+    private String due(int i) {
+        return i == 0 ? profile.dueVtv : i == 1 ? profile.dueInsurance : profile.dueService;
+    }
+
+    private void setDue(int i, String v) {
+        if (i == 0) profile.dueVtv = v;
+        else if (i == 1) profile.dueInsurance = v;
+        else profile.dueService = v;
+        changed();
+    }
+
+    private void dateRow(int title, final int i) {
+        label(title);
+        LinearLayout r = row();
+        final String current = due(i);
+        r.addView(chip(current.isEmpty() ? getString(R.string.date_none) : current, !current.isEmpty(), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar c = Calendar.getInstance();
+                new DatePickerDialog(SettingsActivity.this, (dp1, y, m, d) -> {
+                    setDue(i, String.format(Locale.US, "%04d-%02d-%02d", y, m + 1, d));
+                    buildForm();
+                }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        }));
+        if (!current.isEmpty()) {
+            r.addView(chip(getString(R.string.date_clear), false, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setDue(i, "");
+                    buildForm();
+                }
+            }));
+        }
+        form.addView(r);
+    }
+
+    // ---------------------------------------------------------------- backup
+
+    private void withStorage(int action) {
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            pendingAction = action;
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_STORAGE);
+            return;
+        }
+        if (action == ACT_EXPORT) exportProfile();
+        else if (action == ACT_IMPORT) importProfile();
+        else if (action == ACT_PACKS) importPacks();
+        else pickPhoto();
+    }
+
+    private void exportProfile() {
+        try {
+            File f = Files.write("perfil.json", profile.toJson().toString(2), this);
+            Toast.makeText(this, f == null ? getString(R.string.backup_failed)
+                    : getString(R.string.backup_saved, f.getPath()), Toast.LENGTH_LONG).show();
+        } catch (org.json.JSONException e) {
+            Toast.makeText(this, R.string.backup_failed, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void importProfile() {
+        File found = null;
+        for (File f : Files.find(".json")) {
+            if (f.getName().equalsIgnoreCase("perfil.json")) {
+                found = f;
+                break;
+            }
+        }
+        if (found == null) {
+            Toast.makeText(this, R.string.import_none, Toast.LENGTH_LONG).show();
+            return;
+        }
+        try {
+            profile.applyJson(new org.json.JSONObject(Files.readText(found)));
+            profile.customPhoto = profile.customPhoto && CarImage.customFile(this).isFile();
+            changed();
+            bakeNow.run();
+            recreate();
+        } catch (Exception e) {
+            Toast.makeText(this, R.string.import_bad, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void importPacks() {
+        final Context app = getApplicationContext();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final int n = Files.importPacks(app);
+                main.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (destroyed) return;
+                        Toast.makeText(app, getString(R.string.packs_done, n), Toast.LENGTH_LONG).show();
+                        buildForm();
+                    }
+                });
+            }
+        }, "a3l-packs").start();
     }
 
     private static String pick(String a, String fallback) {
@@ -264,6 +476,7 @@ public class SettingsActivity extends Activity {
 
     private void pickPhoto() {
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            pendingAction = ACT_PHOTO;
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQ_STORAGE);
             return;
         }
@@ -305,7 +518,7 @@ public class SettingsActivity extends Activity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode != REQ_STORAGE) return;
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) pickPhoto();
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) withStorage(pendingAction);
         else Toast.makeText(this, R.string.need_storage, Toast.LENGTH_SHORT).show();
     }
 
@@ -326,7 +539,7 @@ public class SettingsActivity extends Activity {
     private void label(int text) {
         TextView t = new TextView(this);
         t.setText(text);
-        t.setTextColor(getColor(R.color.text2));
+        t.setTextColor(Theming.color(this, R.attr.a3Text2));
         t.setTextSize(13);
         t.setPadding(0, px(10), 0, px(6));
         form.addView(t);
@@ -335,7 +548,7 @@ public class SettingsActivity extends Activity {
     private void hint(int text) {
         TextView t = new TextView(this);
         t.setText(text);
-        t.setTextColor(getColor(R.color.text2));
+        t.setTextColor(Theming.color(this, R.attr.a3Text2));
         t.setTextSize(12);
         t.setPadding(0, px(6), 0, px(6));
         form.addView(t);
@@ -350,7 +563,7 @@ public class SettingsActivity extends Activity {
     private TextView chip(String text, boolean selected, View.OnClickListener click) {
         TextView t = new TextView(this);
         t.setText(text);
-        t.setTextColor(getColor(R.color.text));
+        t.setTextColor(Theming.color(this, R.attr.a3Text));
         t.setTextSize(14);
         t.setGravity(Gravity.CENTER);
         t.setBackgroundResource(R.drawable.chip_bg);
@@ -394,7 +607,7 @@ public class SettingsActivity extends Activity {
         e.setInputType(inputType);
         e.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(maxLen)});
         e.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI | EditorInfo.IME_ACTION_DONE);
-        e.setTextColor(getColor(R.color.text));
+        e.setTextColor(Theming.color(this, R.attr.a3Text));
         e.setTextSize(16);
         e.setBackgroundResource(R.drawable.field_bg);
         e.setPadding(px(14), 0, px(14), 0);
@@ -421,7 +634,7 @@ public class SettingsActivity extends Activity {
         CheckBox c = new CheckBox(this);
         c.setText(title);
         c.setChecked(value);
-        c.setTextColor(getColor(R.color.text));
+        c.setTextColor(Theming.color(this, R.attr.a3Text));
         c.setTextSize(15);
         c.setMinHeight(px(44));
         c.setOnCheckedChangeListener((b, on) -> cb.chosen(on ? "" : null));

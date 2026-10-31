@@ -3,7 +3,7 @@
   "defaults": {"body": "Sportback", "engine": "2.0 TDI", "year": "2008"},
   "bodies": ["3 puertas", "Sportback", "Cabrio"],
   "engines": ["1.4 TFSI", "1.6", "1.8 TFSI", "2.0 TFSI", "1.9 TDI", "2.0 TDI"],
-  "paint": {"gain": 2.0, "gamma": 1.25, "spec": 0.35},
+  "paint": {"gain": 1.7, "gamma": 1.25, "spec": 0.28},
   "paints": [{"id":"original","name":"Original"},{"id":"negro","name":"Negro","color":"#16171A"},{"id":"blanco","name":"Blanco Ibis","color":"#F2F2F0"},{"id":"plata","name":"Plata Hielo","color":"#B9BDC2"},{"id":"gris","name":"Gris Daytona","color":"#4A4D52"},{"id":"rojo","name":"Rojo Brillante","color":"#B5121B"},{"id":"azul","name":"Azul Sepang","color":"#143C8C"},{"id":"verde","name":"Verde Oscuro","color":"#123A2C"},{"id":"naranja","name":"Naranja Samoa","color":"#D9571A"}],
   "wheels": [{"id":"original","name":"Originales"},{"id":"5-rayos","name":"5 rayos"},{"id":"5-doble-rayo","name":"5 doble rayo"},{"id":"7-doble-rayo","name":"7 doble rayo"},{"id":"10-rayos","name":"10 rayos"},{"id":"5-rayos-antracita","name":"5 rayos antracita"},{"id":"5-doble-negra","name":"5 doble negra"}],
   "wheel_centers": [{"cx": 505, "cy": 318, "rx": 60, "ry": 72, "angle": 0}, {"cx": 880, "cy": 282, "rx": 27, "ry": 58, "angle": 0}],

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Configurador A3 Launcher</title>
+<style>
+:root { --bg:#060708; --panel:#ffffff0d; --line:#ffffff1f; --fg:#f1f2f4; --muted:#a3a9b1; --accent:#e3263a; color-scheme:dark; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
+main { max-width:1000px; margin:0 auto; padding:24px 16px 48px; }
+h1 { font-weight:600; font-size:1.7rem; margin:0 0 4px; }
+.sub { color:var(--muted); margin:0 0 20px; }
+.grid { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:16px; align-items:start; }
+@media (max-width:760px) { .grid { grid-template-columns:minmax(0,1fr); } }
+.card { background:var(--panel); border:1px solid var(--line); border-radius:20px; padding:18px; min-width:0; }
+.sticky { position:sticky; top:12px; }
+@media (max-width:760px) { .sticky { position:static; } }
+canvas { width:100%; height:auto; display:block; }
+.t { font-size:1.3rem; font-weight:600; }
+.m { color:var(--muted); font-size:.9rem; }
+label.h { display:block; color:var(--muted); font-size:.85rem; margin:14px 0 6px; }
+.chips { display:flex; flex-wrap:wrap; gap:6px; }
+.chips button { min-height:40px; padding:0 14px; border-radius:20px; border:1px solid var(--line); background:transparent; color:var(--fg); font:inherit; font-size:.9rem; cursor:pointer; }
+.chips button[aria-pressed=true] { background:var(--accent); border-color:var(--accent); }
+input[type=text],input[type=number],input[type=date] { width:100%; min-height:42px; padding:0 12px; border-radius:10px; border:1px solid var(--line); background:#0000; color:var(--fg); font:inherit; }
+.check { display:flex; gap:8px; align-items:center; margin-top:12px; min-height:32px; }
+.go { width:100%; min-height:48px; margin-top:18px; border:0; border-radius:12px; background:var(--accent); color:#fff; font:inherit; font-weight:600; cursor:pointer; }
+ol { color:var(--muted); padding-left:20px; }
+:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Configurador de A3 Launcher</h1>
+  <p class="sub">Elegí tu auto acá y pasalo al estéreo con un pendrive. Nada sale de tu navegador.</p>
+  <div class="grid">
+    <div class="card sticky">
+      <div class="t" id="title"></div>
+      <div class="m" id="sub"></div>
+      <canvas id="car" width="640" height="360"></canvas>
+      <div class="m" id="hello"></div>
+    </div>
+    <div class="card">
+      <label class="h">Modelo</label><div class="chips" id="pack"></div>
+      <label class="h">Color</label><div class="chips" id="paint"></div>
+      <label class="h">Llantas</label><div class="chips" id="wheels"></div>
+      <label class="h">Carrocería</label><div class="chips" id="body"></div>
+      <label class="h" for="engine">Motor</label><input type="text" id="engine" maxlength="32">
+      <label class="h" for="year">Año</label><input type="text" id="year" maxlength="4" inputmode="numeric">
+      <label class="h" for="greeting">Nombre en el saludo</label><input type="text" id="greeting" maxlength="20">
+      <label class="h" for="plate">Patente</label><input type="text" id="plate" maxlength="10">
+      <label class="check"><input type="checkbox" id="plateShow"> Mostrar la patente en el auto</label>
+      <label class="h">Diseño</label><div class="chips" id="layout"></div>
+      <label class="h">Acento</label><div class="chips" id="accent"></div>
+      <label class="h">Modo noche</label><div class="chips" id="night"></div>
+      <label class="check"><input type="checkbox" id="carplay"> Abrir CarPlay al dar contacto</label>
+      <button class="go" id="save">Descargar perfil.json</button>
+      <ol>
+        <li>Copiá <b>perfil.json</b> a un pendrive, en una carpeta llamada <b>A3Launcher</b>.</li>
+        <li>En el estéreo: lápiz de la tarjeta del auto, Copia y packs, <b>Importar perfil</b>.</li>
+      </ol>
+    </div>
+  </div>
+</main>
+<script>
+const PAINTS=[["original","Original"],["negro","Negro","#16171A"],["blanco","Blanco Ibis","#F2F2F0"],["plata","Plata Hielo","#B9BDC2"],["gris","Gris Daytona","#4A4D52"],["rojo","Rojo Brillante","#B5121B"],["azul","Azul Sepang","#143C8C"],["verde","Verde Oscuro","#123A2C"],["naranja","Naranja Samoa","#D9571A"]];
+const WHEELS=[["original","Originales"],["5-rayos","5 rayos"],["5-doble-rayo","5 doble rayo"],["7-doble-rayo","7 doble rayo"],["10-rayos","10 rayos"],["5-rayos-antracita","5 rayos antracita"],["5-doble-negra","5 doble negra"]];
+// Same numbers as each pack.json in launcher/app/src/main/assets/packs.
+const PACKS={
+ "audi-a3-8p":{dir:"a3",title:"Audi A3",body:"Sportback",engine:"2.0 TDI",year:"2008",gain:1.7,gamma:1.25,spec:.28,wheels:[[505,318,60,72,0],[880,282,27,58,0]],plate:[66,261,198,261,198,296,66,296]},
+ "audi-s3-8p":{dir:"s3",title:"Audi S3",body:"Sportback",engine:"2.0 TFSI quattro",year:"2010",gain:.92,gamma:1.5,spec:.22,wheels:[[494,378,62,92,3],[880,245,29,60,2]],plate:[33,303,90,318,87,374,31,352]}
+};
+const s={pack:"audi-a3-8p",paint:"original",wheels:"original",body:"",layout:"glass",accent:"red",night:"off"};
+const $=id=>document.getElementById(id);
+const images={};
+function img(src){return images[src]||(images[src]=new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=src;}));}
+function chips(id,opts,key){const el=$(id);el.textContent="";for(const[v,n]of opts){const b=document.createElement("button");b.type="button";b.textContent=n;b.setAttribute("aria-pressed",s[key]===v);b.onclick=()=>{s[key]=v;render();};el.append(b);}}
+let drawn=0;
+async function draw(){
+  const id=++drawn,p=PACKS[s.pack],[base,mask]=await Promise.all([img(`img/${p.dir}/base.webp`),img(`img/${p.dir}/paint.webp`)]);
+  if(id!==drawn)return;
+  const c=$("car"),x=c.getContext("2d");c.width=base.width;c.height=base.height;x.drawImage(base,0,0);
+  const paint=PAINTS.find(q=>q[0]===s.paint);
+  if(paint&&paint[2]){
+    const hex=parseInt(paint[2].slice(1),16),r=hex>>16&255,g=hex>>8&255,b=hex&255;
+    const a=x.getImageData(0,0,c.width,c.height),t=document.createElement("canvas");t.width=c.width;t.height=c.height;
+    const tx=t.getContext("2d",{willReadFrequently:true});tx.drawImage(mask,0,0,c.width,c.height);const m=tx.getImageData(0,0,c.width,c.height).data,d=a.data;
+    for(let i=0;i<d.length;i+=4){const am=m[i]/255;if(!am)continue;const l=Math.min(1,(d[i]*.299+d[i+1]*.587+d[i+2]*.114)/255*p.gain),sh=Math.pow(l,p.gamma),w=Math.pow(l,7)*p.spec*255;
+      d[i]=d[i]*(1-am)+Math.min(255,r*sh+w)*am;d[i+1]=d[i+1]*(1-am)+Math.min(255,g*sh+w)*am;d[i+2]=d[i+2]*(1-am)+Math.min(255,b*sh+w)*am;}
+    x.putImageData(a,0,0);
+  }
+  const k=c.width/920;
+  if(s.wheels!=="original"){const w=await img(`img/${s.wheels}.webp`);if(id!==drawn)return;for(const[cx,cy,rx,ry,an]of p.wheels){x.save();x.translate(cx*k,cy*k);x.rotate(an*Math.PI/180);x.drawImage(w,-rx*k,-ry*k,rx*2*k,ry*2*k);x.restore();}}
+  const text=normalizePlate($("plate").value);
+  if($("plateShow").checked&&text){const q=p.plate.map(v=>v*k),merc=/^[A-Z]{2} \d{3} [A-Z]{2}$/.test(text),w=Math.hypot(q[2]-q[0],q[3]-q[1]),h=Math.hypot(q[6]-q[0],q[7]-q[1]);
+    x.save();x.transform((q[2]-q[0])/w,(q[3]-q[1])/w,(q[6]-q[0])/h,(q[7]-q[1])/h,q[0],q[1]);x.fillStyle=merc?"#f4f4f4":"#111114";x.fillRect(0,0,w,h);x.fillStyle=merc?"#111":"#f4f4f4";x.font=`bold ${h*.6}px monospace`;x.textAlign="center";x.textBaseline="middle";x.fillText(text,w/2,h/2,w*.92);x.restore();}
+}
+function normalizePlate(raw){const t=raw.toUpperCase().replace(/[^A-Z0-9]/g,"");if(/^[A-Z]{3}\d{3}$/.test(t))return t.slice(0,3)+" "+t.slice(3);if(/^[A-Z]{2}\d{3}[A-Z]{2}$/.test(t))return t.slice(0,2)+" "+t.slice(2,5)+" "+t.slice(5);return raw.trim().toUpperCase();}
+function render(){
+  const p=PACKS[s.pack];
+  chips("pack",Object.entries(PACKS).map(([k,v])=>[k,v.title]),"pack");chips("paint",PAINTS,"paint");chips("wheels",WHEELS,"wheels");
+  chips("body",["3 puertas","Sportback","Cabrio"].map(b=>[b,b]),"body");
+  chips("layout",[["glass","Liquid glass"],["mmi","MMI clásico"]],"layout");chips("accent",[["red","Rojo"],["blue","Azul"],["gray","Gris"]],"accent");
+  chips("night",[["off","Apagado"],["on","Siempre"],["sun","Al atardecer"],["lights","Con las luces"]],"night");
+  $("engine").placeholder=p.engine;$("year").placeholder=p.year;
+  $("title").textContent=p.title;
+  $("sub").textContent=[s.body||p.body,$("engine").value||p.engine,$("year").value||p.year].join(" · ");
+  $("hello").textContent=$("greeting").value?`Hola, ${$("greeting").value}`:"";
+  draw();
+}
+for(const id of["engine","year","greeting","plate","plateShow"])$(id).addEventListener("input",render);
+$("save").onclick=()=>{
+  const o={greeting:$("greeting").value.trim(),pack:s.pack,body:s.body,engine:$("engine").value.trim(),year:$("year").value.trim(),
+    plate:{text:$("plate").value.trim(),show:$("plateShow").checked},paint:s.paint,wheels:s.wheels,layout:s.layout,accent:s.accent,night:s.night,carplayOnAcc:$("carplay").checked};
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(o,null,2)],{type:"application/json"}));a.download="perfil.json";a.click();URL.revokeObjectURL(a.href);
+};
+render();
+</script>
+</body>
+</html>

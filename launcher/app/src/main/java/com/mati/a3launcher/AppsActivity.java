@@ -1,6 +1,5 @@
 package com.mati.a3launcher;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -24,7 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /** App drawer: every launchable app, sorted by label, 6 columns. */
-public class AppsActivity extends Activity {
+public class AppsActivity extends BaseActivity {
     /** With this boolean extra the drawer returns the tapped app (as a flattened component). */
     static final String EXTRA_PICK = "pick";
 
@@ -47,7 +46,7 @@ public class AppsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setBackgroundDrawable(new GlowBackground(getResources().getDisplayMetrics().density));
+        getWindow().setBackgroundDrawable(new GlowBackground(this, !night));
         setContentView(R.layout.activity_apps);
         findViewById(R.id.btnClose).setOnClickListener(new View.OnClickListener() {
             @Override

@@ -51,6 +51,12 @@ Callback `com.jancar.services.system.IGpsCallback`:
 Real: `lon="-6x.xx…" lat="-3x.xx…" acc=0.9–2.7 alt≈4xx speed=0.0` (coordenadas ocultadas, auto quieto). Llega
 aproximadamente cada 1 s. La velocidad está en km/h.
 
+### ICar (descriptor `com.jancar.services.car.ICar`)
+
+`...action.car`. `getHandbrakeStatus`=11, `getLightStatusMask`=13, `getHeadLightStatus`=14 (sin argumentos,
+responde int). El launcher lee el 14 al conectarse y una vez por minuto mientras está visible, sin registrar
+callback. **Sin verificar en el auto**: falta confirmar que el canbus lo alimente; por eso figura como experimental.
+
 ### IRadio (descriptor `com.jancar.services.radio.IRadio`)
 
 Lectura: `getFreq`, `getBand`, `getPSText(int)`, `isStereo`, …; registro: `open(IRadioCallback, String)`.

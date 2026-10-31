@@ -35,7 +35,82 @@ final class JanCar {
     // play state used by JanCar music: 3 = playing, 2 = paused
     static final int STATE_PLAYING = 3;
 
+    static final String ACTION_CAR = "com.jancar.services.action.car";
+    private static final String DESC_CAR = "com.jancar.services.car.ICar";
+    private static final int TX_GET_HEADLIGHT_STATUS = 14;
+
     private JanCar() {}
+
+    interface LightsListener {
+        /** Called on a background thread. */
+        void onHeadlights(boolean on);
+    }
+
+    /**
+     * Read-only access to ICar.getHeadLightStatus. No callback is registered: the launcher reads
+     * the value when it connects and once a minute while visible.
+     */
+    static final class CarLink implements ServiceConnection {
+        private final LightsListener listener;
+        private volatile IBinder remote;
+        private boolean bound;
+
+        CarLink(LightsListener listener) {
+            this.listener = listener;
+        }
+
+        void bind(Context ctx) {
+            if (bound) return;
+            try {
+                bound = ctx.bindService(new Intent(ACTION_CAR).setPackage(PKG), this, Context.BIND_AUTO_CREATE);
+            } catch (Throwable t) {
+                DebugLog.log("bind car error: " + t);
+            }
+        }
+
+        void unbind(Context ctx) {
+            remote = null;
+            if (!bound) return;
+            bound = false;
+            try {
+                ctx.unbindService(this);
+            } catch (Throwable ignored) {
+            }
+        }
+
+        void readHeadlights() {
+            final IBinder r = remote;
+            if (r == null) return;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Parcel in = Parcel.obtain(), out = Parcel.obtain();
+                    try {
+                        in.writeInterfaceToken(DESC_CAR);
+                        r.transact(TX_GET_HEADLIGHT_STATUS, in, out, 0);
+                        out.readException();
+                        listener.onHeadlights(out.readInt() != 0);
+                    } catch (Throwable t) {
+                        DebugLog.log("headlights error: " + t);
+                    } finally {
+                        in.recycle();
+                        out.recycle();
+                    }
+                }
+            }, "a3l-car").start();
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            remote = service;
+            readHeadlights();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            remote = null;
+        }
+    }
 
     interface MediaListener {
         /** Called on a binder thread. */

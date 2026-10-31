@@ -52,6 +52,22 @@ final class Launch {
         return c.getDrawable(R.drawable.ic_apps);
     }
 
+    static CharSequence label(Context c, String flat) {
+        if (CARPLAY.equals(flat)) return c.getString(R.string.cd_carplay);
+        if (ANDROID_AUTO.equals(flat)) return c.getString(R.string.cd_aa);
+        if (RADIO.equals(flat)) return c.getString(R.string.cd_radio);
+        if (MUSIC.equals(flat)) return c.getString(R.string.cd_music);
+        ComponentName cn = ComponentName.unflattenFromString(flat);
+        if (cn != null) {
+            try {
+                PackageManager pm = c.getPackageManager();
+                return pm.getActivityInfo(cn, 0).loadLabel(pm);
+            } catch (PackageManager.NameNotFoundException ignored) {
+            }
+        }
+        return c.getString(R.string.cd_apps);
+    }
+
     static void open(Context c, String flat) {
         if (start(c, flat)) return;
         Toast.makeText(c, R.string.cannot_open, Toast.LENGTH_SHORT).show();

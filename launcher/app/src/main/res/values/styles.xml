@@ -1,12 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.A3" parent="@android:style/Theme.Material.NoActionBar.Fullscreen">
+        <item name="a3Bg">@color/bg</item>
+        <item name="a3Accent">@color/accent</item>
+        <item name="a3Text">@color/text</item>
+        <item name="a3Text2">@color/text2</item>
+        <item name="a3GlassFill">@color/glass_fill</item>
+        <item name="a3GlassStroke">@color/glass_stroke</item>
+        <item name="a3GlassHi">@color/glass_hi</item>
+        <item name="a3Track">@color/track</item>
+        <item name="a3Floor">@color/floor</item>
         <item name="android:windowBackground">@color/bg</item>
-        <item name="android:colorAccent">@color/accent</item>
-        <item name="android:textColor">@color/text</item>
+        <item name="android:colorAccent">?attr/a3Accent</item>
+        <item name="android:textColor">?attr/a3Text</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/black</item>
         <item name="android:windowDisablePreview">false</item>
+    </style>
+
+    <style name="Theme.A3.Blue">
+        <item name="a3Accent">#FF2F6BD9</item>
+        <item name="android:colorAccent">#FF2F6BD9</item>
+    </style>
+
+    <style name="Theme.A3.Gray">
+        <item name="a3Accent">#FF8A93A3</item>
+        <item name="android:colorAccent">#FF8A93A3</item>
+    </style>
+
+    <!-- Instrument cluster at night: pure black and red, nothing bright. -->
+    <style name="Theme.A3.Night">
+        <item name="a3Bg">#FF000000</item>
+        <item name="a3Accent">#FFB3241C</item>
+        <item name="a3Text">#FFE8392E</item>
+        <item name="a3Text2">#FF9A2A22</item>
+        <item name="a3GlassFill">#0AFF2A20</item>
+        <item name="a3GlassStroke">#26FF2A20</item>
+        <item name="a3GlassHi">#26FF2A20</item>
+        <item name="a3Track">#1AFF2A20</item>
+        <item name="a3Floor">#2EFF2A20</item>
+        <item name="android:colorAccent">#FFB3241C</item>
+        <item name="android:textColor">#FFE8392E</item>
+        <item name="android:windowBackground">#FF000000</item>
     </style>
 
     <style name="Theme.A3.Splash">
@@ -17,11 +52,36 @@
     </style>
 
     <style name="Label">
-        <item name="android:textColor">@color/text2</item>
+        <item name="android:textColor">?attr/a3Text2</item>
         <item name="android:textSize">11sp</item>
         <item name="android:letterSpacing">0.14</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="MmiRow">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textSize">19sp</item>
+        <item name="android:textColor">?attr/a3Text</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="MmiLabel">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">?attr/a3Text2</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="MmiButton">
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:background">@drawable/mmi_button</item>
     </style>
 
     <style name="RailButton">

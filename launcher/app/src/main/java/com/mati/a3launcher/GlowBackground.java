@@ -12,23 +12,28 @@ import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 
 /**
- * Static window background: flat #060708 plus three soft elliptical glows.
+ * Static window background: flat color plus (optionally) three soft elliptical glows.
  * Each glow only paints its own oval, so the cost is one fill plus three small ovals.
  */
 final class GlowBackground extends Drawable {
-    private static final int BG = 0xFF060708;
-
     private final float density;
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF oval = new RectF();
     private final Matrix matrix = new Matrix();
     private final RadialGradient[] shaders = new RadialGradient[3];
 
-    GlowBackground(float density) {
-        this.density = density;
+    private final int bg;
+    private final boolean glows;
+
+    /** Reads the palette from the context's theme. */
+    GlowBackground(android.content.Context c, boolean glows) {
+        this.density = c.getResources().getDisplayMetrics().density;
+        this.bg = Theming.color(c, R.attr.a3Bg);
+        this.glows = glows;
+        int rgb = Theming.color(c, R.attr.a3Accent) & 0xFFFFFF;
         // Unit-radius gradients, scaled into ellipses at draw time.
-        shaders[0] = gradient(0xE3263A, 0.30f);
-        shaders[1] = gradient(0xE3263A, 0.20f);
+        shaders[0] = gradient(rgb, 0.30f);
+        shaders[1] = gradient(rgb, 0.20f);
         shaders[2] = gradient(0x8A93A3, 0.12f);
     }
 
@@ -42,7 +47,8 @@ final class GlowBackground extends Drawable {
     @Override
     public void draw(Canvas canvas) {
         Rect b = getBounds();
-        canvas.drawColor(BG);
+        canvas.drawColor(bg);
+        if (!glows) return;
         float d = density;
         glow(canvas, 0, b.left + 340 * d, b.top + 340 * d, 280 * d, 200 * d);
         glow(canvas, 1, b.right, b.bottom, 200 * d, 160 * d);
