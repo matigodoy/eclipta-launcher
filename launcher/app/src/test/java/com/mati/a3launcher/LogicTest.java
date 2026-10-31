@@ -51,4 +51,13 @@ public class LogicTest {
         int white = m.apply(0xFFFFFFFF, 255);
         assertTrue(((white >> 16) & 0xFF) == 255);
     }
+
+    @Test
+    public void screenFit() {
+        assertEquals(1f, ScreenFit.density(1024, 600, 1024, 600, 1f, 0.03f), 0.001f);
+        assertEquals(1f, ScreenFit.density(1024, 590, 1024, 600, 1f, 0.03f), 0.001f);
+        assertEquals(1.2f, ScreenFit.density(1280, 720, 1024, 600, 1f, 0.03f), 0.001f);
+        assertEquals(1.2f, ScreenFit.density(1920, 720, 1024, 600, 1.5f, 0.03f), 0.001f);
+        assertEquals(1.333f, ScreenFit.density(1366, 800, 1024, 600, 1f, 0.03f), 0.01f);
+    }
 }

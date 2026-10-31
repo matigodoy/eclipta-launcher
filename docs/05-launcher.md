@@ -12,6 +12,7 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 | 0.1.2 | 3 | La animación también se dispara con `QB_POWERON`; el log solo guarda cambios de media; el nombre de archivo se limpia ("a_b.mp3" pasa a "a b") | Publicada |
 | 0.2.0 | 4 | Personalizar (saludo, patente, modelo A3/S3 8P, carrocería, motor, año, foto propia), CarPlay al contacto, animación opcional, barra lateral configurable. Release sin log ni permiso de internet y con R8 | Local, probada en emulador |
 | 0.3.0 | 5 | Color y llantas por capas, patente sobre la foto, sombra; temas glass y MMI clásico, acentos, modo noche (siempre, atardecer, luces); aviso de velocidad; recordatorios; exportar e importar perfil y packs por pendrive; configurador web | Local, probada en emulador |
+| 0.4.0 | 6 | Se adapta a otras pantallas apaisadas; funciona sin servicios JanCar (oculta la radio, GPS estándar, elegís las apps); inglés y portugués; exportar diagnóstico; menos memoria: sin doble GPS en JanCar, reloj interno más lento en reposo, libera bitmaps con CarPlay adelante | Local, probada en emulador |
 
 ## Build
 
@@ -19,7 +20,7 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
   (a propósito: con target < 26 los receivers del manifest siguen recibiendo los broadcasts
   implícitos de JanCar; la app se instala a mano, no va a Play Store).
 - Java puro, **sin AndroidX ni librerías externas**. Firma debug (v2).
-- Tamaño de la APK: unos 1,16 MB (la animación WebP ocupa 967 KB y la foto del auto 109 KB).
+- Tamaño de la APK: unos 1,2 MB (la animación WebP ocupa 967 KB; cada pack, unos 40 KB).
 
 ## Código (`launcher/app/src/main/java/com/mati/a3launcher/`)
 
@@ -73,6 +74,25 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 6. Log en un hilo, con tope de líneas.
 7. Los callbacks del Binder publican lo mínimo en el hilo principal y no redibujan si el valor no cambió.
 
+## Mediciones en emulador (v0.4.0, API 36, 1024x600, sin JanCar)
+
+Con `scripts/measure.sh`. **Orientativas**: falta repetirlas en el estéreo y con CarPlay real. La v0.1.2 medida era la build
+debug guardada, así que parte de la mejora viene de pasar a release con R8.
+
+| | v0.1.2 | v0.4.0 |
+|---|---|---|
+| PSS visible | 40 MB | 20 MB |
+| PSS con otra app adelante | 46 MB | 27 MB |
+| CPU en reposo (visible y en segundo plano) | 0,0 % | 0,0 % |
+| Conexiones a JanCar en segundo plano | 0 | 0 |
+| APK | 1,16 MB | 1,2 MB |
+
+## Sin JanCar
+
+`JanCar.available()` decide: si no está, no hay radio ni "qué suena" (hace falta acceso a notificaciones, que no se pide), se usa
+el GPS estándar y un acceso cuya app falta abre el selector. Sin señal de contacto no hay animación ni CarPlay automático. Las
+pantallas verticales no están soportadas.
+
 ## Resultados en el estéreo (sesión 2, v0.1.1)
 
 - Instalación OK (`versionCode=2 minSdk=28 targetSdk=25`). Mati eligió "A3 Launcher" como Inicio, "Siempre".
@@ -85,19 +105,19 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 
 ## Assets
 
-- Foto del auto: `design/auto-a3-removebg.png` (676x369, sin fondo, de remove.bg),
-  recortada al borde y escalada a 460 px → `res/drawable-nodpi/car_a3.png`. Ojo: es un **3 puertas**,
-  no un Sportback.
+- Fotos de los autos: `assets/packs/`, ver [packs](08-packs.md). La del A3 es un **3 puertas**, no un Sportback; la del S3 sí es
+  Sportback. Las capas tienen la patente tapada.
 - Animación: `design/audi-logo-sting.gif` (800x600, 120 cuadros de 30 ms, fondo `#00010C`, 5,8 MB),
   convertida con `gif2webp -q 80 -m 4 -mixed` → `res/raw/audi_sting.webp` (967 KB).
 - Log de diagnóstico: `/sdcard/Android/data/com.mati.a3launcher/files/a3l-log.txt`, que se apaga con `DebugLog.ENABLED`.
 
 ## Pendientes conocidos
 
-- Instalar la v0.1.2.
+- Instalar la última versión (firma de release: hay que desinstalar la de debug una vez).
 - Medir con CarPlay adelante (**todavía no se midió en segundo plano**).
-- Sombra suave bajo el auto (opcional).
-- Nombre de la emisora (RDS) y presets vía IRadio, sin usar `open()`.
+- Nombre de la emisora (RDS) y presets vía IRadio, sin usar `open()`. No se hizo: no se puede probar sin el auto y tocar la radio a ciegas es riesgoso.
+- Confirmar en el auto si `getHeadLightStatus` cambia con las luces (modo noche experimental).
+- Packs de A3 8V y A4 B8: faltan fotos propias.
 - La temperatura exterior **no se puede** obtener con este protocolo CAN.
 - Conseguir una foto de un Sportback (5 puertas).
 

@@ -12,20 +12,24 @@ contributions in English are welcome.*
 ## Qué hay acá
 
 - **`launcher/`**: A3 Launcher, una app HOME en Java puro (sin AndroidX), ~1 MB, que muestra hora,
-  fecha, velocidad GPS, lo que suena, la radio y accesos a CarPlay / Android Auto. No corre nada
-  en segundo plano para no quitarle recursos a CarPlay.
+  fecha, velocidad GPS, lo que suena, la radio y accesos a CarPlay / Android Auto. Elegís modelo (A3 o S3 8P),
+  color, llantas, patente, saludo y diseño (liquid glass o MMI clásico), con modo noche. En español, inglés y
+  portugués. No corre nada en segundo plano para no quitarle recursos a CarPlay.
 - **`docs/`**: lo que se sabe de estas unidades, verificado por ADB en solo lectura:
   - [Hardware y firmware](docs/01-estereo-hardware.md)
   - [Conexión por ADB vía Wi-Fi](docs/02-conexion-adb.md)
   - [APIs de JanCar](docs/03-apis-jancar.md) (servicios, AIDL, broadcasts)
   - [CAN bus](docs/04-canbus.md) (decodificador Simple Soft, `SpAudiProtocol`)
   - [El launcher](docs/05-launcher.md), [diseño](docs/06-diseno.md), [logo de arranque](docs/07-logo-arranque.md)
+  - [Packs de vehículo y perfil](docs/08-packs.md), [configurador web](docs/configurador/index.html)
   - [Otros autos y unidades](docs/vehiculos/) aportados por la comunidad
 
 ## ¿Funciona en mi estéreo?
 
 Probado en una sola unidad: JanCar `UJC201_64`, firmware `UJC201-V1.1.04R1-240907`, 1024x600.
-Otras unidades con firmware JanCar probablemente funcionen; si lo probás, [contanos](CONTRIBUTING.md).
+Otras unidades con firmware JanCar probablemente funcionen. Desde la v0.4 también abre en otras pantallas apaisadas
+y en Android sin JanCar, pero sin radio ni "qué suena". Si lo probás, [contanos](CONTRIBUTING.md) con el diagnóstico
+que exporta el launcher.
 
 ## Instalar
 
@@ -55,7 +59,7 @@ implícitos de JanCar. Por eso la app no puede ir a Play Store; se instala a man
 ### Personalizar
 
 Desde la v0.2 casi todo se cambia en el estéreo: tocá el lápiz de la tarjeta del auto (saludo, patente,
-modelo, foto propia, CarPlay al dar contacto). Para cambiar un acceso de la barra lateral, mantenelo apretado.
+modelo, color, llantas, foto propia, diseño, modo noche, recordatorios, CarPlay al dar contacto). Para cambiar un acceso de la barra lateral, mantenelo apretado.
 
 ### Personalizar tu build (animación, recursos)
 

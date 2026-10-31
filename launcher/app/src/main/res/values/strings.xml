@@ -3,7 +3,7 @@
     <string name="app_name">A3 Launcher</string>
     <!-- Name in the greeting ("Buen día, <name>"). Empty = no name. Override it in launcher/private-res/values/. -->
     <string name="greeting_name" translatable="false"></string>
-    <string name="kmh">km/h</string>
+    <string name="kmh" translatable="false">km/h</string>
     <string name="speed_label">VELOCIDAD</string>
     <string name="gps">GPS</string>
     <string name="no_gps">Sin señal GPS</string>
@@ -89,4 +89,16 @@
     <string name="import_none">No encontré perfil.json en el pendrive</string>
     <string name="import_bad">Ese archivo no es un perfil válido</string>
     <string name="packs_done">Packs importados: %1$d</string>
+    <string name="good_morning">Buen día</string>
+    <string name="good_afternoon">Buenas tardes</string>
+    <string name="good_evening">Buenas noches</string>
+    <string name="date_pattern">EEEE d \'de\' MMMM</string>
+    <string name="radio_band">RADIO %1$s</string>
+    <string name="f_lang">Idioma</string>
+    <string name="lang_auto">Automático</string>
+    <string name="lang_es" translatable="false">Español</string>
+    <string name="lang_en" translatable="false">English</string>
+    <string name="lang_pt" translatable="false">Português</string>
+    <string name="diag_export">Exportar diagnóstico</string>
+    <string name="diag_tip">Guarda la placa, el firmware y la pantalla para adjuntar a un reporte. No incluye seriales, MAC ni ubicación.</string>
 </resources>

@@ -36,7 +36,7 @@ import java.util.Locale;
 public class SettingsActivity extends BaseActivity {
     private static final int REQ_STORAGE = 1;
     private static final long BAKE_DELAY_MS = 350;
-    private static final int ACT_PHOTO = 0, ACT_EXPORT = 1, ACT_IMPORT = 2, ACT_PACKS = 3;
+    private static final int ACT_PHOTO = 0, ACT_EXPORT = 1, ACT_IMPORT = 2, ACT_PACKS = 3, ACT_DIAG = 4;
 
     private interface OnChoice {
         void chosen(String id);
@@ -282,6 +282,16 @@ public class SettingsActivity extends BaseActivity {
                     }
                 });
 
+        chips(R.string.f_lang, list(new String[]{"auto", "es", "en", "pt"}),
+                strings(R.string.lang_auto, R.string.lang_es, R.string.lang_en, R.string.lang_pt), profile.lang, new OnChoice() {
+                    @Override
+                    public void chosen(String id) {
+                        profile.lang = id;
+                        changed();
+                        recreate();
+                    }
+                });
+
         section(R.string.sec_drive);
         field(R.string.f_speed_limit, String.valueOf(profile.speedLimit), InputType.TYPE_CLASS_NUMBER, 3, new OnChoice() {
             @Override
@@ -351,6 +361,16 @@ public class SettingsActivity extends BaseActivity {
             }
         }));
         form.addView(backup);
+        LinearLayout support = row();
+        support.setPadding(0, px(8), 0, 0);
+        support.addView(chip(getString(R.string.diag_export), false, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                withStorage(ACT_DIAG);
+            }
+        }));
+        form.addView(support);
+        hint(R.string.diag_tip);
     }
 
     private List<String> strings(int... ids) {
@@ -408,6 +428,7 @@ public class SettingsActivity extends BaseActivity {
         if (action == ACT_EXPORT) exportProfile();
         else if (action == ACT_IMPORT) importProfile();
         else if (action == ACT_PACKS) importPacks();
+        else if (action == ACT_DIAG) exportDiagnostics();
         else pickPhoto();
     }
 
@@ -419,6 +440,12 @@ public class SettingsActivity extends BaseActivity {
         } catch (org.json.JSONException e) {
             Toast.makeText(this, R.string.backup_failed, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void exportDiagnostics() {
+        File f = Files.write("diagnostico.txt", Diagnostics.report(this), this);
+        Toast.makeText(this, f == null ? getString(R.string.backup_failed)
+                : getString(R.string.backup_saved, f.getPath()), Toast.LENGTH_LONG).show();
     }
 
     private void importProfile() {

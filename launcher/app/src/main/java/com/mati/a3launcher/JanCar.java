@@ -41,6 +41,15 @@ final class JanCar {
 
     private JanCar() {}
 
+    static boolean available(Context c) {
+        try {
+            c.getPackageManager().getPackageInfo(PKG, 0);
+            return true;
+        } catch (android.content.pm.PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
     interface LightsListener {
         /** Called on a background thread. */
         void onHeadlights(boolean on);

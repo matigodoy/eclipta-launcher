@@ -190,6 +190,7 @@
 
         <!-- Car card -->
         <LinearLayout
+            android:id="@+id/carCard"
             android:layout_width="520dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="12dp"

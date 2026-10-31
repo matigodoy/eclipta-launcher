@@ -15,11 +15,32 @@ final class Launch {
     static final String MUSIC = "com.jancar.music/com.jancar.music.activity.MainActivity";
     static final String SETTINGS = "com.jancar.settings/com.jancar.settings.ui.activity.MainActivity";
     private static final String[] DEFAULT_SLOTS = {CARPLAY, ANDROID_AUTO, RADIO, MUSIC};
+    // Projection apps on other head units. Reported by owners, not verified on a unit: only used if installed.
+    private static final String[] OTHER_CARPLAY_PACKAGES = {"com.zjinnova.zlink", "cn.manstep.phonemirrorBox", "net.easyconn"};
 
     private Launch() {}
 
-    static String slot(Profile p, int i) {
-        return p.slots[i].isEmpty() ? DEFAULT_SLOTS[i] : p.slots[i];
+    static String slot(Context c, Profile p, int i) {
+        if (!p.slots[i].isEmpty()) return p.slots[i];
+        if (i == 0 && !installed(c, CARPLAY)) {
+            for (String pkg : OTHER_CARPLAY_PACKAGES) {
+                String flat = pkg + "/.unknown";
+                if (installed(c, flat)) return flat;
+            }
+        }
+        return DEFAULT_SLOTS[i];
+    }
+
+    static void openSettings(Context c) {
+        if (installed(c, SETTINGS)) {
+            open(c, SETTINGS);
+            return;
+        }
+        try {
+            c.startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } catch (Throwable t) {
+            Toast.makeText(c, R.string.cannot_open, Toast.LENGTH_SHORT).show();
+        }
     }
 
     static boolean installed(Context c, String flat) {

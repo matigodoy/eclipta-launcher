@@ -29,6 +29,7 @@ final class Profile {
     String accent;                  // "red", "blue" or "gray"
     String night;                   // "off", "on", "sun" or "lights"
     int speedLimit;                 // km/h, 0 = off
+    String lang;                    // "auto", "es", "en" or "pt"
     String dueVtv, dueInsurance, dueService; // yyyy-MM-dd, empty = off
 
     static Profile load(Context c) {
@@ -51,6 +52,7 @@ final class Profile {
         o.accent = p.getString("p_accent", "red");
         o.night = p.getString("p_night", "off");
         o.speedLimit = p.getInt("p_speed_limit", 0);
+        o.lang = p.getString("p_lang", "auto");
         o.dueVtv = p.getString("p_due_vtv", "");
         o.dueInsurance = p.getString("p_due_insurance", "");
         o.dueService = p.getString("p_due_service", "");
@@ -67,7 +69,7 @@ final class Profile {
         for (int i = 0; i < SLOTS; i++) e.putString("p_slot" + i, slots[i]);
         e.putString("p_paint", paint).putString("p_wheels", wheels).putString("p_layout", layout)
                 .putString("p_accent", accent).putString("p_night", night).putInt("p_speed_limit", speedLimit)
-                .putString("p_due_vtv", dueVtv).putString("p_due_insurance", dueInsurance)
+                .putString("p_lang", lang).putString("p_due_vtv", dueVtv).putString("p_due_insurance", dueInsurance)
                 .putString("p_due_service", dueService);
         e.apply();
     }
@@ -77,7 +79,7 @@ final class Profile {
         JSONObject o = new JSONObject();
         o.put("greeting", greeting).put("pack", pack).put("body", body).put("engine", engine).put("year", year);
         o.put("plate", new JSONObject().put("text", plate).put("show", plateShow));
-        o.put("paint", paint).put("wheels", wheels).put("layout", layout).put("accent", accent).put("night", night);
+        o.put("paint", paint).put("wheels", wheels).put("layout", layout).put("accent", accent).put("night", night).put("lang", lang);
         o.put("splash", splash).put("carplayOnAcc", carplayOnAcc).put("speedLimit", speedLimit);
         o.put("dueVtv", dueVtv).put("dueInsurance", dueInsurance).put("dueService", dueService);
         JSONArray rail = new JSONArray();
@@ -103,6 +105,7 @@ final class Profile {
         layout = oneOf(o, "layout", layout, "glass", "mmi");
         accent = oneOf(o, "accent", accent, "red", "blue", "gray");
         night = oneOf(o, "night", night, "off", "on", "sun", "lights");
+        lang = oneOf(o, "lang", lang, "auto", "es", "en", "pt");
         splash = o.optBoolean("splash", splash);
         carplayOnAcc = o.optBoolean("carplayOnAcc", carplayOnAcc);
         speedLimit = Math.max(0, Math.min(300, o.optInt("speedLimit", speedLimit)));

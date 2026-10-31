@@ -1,0 +1,16 @@
+name: Mi estéreo
+description: ¿Funciona en tu unidad? Contanos cómo anda
+title: "[Estéreo] "
+labels: [unidad]
+body:
+  - type: textarea
+    id: diag
+    attributes:
+      label: Diagnóstico
+      description: "Personalizar > Copia y packs > Exportar diagnóstico, y pegá el archivo acá. No incluye seriales, MAC ni ubicación."
+      render: text
+    validations: {required: true}
+  - type: textarea
+    id: what
+    attributes: {label: "Qué funciona y qué no"}
+    validations: {required: true}

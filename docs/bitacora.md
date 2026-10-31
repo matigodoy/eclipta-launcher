@@ -29,11 +29,13 @@
   (21:07). Visible: 43 MB y 0 % de CPU, arranque en 1,45 s.
 - El auto se apagó mientras se instalaba la v0.1.2: **quedó sin instalar**. Falta medir con CarPlay adelante.
 
-## 31/10/2026: v0.2 (Mac, emulador)
+## 31/10/2026: v0.2 a v0.4 (Mac, emulador)
 
 - Pedido de Mati: desarrollar las próximas versiones sin preguntar. Estéreo no conectado: todo probado en un
   emulador API 36 a 1024x600, **sin** servicios JanCar. Por eso las releases salen como prerelease hasta probarlas en el auto.
 - Foto del S3 recortada con Vision de macOS, patente real tapada, parabrisas oscurecido (reflejaba un cartel).
+
+- v0.3: capas de pintura y llantas, temas y perfil. v0.4: otras pantallas, sin JanCar, idiomas. PSS visible de 40 a 20 MB en emulador.
 
 ## Correcciones
 

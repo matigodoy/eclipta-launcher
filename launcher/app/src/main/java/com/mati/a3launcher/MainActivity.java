@@ -36,7 +36,9 @@ import java.util.Locale;
 
 /** HOME screen. All bindings, listeners and timers live only between onStart and onStop. */
 public class MainActivity extends BaseActivity implements JanCar.MediaListener, JanCar.GpsListener {
-    private static final Locale ES = new Locale("es", "AR");
+    private static final long JANCAR_GPS_GRACE_MS = 15_000;
+    private static final long TICK_PLAYING_MS = 1000, TICK_IDLE_MS = 5000;
+    private static final int WIDE_DP = 1180;
     private static final long GPS_STALE_MS = 10_000;
     private static final long GEOCODE_INTERVAL_MS = 10 * 60_000;
     private static final long GPS_LOG_INTERVAL_MS = 30_000;
@@ -70,6 +72,12 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
     private AudioManager audio;
     private LocationManager locationManager;
     private boolean started;
+    private boolean jancar;
+    private Locale locale;
+    private volatile boolean jancarGpsSeen;
+    private boolean locationStarted;
+    private long startedAt;
+    private boolean trimmed;
     private float density;
 
     // views
@@ -116,7 +124,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         @Override
         public void run() {
             tick();
-            main.postDelayed(this, 1000);
+            main.postDelayed(this, playing ? TICK_PLAYING_MS : TICK_IDLE_MS);
         }
     };
 
@@ -146,6 +154,8 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         DebugLog.init(this);
         DebugLog.log("MainActivity onCreate");
         density = getResources().getDisplayMetrics().density;
+        jancar = JanCar.available(this);
+        locale = getResources().getConfiguration().getLocales().get(0);
         profile = Profile.load(this);
         boolean mmi = "mmi".equals(profile.layout);
         getWindow().setBackgroundDrawable(new GlowBackground(this, !night && !mmi));
@@ -185,10 +195,30 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         showRadio(prefs.getString("radio_band", null), prefs.getString("radio_freq", null));
         showNothingPlaying();
 
+        if (!jancar) {
+            // Without JanCar there is no radio or now-playing feed: media controls take the whole column.
+            findViewById(R.id.radioCard).setVisibility(View.GONE);
+            askLocation();
+        }
+        fitWideScreen();
+    }
+
+    /** JanCar gives speed and position without any permission. Other units need this. */
+    private void askLocation() {
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION}, REQ_LOCATION);
         }
+    }
+
+    /** On very wide panels the car card grows along with the right column. */
+    private void fitWideScreen() {
+        View card = findViewById(R.id.carCard);
+        if (card == null || getResources().getConfiguration().screenWidthDp < WIDE_DP) return;
+        android.widget.LinearLayout.LayoutParams lp = (android.widget.LinearLayout.LayoutParams) card.getLayoutParams();
+        lp.width = 0;
+        lp.weight = 1;
+        card.setLayoutParams(lp);
     }
 
     // ---------------------------------------------------------------- lifecycle
@@ -205,11 +235,18 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
             registerReceiver(accReceiver, wake);
         } catch (Throwable ignored) {
         }
-        mediaLink.bind(this);
-        systemLink.bind(this);
-        if ("lights".equals(profile.night)) carLink.bind(this);
+        startedAt = SystemClock.elapsedRealtime();
+        if (trimmed) {
+            trimmed = false;
+            showCar();
+        }
+        if (jancar) {
+            mediaLink.bind(this);
+            systemLink.bind(this);
+        }
+        if (jancar && "lights".equals(profile.night)) carLink.bind(this);
         updateReminder();
-        startLocation();
+        if (!jancar) startLocation();
         lastFixAt = SystemClock.elapsedRealtime();
         main.post(ticker);
     }
@@ -231,6 +268,20 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         } catch (Throwable ignored) {
         }
         super.onStop();
+    }
+
+    /** With CarPlay in front the home screen gives back its bitmaps; they return on the next onStart. */
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        if (level < TRIM_MEMORY_UI_HIDDEN || started) return;
+        trimmed = true;
+        ((ImageView) findViewById(R.id.car)).setImageDrawable(null);
+        if (carBitmap != null) {
+            carBitmap.recycle();
+            carBitmap = null;
+        }
+        setArt(null);
     }
 
     @Override
@@ -311,12 +362,12 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         checkNight();
         if (isFinishing()) return;
         Date now = new Date();
-        time.setText(new SimpleDateFormat("HH:mm", ES).format(now));
+        time.setText(new SimpleDateFormat("HH:mm", locale).format(now));
         int h = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        String g = h >= 6 && h < 13 ? "Buen día" : h >= 13 && h < 20 ? "Buenas tardes" : "Buenas noches";
+        String g = getString(h >= 6 && h < 13 ? R.string.good_morning : h >= 13 && h < 20 ? R.string.good_afternoon : R.string.good_evening);
         String name = profile.greeting;
         greeting.setText(name.isEmpty() ? g : g + ", " + name);
-        String d = new SimpleDateFormat("EEEE d 'de' MMMM", ES).format(now);
+        String d = new SimpleDateFormat(getString(R.string.date_pattern), locale).format(now);
         date.setText(d.isEmpty() ? d : Character.toUpperCase(d.charAt(0)) + d.substring(1));
     }
 
@@ -346,12 +397,13 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         geocoding = true;
         final double lat = lastLat, lon = lastLon;
         final Context app = getApplicationContext();
+        final Locale geoLocale = locale;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 String name = null;
                 try {
-                    List<Address> list = new Geocoder(app, ES).getFromLocation(lat, lon, 1);
+                    List<Address> list = new Geocoder(app, geoLocale).getFromLocation(lat, lon, 1);
                     if (list != null && !list.isEmpty()) {
                         Address a = list.get(0);
                         name = a.getLocality();
@@ -389,7 +441,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         findViewById(R.id.btnSettings).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Launch.open(MainActivity.this, Launch.SETTINGS);
+                Launch.openSettings(MainActivity.this);
             }
         });
         findViewById(R.id.btnApps).setOnClickListener(new View.OnClickListener() {
@@ -412,7 +464,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
 
     private void setupSlot(final int i) {
         View b = findViewById(SLOT_IDS[i]);
-        final String flat = Launch.slot(profile, i);
+        final String flat = Launch.slot(this, profile, i);
         if (b instanceof ImageButton) {
             ImageButton ib = (ImageButton) b;
             ib.setImageDrawable(Launch.icon(this, flat));
@@ -424,18 +476,23 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Launch.open(MainActivity.this, flat);
+                if (Launch.installed(MainActivity.this, flat)) Launch.open(MainActivity.this, flat);
+                else pickForSlot(i);
             }
         });
         b.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Intent pick = new Intent(MainActivity.this, AppsActivity.class).putExtra(AppsActivity.EXTRA_PICK, true);
-                startActivityForResult(pick, REQ_PICK_SLOT + (i << 8));
-                Toast.makeText(MainActivity.this, R.string.pick_for_slot, Toast.LENGTH_SHORT).show();
+                pickForSlot(i);
                 return true;
             }
         });
+    }
+
+    private void pickForSlot(int i) {
+        Intent pick = new Intent(this, AppsActivity.class).putExtra(AppsActivity.EXTRA_PICK, true);
+        startActivityForResult(pick, REQ_PICK_SLOT + (i << 8));
+        Toast.makeText(this, R.string.pick_for_slot, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -480,6 +537,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
     @Override
     public void onGps(String longitude, String latitude, float accuracy, double altitude, final float kmh) {
         // Binder thread.
+        jancarGpsSeen = true;
         long now = SystemClock.elapsedRealtime();
         if (now - lastGpsLogAt >= GPS_LOG_INTERVAL_MS) {
             lastGpsLogAt = now;
@@ -531,6 +589,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
             return;
         }
         try {
+            locationStarted = true;
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener, Looper.getMainLooper());
             Location last = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if (last != null) setLatLon(last.getLatitude(), last.getLongitude());
@@ -540,7 +599,8 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
     }
 
     private void stopLocation() {
-        if (locationManager == null) return;
+        if (locationManager == null || !locationStarted) return;
+        locationStarted = false;
         try {
             locationManager.removeUpdates(locationListener);
         } catch (Throwable ignored) {
@@ -651,7 +711,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
                     showRadio(parts[0], parts[1]);
                     prefs.edit().putString("radio_band", parts[0]).putString("radio_freq", parts[1]).apply();
                 }
-                setTexts("Radio " + (radioFreqValue == null ? "" : radioFreqValue + " " + radioUnit.getText()),
+                setTexts(getString(R.string.cd_radio) + " " + (radioFreqValue == null ? "" : radioFreqValue + " " + radioUnit.getText()),
                         radioBandValue);
                 setArt(null);
                 break;
@@ -717,6 +777,10 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
                 if (p != playing) {
                     playing = p;
                     btnPlay.setImageResource(p ? R.drawable.ic_pause : R.drawable.ic_play);
+                    if (started) {
+                        main.removeCallbacks(ticker);
+                        main.post(ticker);
+                    }
                 }
                 position = Math.max(0, pos);
                 duration = Math.max(0, dur);
@@ -766,12 +830,18 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         radioFreq.setText(freq);
         radioUnit.setText(fm ? "MHz" : "kHz");
         radioBand.setText(band);
-        radioLabel.setText(fm ? "RADIO FM" : "RADIO " + band.toUpperCase(Locale.US));
+        radioLabel.setText(getString(R.string.radio_band, band.toUpperCase(Locale.US)));
     }
 
     // ---------------------------------------------------------------- ticker
 
     private void tick() {
+        // A JanCar unit whose firmware never reports GPS falls back to the standard provider.
+        if (jancar && !jancarGpsSeen && !locationStarted
+                && SystemClock.elapsedRealtime() - startedAt > JANCAR_GPS_GRACE_MS) {
+            askLocation();
+            startLocation();
+        }
         if (playing) updateProgress();
         boolean stale = SystemClock.elapsedRealtime() - lastFixAt > GPS_STALE_MS;
         if (stale != noGpsShown) {

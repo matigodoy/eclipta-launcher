@@ -1,0 +1,14 @@
+name: Pack nuevo
+description: Pedí o proponé un pack para otro modelo
+title: "[Pack] "
+labels: [pack]
+body:
+  - type: input
+    id: car
+    attributes: {label: "Modelo, generación y años", placeholder: "Audi A4 B8 2008-2015"}
+    validations: {required: true}
+  - type: textarea
+    id: photo
+    attributes:
+      label: Foto
+      description: "Foto propia, de 3/4 de frente, entera y bien iluminada. Tapá la patente antes de subirla. Guía en docs/08-packs.md."

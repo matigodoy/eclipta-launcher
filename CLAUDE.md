@@ -34,11 +34,13 @@ Si tenés notas personales (IP del estéreo, nombre de tu hotspot, estado de tu 
 | `docs/05-launcher.md` | El launcher: build, código, versiones, rendimiento y pendientes |
 | `docs/06-diseno.md` | Decisiones de diseño, medidas y estilo |
 | `docs/07-logo-arranque.md` | Logo de arranque en frío (AutoChips metalogo) |
+| `docs/08-packs.md`, `docs/configurador/` | Formato de packs y perfil; configurador web estático |
 | `docs/vehiculos/` | Datos de otros autos / unidades aportados por la comunidad (con plantilla) |
 | `docs/bitacora.md` | Línea de tiempo y correcciones |
 | `design/` | Capturas, foto del auto y animación (ver `design/README.md`) |
 | `launcher/` | Proyecto Android (Gradle). `launcher/private-res/` = overrides locales, no versionados |
-| `scripts/release.sh` | Build firmado + GitHub Release |
+| `scripts/release.sh` | Build firmado + GitHub Release (`PRERELEASE=1` si no se probó en el auto) |
+| `scripts/measure.sh`, `make_pack.py`, `make_wheels.py`, `validate_packs.py` | Medir consumo; crear y validar packs |
 | `apks/`, `decompiled/`, `private/` | Locales, **no versionados** (material propietario o personal) |
 
 ## Build

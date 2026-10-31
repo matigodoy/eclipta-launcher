@@ -1,0 +1,17 @@
+name: Mi auto
+description: Datos de tu auto y de tu caja CAN
+title: "[Auto] "
+labels: [vehiculo]
+body:
+  - type: input
+    id: car
+    attributes: {label: "Marca, modelo, año y motor", placeholder: "Audi A3 8P 2008 2.0 TDI"}
+    validations: {required: true}
+  - type: input
+    id: can
+    attributes: {label: "Caja CAN (marca, modelo, versión)", placeholder: "Simple Soft RP5-AD-001"}
+  - type: textarea
+    id: data
+    attributes:
+      label: Qué datos llegan
+      description: "Marcá cada uno como verificado (lo viste por ADB) o sin verificar. No pegues MAC, seriales, patentes ni coordenadas."
