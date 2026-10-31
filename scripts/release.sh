@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Builds a signed release APK and publishes it as a GitHub Release.
 # Usage: scripts/release.sh 0.1.3
+#        PRERELEASE=1 scripts/release.sh 0.1.3   (not yet tested in a real car; /releases/latest skips it)
 # Needs launcher/keystore.properties (git-ignored) with:
 #   storeFile=/absolute/path/outside/repo/a3launcher-release.jks
 #   storePassword=...
@@ -25,4 +26,4 @@ cp "$apk" "$out"
 
 git tag -a "v$version" -m "A3 Launcher v$version"
 git push origin "v$version"
-gh release create "v$version" "$out" "$out.sha256" --title "A3 Launcher v$version" --generate-notes
+gh release create "v$version" "$out" "$out.sha256" --title "A3 Launcher v$version" --generate-notes ${PRERELEASE:+--prerelease}

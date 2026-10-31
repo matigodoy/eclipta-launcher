@@ -3,7 +3,6 @@ package com.mati.a3launcher;
 import android.Manifest;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -45,17 +44,18 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
     private static final int MEDIA_LOG_LIMIT = 20;
     private static final int REQ_LOCATION = 1;
 
-    private static final String PKG_CARPLAY = "com.autochips.carplayapp";
-    private static final String PKG_AA = "com.google.android.projection.sink";
-    private static final String PKG_RADIO = "com.jancar.radio";
-    private static final String PKG_MUSIC = "com.jancar.music";
-    private static final String PKG_SETTINGS = "com.jancar.settings";
+    private static final int REQ_PICK_SLOT = 2;
+    private static final int REQ_CUSTOMIZE = 3;
+    private static final int MOVING_KMH = 10;
+    private static final int[] SLOT_IDS = {R.id.slot0, R.id.slot1, R.id.slot2, R.id.slot3};
 
     private final Handler main = new Handler(Looper.getMainLooper());
     private final JanCar.MediaLink mediaLink = new JanCar.MediaLink(this);
     private final JanCar.SystemLink systemLink = new JanCar.SystemLink(this);
     private final AccReceiver accReceiver = new AccReceiver();
     private SharedPreferences prefs;
+    private Profile profile;
+    private Bitmap carBitmap;
     private AudioManager audio;
     private LocationManager locationManager;
     private boolean started;
@@ -160,8 +160,10 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
         radioBand = findViewById(R.id.radioBand);
         radioLabel = findViewById(R.id.radioLabel);
 
+        profile = Profile.load(this);
         setupRail();
         setupMedia();
+        showCar();
 
         String cachedCity = prefs.getString("city", null);
         if (!TextUtils.isEmpty(cachedCity)) showCity(cachedCity);
@@ -217,6 +219,11 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
     protected void onDestroy() {
         main.removeCallbacksAndMessages(null);
         art.setImageDrawable(null);
+        ((ImageView) findViewById(R.id.car)).setImageDrawable(null);
+        if (carBitmap != null) {
+            carBitmap.recycle();
+            carBitmap = null;
+        }
         if (artBitmap != null) {
             artBitmap.recycle();
             artBitmap = null;
@@ -259,7 +266,7 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
         time.setText(new SimpleDateFormat("HH:mm", ES).format(now));
         int h = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         String g = h >= 6 && h < 13 ? "Buen día" : h >= 13 && h < 20 ? "Buenas tardes" : "Buenas noches";
-        String name = getString(R.string.greeting_name);
+        String name = profile.greeting;
         greeting.setText(name.isEmpty() ? g : g + ", " + name);
         String d = new SimpleDateFormat("EEEE d 'de' MMMM", ES).format(now);
         date.setText(d.isEmpty() ? d : Character.toUpperCase(d.charAt(0)) + d.substring(1));
@@ -319,68 +326,90 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
     // ---------------------------------------------------------------- rail
 
     private void setupRail() {
-        ImageButton carplay = findViewById(R.id.btnCarPlay);
-        ImageButton aa = findViewById(R.id.btnAndroidAuto);
-        setAppIcon(carplay, PKG_CARPLAY);
-        setAppIcon(aa, PKG_AA);
-
+        for (int i = 0; i < Profile.SLOTS; i++) setupSlot(i);
         findViewById(R.id.btnHome).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Already home.
             }
         });
-        carplay.setOnClickListener(launcher(PKG_CARPLAY, PKG_CARPLAY + ".CarPlayActivity"));
-        aa.setOnClickListener(launcher(PKG_AA, PKG_AA + ".ui.AndroidAutoActivity"));
-        findViewById(R.id.btnRadio).setOnClickListener(launcher(PKG_RADIO, PKG_RADIO + ".activity.RadioMainActivity"));
-        findViewById(R.id.btnMusic).setOnClickListener(launcher(PKG_MUSIC, PKG_MUSIC + ".activity.MainActivity"));
-        findViewById(R.id.btnSettings).setOnClickListener(launcher(PKG_SETTINGS, PKG_SETTINGS + ".ui.activity.MainActivity"));
+        findViewById(R.id.btnSettings).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Launch.open(MainActivity.this, Launch.SETTINGS);
+            }
+        });
         findViewById(R.id.btnApps).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, AppsActivity.class));
             }
         });
-    }
-
-    private void setAppIcon(ImageButton b, String pkg) {
-        try {
-            b.setImageDrawable(getPackageManager().getApplicationIcon(pkg));
-        } catch (PackageManager.NameNotFoundException e) {
-            b.setImageResource(R.drawable.ic_apps);
-            b.setScaleType(ImageView.ScaleType.CENTER);
-        }
-    }
-
-    private View.OnClickListener launcher(final String pkg, final String cls) {
-        return new View.OnClickListener() {
+        findViewById(R.id.btnCustomize).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                launch(pkg, cls);
+                if (isMoving()) {
+                    Toast.makeText(MainActivity.this, R.string.stopped_only, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), REQ_CUSTOMIZE);
             }
-        };
+        });
     }
 
-    private void launch(String pkg, String cls) {
-        Intent i = new Intent(Intent.ACTION_MAIN)
-                .setComponent(new ComponentName(pkg, cls))
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        try {
-            startActivity(i);
-            return;
-        } catch (Throwable t) {
-            DebugLog.log("launch " + cls + " failed: " + t);
-        }
-        try {
-            Intent fallback = getPackageManager().getLaunchIntentForPackage(pkg);
-            if (fallback != null) {
-                startActivity(fallback.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                return;
+    private void setupSlot(final int i) {
+        ImageButton b = findViewById(SLOT_IDS[i]);
+        final String flat = Launch.slot(profile, i);
+        b.setImageDrawable(Launch.icon(this, flat));
+        b.setScaleType(Launch.RADIO.equals(flat) || Launch.MUSIC.equals(flat)
+                ? ImageView.ScaleType.CENTER : ImageView.ScaleType.FIT_CENTER);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Launch.open(MainActivity.this, flat);
             }
-        } catch (Throwable t) {
-            DebugLog.log("launch " + pkg + " fallback failed: " + t);
+        });
+        b.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent pick = new Intent(MainActivity.this, AppsActivity.class).putExtra(AppsActivity.EXTRA_PICK, true);
+                startActivityForResult(pick, REQ_PICK_SLOT + (i << 8));
+                Toast.makeText(MainActivity.this, R.string.pick_for_slot, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_CUSTOMIZE) {
+            // Whatever changed in Personalizar shows up on a fresh screen.
+            recreate();
+        } else if ((requestCode & 0xFF) == REQ_PICK_SLOT && resultCode == RESULT_OK && data != null) {
+            int slot = requestCode >> 8;
+            profile.slots[slot] = data.getStringExtra(AppsActivity.EXTRA_PICK);
+            profile.save(this);
+            setupSlot(slot);
         }
-        Toast.makeText(this, R.string.cannot_open, Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean isMoving() {
+        return shownSpeed >= MOVING_KMH && !noGpsShown;
+    }
+
+    private void showCar() {
+        Pack pack = Pack.load(this, profile.pack);
+        ((TextView) findViewById(R.id.carTitle)).setText(pack.title);
+        ((TextView) findViewById(R.id.carSub)).setText(profile.subtitle(pack));
+        carBitmap = CarImage.loadForDisplay(this, density);
+        ImageView car = findViewById(R.id.car);
+        car.setImageBitmap(carBitmap);
+        if (carBitmap != null) {
+            // Floor line just under the wheels, whatever the photo's proportions.
+            float h = carBitmap.getHeight() * (440f * density / carBitmap.getWidth());
+            findViewById(R.id.floor).setTranslationY(h / 2 - 2 * density);
+        }
     }
 
     // ---------------------------------------------------------------- speed
@@ -457,7 +486,12 @@ public class MainActivity extends Activity implements JanCar.MediaListener, JanC
         btnPlay.setOnClickListener(mediaKey(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE));
         findViewById(R.id.btnNext).setOnClickListener(mediaKey(KeyEvent.KEYCODE_MEDIA_NEXT));
 
-        View.OnClickListener openRadio = launcher(PKG_RADIO, PKG_RADIO + ".activity.RadioMainActivity");
+        View.OnClickListener openRadio = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Launch.open(MainActivity.this, Launch.RADIO);
+            }
+        };
         findViewById(R.id.radioCard).setOnClickListener(openRadio);
         findViewById(R.id.btnSeekBack).setOnClickListener(radioSeek(KeyEvent.KEYCODE_MEDIA_PREVIOUS, openRadio));
         findViewById(R.id.btnSeekFwd).setOnClickListener(radioSeek(KeyEvent.KEYCODE_MEDIA_NEXT, openRadio));

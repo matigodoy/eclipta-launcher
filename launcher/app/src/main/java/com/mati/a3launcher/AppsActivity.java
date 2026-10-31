@@ -25,6 +25,8 @@ import java.util.List;
 
 /** App drawer: every launchable app, sorted by label, 6 columns. */
 public class AppsActivity extends Activity {
+    /** With this boolean extra the drawer returns the tapped app (as a flattened component). */
+    static final String EXTRA_PICK = "pick";
 
     private static final class App {
         final String label;
@@ -59,7 +61,13 @@ public class AppsActivity extends Activity {
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                launch(apps.get(position));
+                App app = apps.get(position);
+                if (getIntent().hasExtra(EXTRA_PICK)) {
+                    setResult(RESULT_OK, new Intent().putExtra(EXTRA_PICK, app.component.flattenToString()));
+                    finish();
+                } else {
+                    launch(app);
+                }
             }
         });
         loadApps();

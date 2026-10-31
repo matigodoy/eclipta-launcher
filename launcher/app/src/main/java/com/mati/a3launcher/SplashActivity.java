@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-/** Wake animation: plays the Audi sting once over whatever is on screen, then finishes itself. */
+/** Wake animation: plays the Audi sting once over whatever is on screen, then finishes itself (and opens CarPlay if asked). */
 public class SplashActivity extends Activity {
     private static final long FALLBACK_MS = 4000;
 
@@ -22,7 +22,9 @@ public class SplashActivity extends Activity {
     private final Runnable finisher = new Runnable() {
         @Override
         public void run() {
-            if (!isFinishing()) finish();
+            if (isFinishing()) return;
+            finish();
+            if (Profile.load(SplashActivity.this).carplayOnAcc) Launch.start(SplashActivity.this, Launch.CARPLAY);
         }
     };
 

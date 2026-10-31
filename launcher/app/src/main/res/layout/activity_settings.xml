@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:paddingLeft="16dp"
+    android:paddingTop="14dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp">
+
+    <!-- Preview -->
+    <LinearLayout
+        android:layout_width="400dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/glass_panel"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+        <TextView
+            android:id="@+id/previewTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/text"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/previewSub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text2"
+            android:textSize="13sp" />
+
+        <ImageView
+            android:id="@+id/previewCar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:importantForAccessibility="no"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/previewGreeting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/text2"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Options -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="12dp"
+        android:layout_weight="1"
+        android:background="@drawable/glass_panel"
+        android:orientation="vertical"
+        android:paddingLeft="18dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/customize"
+                android:textColor="@color/text"
+                android:textSize="20sp" />
+
+            <ImageButton
+                android:id="@+id/btnClose"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/glass_circle"
+                android:contentDescription="@string/cd_close"
+                android:src="@drawable/ic_close" />
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fadingEdgeLength="20dp"
+            android:requiresFadingEdge="vertical"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/form"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingRight="8dp"
+                android:paddingBottom="24dp" />
+        </ScrollView>
+    </LinearLayout>
+</LinearLayout>

@@ -3,8 +3,6 @@
     <string name="app_name">A3 Launcher</string>
     <!-- Name in the greeting ("Buen día, <name>"). Empty = no name. Override it in launcher/private-res/values/. -->
     <string name="greeting_name" translatable="false"></string>
-    <string name="car_title">Audi A3</string>
-    <string name="car_sub">Sportback · 2.0 TDI · 2008</string>
     <string name="kmh">km/h</string>
     <string name="speed_label">VELOCIDAD</string>
     <string name="gps">GPS</string>
@@ -27,4 +25,32 @@
     <string name="cd_play">Reproducir o pausar</string>
     <string name="cd_next">Siguiente</string>
     <string name="cannot_open">No se pudo abrir la app</string>
+    <string name="cd_customize">Personalizar</string>
+    <string name="stopped_only">Disponible con el auto detenido</string>
+    <string name="pick_for_slot">Elegí la app para este acceso</string>
+    <string name="customize">Personalizar</string>
+    <string name="sec_car">Tu auto</string>
+    <string name="sec_you">Saludo y patente</string>
+    <string name="sec_start">Al dar contacto</string>
+    <string name="sec_rail">Barra lateral</string>
+    <string name="f_model">Modelo</string>
+    <string name="f_body">Carrocería</string>
+    <string name="f_engine">Motor</string>
+    <string name="f_year">Año</string>
+    <string name="f_greeting">Nombre en el saludo</string>
+    <string name="f_plate">Patente</string>
+    <string name="f_plate_show">Mostrar la patente en el auto</string>
+    <string name="f_photo">Foto del auto</string>
+    <string name="photo_pick">Elegir foto (pendrive)</string>
+    <string name="photo_reset">Usar la foto del modelo</string>
+    <string name="photo_tip">Mejor un PNG sin fondo. Buscamos en el pendrive, en su carpeta A3Launcher y en Descargas.</string>
+    <string name="photo_none">No encontré fotos. Copiá un PNG al pendrive.</string>
+    <string name="photo_error">No se pudo leer esa imagen</string>
+    <string name="f_splash">Animación del logo</string>
+    <string name="f_carplay_acc">Abrir CarPlay después</string>
+    <string name="rail_tip">Mantené apretado un acceso de la barra para cambiar su app.</string>
+    <string name="rail_reset">Restablecer accesos</string>
+    <string name="done">Listo</string>
+    <string name="need_storage">Hace falta permiso de almacenamiento</string>
+    <string name="hello">Hola, %1$s</string>
 </resources>

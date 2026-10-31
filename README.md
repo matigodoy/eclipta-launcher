@@ -52,7 +52,12 @@ cd launcher
 `targetSdk` es 25 a propósito: así los receivers del manifest siguen recibiendo los broadcasts
 implícitos de JanCar. Por eso la app no puede ir a Play Store; se instala a mano.
 
-### Personalizar tu build (nombre, foto de tu auto, animación)
+### Personalizar
+
+Desde la v0.2 casi todo se cambia en el estéreo: tocá el lápiz de la tarjeta del auto (saludo, patente,
+modelo, foto propia, CarPlay al dar contacto). Para cambiar un acceso de la barra lateral, mantenelo apretado.
+
+### Personalizar tu build (animación, recursos)
 
 Sin tocar archivos versionados: creá `launcher/private-res/` (está en `.gitignore`) con la misma
 estructura que `res/` y la build usa esos recursos en lugar de los del repo. Por ejemplo:

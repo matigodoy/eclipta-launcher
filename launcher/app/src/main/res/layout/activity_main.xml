@@ -121,7 +121,7 @@
                 android:src="@drawable/ic_home" />
 
             <ImageButton
-                android:id="@+id/btnCarPlay"
+                android:id="@+id/slot0"
                 style="@style/RailButton"
                 android:layout_marginTop="10dp"
                 android:contentDescription="@string/cd_carplay"
@@ -129,7 +129,7 @@
                 android:scaleType="fitCenter" />
 
             <ImageButton
-                android:id="@+id/btnAndroidAuto"
+                android:id="@+id/slot1"
                 style="@style/RailButton"
                 android:layout_marginTop="10dp"
                 android:contentDescription="@string/cd_aa"
@@ -137,14 +137,16 @@
                 android:scaleType="fitCenter" />
 
             <ImageButton
-                android:id="@+id/btnRadio"
+                android:id="@+id/slot2"
                 style="@style/RailButton"
                 android:layout_marginTop="10dp"
                 android:contentDescription="@string/cd_radio"
+                android:padding="9dp"
+                android:scaleType="center"
                 android:src="@drawable/ic_radio" />
 
             <ImageButton
-                android:id="@+id/btnMusic"
+                android:id="@+id/slot3"
                 style="@style/RailButton"
                 android:layout_marginTop="10dp"
                 android:contentDescription="@string/cd_music"
@@ -182,23 +184,43 @@
             android:paddingRight="22dp"
             android:paddingBottom="18dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:includeFontPadding="false"
-                android:text="@string/car_title"
-                android:textColor="@color/text"
-                android:textSize="26sp" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:includeFontPadding="false"
-                android:text="@string/car_sub"
-                android:textColor="@color/text2"
-                android:textSize="13sp" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/carTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/text"
+                        android:textSize="26sp" />
+
+                    <TextView
+                        android:id="@+id/carSub"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/text2"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/btnCustomize"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="right|top"
+                    android:background="@drawable/glass_circle"
+                    android:contentDescription="@string/cd_customize"
+                    android:src="@drawable/ic_edit" />
+            </FrameLayout>
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -225,8 +247,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
-                    android:importantForAccessibility="no"
-                    android:src="@drawable/car_a3" />
+                    android:importantForAccessibility="no" />
             </FrameLayout>
 
             <LinearLayout

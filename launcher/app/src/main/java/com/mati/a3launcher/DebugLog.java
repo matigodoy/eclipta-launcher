@@ -13,10 +13,10 @@ import java.util.concurrent.Executors;
 /**
  * Tiny append-only debug log in getExternalFilesDir(null)/a3l-log.txt.
  * Single background writer thread, at most MAX_LINES per process, file truncated above MAX_BYTES.
- * Set ENABLED = false for v1.
+ * Debug builds only: release builds log nothing (the log can contain GPS coordinates).
  */
 final class DebugLog {
-    static final boolean ENABLED = true;
+    static final boolean ENABLED = BuildConfig.DEBUG;
     private static final int MAX_LINES = 200;
     private static final long MAX_BYTES = 500 * 1024;
 

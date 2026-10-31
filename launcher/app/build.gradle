@@ -12,8 +12,8 @@ android {
         // Deliberately low: manifest receivers keep getting JanCar's implicit broadcasts. Sideload only.
         //noinspection ExpiredTargetSdkVersion
         targetSdk 25
-        versionCode 3
-        versionName '0.1.2'
+        versionCode 4
+        versionName '0.2.0'
     }
 
     // Release signing comes from launcher/keystore.properties (git-ignored). Never commit the keystore.
@@ -36,7 +36,10 @@ android {
             minifyEnabled false
         }
         release {
-            minifyEnabled false
+            // Binder clients are hand-written and everything else is reached from the manifest.
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
             if (keystoreFile.exists()) signingConfig signingConfigs.release
         }
     }
@@ -52,6 +55,10 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig true
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -61,4 +68,8 @@ android {
         abortOnError false
         checkReleaseBuilds false
     }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
 }

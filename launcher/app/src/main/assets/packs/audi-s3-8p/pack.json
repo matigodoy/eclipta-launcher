@@ -1,0 +1,11 @@
+{
+  "id": "audi-s3-8p", "title": "Audi S3", "years": "2006-2013", "ref_width": 920,
+  "defaults": {"body": "Sportback", "engine": "2.0 TFSI quattro", "year": "2010"},
+  "bodies": ["3 puertas", "Sportback", "Cabrio"],
+  "engines": ["2.0 TFSI quattro"],
+  "paint": {"gain": 0.92, "gamma": 1.5, "spec": 0.22},
+  "paints": [{"id":"original","name":"Original"},{"id":"negro","name":"Negro","color":"#16171A"},{"id":"blanco","name":"Blanco Ibis","color":"#F2F2F0"},{"id":"plata","name":"Plata Hielo","color":"#B9BDC2"},{"id":"gris","name":"Gris Daytona","color":"#4A4D52"},{"id":"rojo","name":"Rojo Brillante","color":"#B5121B"},{"id":"azul","name":"Azul Sepang","color":"#143C8C"},{"id":"verde","name":"Verde Oscuro","color":"#123A2C"},{"id":"naranja","name":"Naranja Samoa","color":"#D9571A"}],
+  "wheels": [{"id":"original","name":"Originales"},{"id":"5-rayos","name":"5 rayos"},{"id":"5-doble-rayo","name":"5 doble rayo"},{"id":"7-doble-rayo","name":"7 doble rayo"},{"id":"10-rayos","name":"10 rayos"},{"id":"5-rayos-antracita","name":"5 rayos antracita"},{"id":"5-doble-negra","name":"5 doble negra"}],
+  "wheel_centers": [{"cx": 494, "cy": 378, "rx": 62, "ry": 92, "angle": 3}, {"cx": 880, "cy": 245, "rx": 29, "ry": 60, "angle": 2}],
+  "plate": [33, 303, 90, 318, 87, 374, 31, 352]
+}
