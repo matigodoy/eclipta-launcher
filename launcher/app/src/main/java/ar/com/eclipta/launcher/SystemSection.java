@@ -79,7 +79,7 @@ final class SystemSection extends SettingsSection {
             JSONObject o = new JSONObject(Files.readText(found));
             p.applyJson(o);
             p.customPhoto = p.customPhoto && CarImage.customFile(a).isFile();
-            List<Reminders.Item> reminders = Reminders.fromProfile(o);
+            List<Reminders.Item> reminders = Reminders.fromProfile(o, Reminders.load(a));
             if (reminders != null) Reminders.save(a, reminders);
             a.pack = Pack.load(a, p.pack);
             a.carChanged();

@@ -79,6 +79,16 @@ final class Pack {
         return dir == null ? null : new File(dir, name);
     }
 
+    /** Whether a pack.json would load, for import. */
+    static boolean parses(String json, String id) {
+        try {
+            new Pack().parse(new JSONObject(json), id);
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     private static Pack tryLoad(Context c, String id) {
         try {
             Pack p = new Pack();

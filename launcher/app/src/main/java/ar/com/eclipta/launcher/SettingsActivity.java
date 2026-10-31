@@ -67,7 +67,7 @@ public class SettingsActivity extends BaseActivity {
             @Override
             public void onBaked() {
                 if (closing) reallyFinish();
-                else loadPreview();
+                else showBaked();
             }
         });
         String start = savedInstanceState != null ? savedInstanceState.getString(STATE_SECTION)
@@ -81,6 +81,13 @@ public class SettingsActivity extends BaseActivity {
     protected void onSaveInstanceState(Bundle out) {
         super.onSaveInstanceState(out);
         out.putString(STATE_SECTION, current);
+    }
+
+    /** Back from something on top, such as the start-up alert, which may have changed what's shown. */
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (section != null) section.onReturn();
     }
 
     @Override
@@ -292,10 +299,13 @@ public class SettingsActivity extends BaseActivity {
 
     private void loadPreview() {
         if (previewCar == null) return;
-        if (CarBaker.needsBake(this)) {
-            CarBaker.bake(this);
-            return;
-        }
+        if (CarBaker.needsBake(this)) CarBaker.bake(this);
+        else showBaked();
+    }
+
+    /** What's on disk now, baked or not. Never starts a bake, so a failed one can't loop. */
+    private void showBaked() {
+        if (previewCar == null) return;
         final int generation = ++previewGeneration;
         final float density = getResources().getDisplayMetrics().density;
         final android.content.Context app = getApplicationContext();

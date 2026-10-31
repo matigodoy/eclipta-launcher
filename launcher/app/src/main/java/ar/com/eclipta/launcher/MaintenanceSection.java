@@ -21,7 +21,7 @@ import java.util.TimeZone;
 
 /** Mantenimiento: the list on the left, what's selected on the right. */
 final class MaintenanceSection extends SettingsSection {
-    private final List<Reminders.Item> items;
+    private List<Reminders.Item> items;
     /** Previous due and done dates of what was marked done on this page, so it can be undone. */
     private final Map<String, String[]> undo = new HashMap<>();
     private final TimeZone tz = TimeZone.getDefault();
@@ -53,6 +53,16 @@ final class MaintenanceSection extends SettingsSection {
 
     private static long now() {
         return System.currentTimeMillis();
+    }
+
+    /** The alert may have marked something done while this page was covered. */
+    @Override
+    void onReturn() {
+        String id = selected == null ? null : selected.id;
+        items = Reminders.load(a);
+        selected = null;
+        for (Reminders.Item item : items) if (item.id.equals(id)) selected = item;
+        rebuild();
     }
 
     private void save() {
@@ -253,6 +263,8 @@ final class MaintenanceSection extends SettingsSection {
             save();
             rebuild();
         }, y, m, d);
+        // The style asks for spinners only, but some Android versions still add the calendar next to them.
+        dialog.getDatePicker().setCalendarViewShown(false);
         dialog.show();
     }
 

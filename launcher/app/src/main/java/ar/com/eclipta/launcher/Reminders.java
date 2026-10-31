@@ -228,18 +228,23 @@ final class Reminders {
         return a;
     }
 
-    /** From a perfil.json, new format or the old dueVtv/dueInsurance/dueService keys. Null if it has neither. */
-    static List<Item> fromProfile(JSONObject o) {
-        if (o.has("reminders")) return fromJson(o.optJSONArray("reminders"));
+    /**
+     * From a perfil.json. The new format replaces the list. The old one only knew three dates, so
+     * everything else stays as it is. Null if the file says nothing about reminders.
+     */
+    static List<Item> fromProfile(JSONObject o, List<Item> current) {
+        JSONArray all = o.optJSONArray("reminders");
+        if (all != null) return fromJson(all);
         String[][] old = {{"dueVtv", "vtv"}, {"dueInsurance", "insurance"}, {"dueService", "service"}};
-        List<Item> out = null;
+        boolean found = false;
         for (String[] pair : old) {
             if (!o.has(pair[0])) continue;
-            if (out == null) out = catalog();
+            found = true;
             String due = text(o, pair[0], 10);
-            if (validDate(due)) out.get(catalogIndex(pair[1])).due = due;
+            if (!validDate(due)) continue;
+            for (Item item : current) if (item.id.equals(pair[1])) item.due = due;
         }
-        return out;
+        return found ? current : null;
     }
 
     private static String text(JSONObject o, String key, int maxLen) {

@@ -90,7 +90,8 @@ final class Files {
     private static boolean copyPack(Context c, File src) {
         if (!src.isDirectory() || !src.getName().matches(PACK_ID) || !new File(src, "pack.json").isFile()) return false;
         try {
-            if (new org.json.JSONObject(readText(new File(src, "pack.json"))).optString("title").isEmpty()) return false;
+            if (!new File(src, "base.webp").isFile() || !new File(src, "paint.webp").isFile()) return false;
+            if (!Pack.parses(readText(new File(src, "pack.json")), src.getName())) return false;
             File dst = new File(new File(c.getFilesDir(), "packs"), src.getName());
             if (!dst.isDirectory() && !dst.mkdirs()) return false;
             for (String name : PACK_FILES) {

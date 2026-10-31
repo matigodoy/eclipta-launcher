@@ -17,13 +17,18 @@ final class CarBaker {
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
     private static final Object LOCK = new Object();
     private static boolean running, again;
-    private static Listener listener;
+    private static Listener listener, homeListener;
 
     private CarBaker() {}
 
     /** Main thread only. */
     static void setListener(Listener l) {
         listener = l;
+    }
+
+    /** Home, while visible: Settings can go away (Home key, power-off) with a bake still running. */
+    static void setHomeListener(Listener l) {
+        homeListener = l;
     }
 
     static boolean isBusy() {
@@ -37,8 +42,12 @@ final class CarBaker {
         prefs(c).edit().putBoolean(KEY_DIRTY, true).apply();
     }
 
+    static boolean isDirty(Context c) {
+        return prefs(c).getBoolean(KEY_DIRTY, false);
+    }
+
     static boolean needsBake(Context c) {
-        return prefs(c).getBoolean(KEY_DIRTY, false) || !CarImage.bakedFile(c).isFile();
+        return isDirty(c) || !CarImage.bakedFile(c).isFile();
     }
 
     static void bake(Context c) {
@@ -57,18 +66,20 @@ final class CarBaker {
                     synchronized (LOCK) {
                         again = false;
                     }
-                    boolean ok = CarImage.bake(app, Profile.load(app));
+                    CarImage.bake(app, Profile.load(app));
                     synchronized (LOCK) {
                         if (again) continue;
                         running = false;
                     }
-                    if (ok) prefs(app).edit().putBoolean(KEY_DIRTY, false).apply();
+                    // Even if it failed: a pack that can't be baked won't get better by retrying.
+                    prefs(app).edit().putBoolean(KEY_DIRTY, false).apply();
                     break;
                 }
                 MAIN.post(new Runnable() {
                     @Override
                     public void run() {
                         if (listener != null) listener.onBaked();
+                        if (homeListener != null) homeListener.onBaked();
                     }
                 });
             }

@@ -102,7 +102,7 @@
     <string name="f_photo">Car photo</string>
     <string name="photo_pick">Choose</string>
     <string name="photo_reset">Use the model\'s photo</string>
-    <string name="photo_reset_button">Restore</string>
+    <string name="photo_reset_button">Use</string>
     <string name="photo_tip">A PNG without background works best. We look on the USB stick, in its EcliptaLauncher folder and in Downloads.</string>
     <string name="grp_plate">Plate</string>
     <string name="f_plate">Plate number</string>

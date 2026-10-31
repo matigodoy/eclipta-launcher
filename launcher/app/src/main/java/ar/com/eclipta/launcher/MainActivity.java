@@ -146,6 +146,15 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         }
     };
 
+    private final CarBaker.Listener bakeListener = new CarBaker.Listener() {
+        @Override
+        public void onBaked() {
+            Bitmap old = carBitmap;
+            showCar();
+            if (old != null && old != carBitmap) old.recycle();
+        }
+    };
+
     private final Runnable openMaintenance = new Runnable() {
         @Override
         public void run() {
@@ -279,6 +288,8 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         shownSpeed = -1; // whatever it was the last time Home was visible
         Startup.noteBoot(this);
         main.postDelayed(alertCheck, ALERT_CHECK_DELAY_MS);
+        CarBaker.setHomeListener(bakeListener);
+        if (CarBaker.isDirty(this)) CarBaker.bake(this);
         if (trimmed) {
             trimmed = false;
             showCar();
@@ -299,6 +310,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         started = false;
         main.removeCallbacks(ticker);
         main.removeCallbacks(alertCheck);
+        CarBaker.setHomeListener(null);
         stopLocation();
         mediaLink.unbind(this);
         systemLink.unbind(this);

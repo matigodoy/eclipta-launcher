@@ -90,7 +90,11 @@ final class CarSection extends SettingsSection {
         f.actionRow(R.string.f_photo, R.string.photo_tip, R.string.photo_pick, () -> a.withStorage(this::pickPhoto));
         if (p.customPhoto) {
             f.actionRow(R.string.photo_reset, 0, R.string.photo_reset_button, () -> {
+                // Those texts described the photo, not this model.
                 p.customPhoto = false;
+                p.title = "";
+                p.body = "";
+                p.engine = "";
                 CarImage.customFile(a).delete();
                 a.carChanged();
                 a.rebuild();
@@ -127,7 +131,11 @@ final class CarSection extends SettingsSection {
     /** Brand chips appear once packs span more than one brand. */
     private void modelChips() {
         List<Pack> packs = new ArrayList<>();
-        for (String id : Pack.ids(a)) packs.add(Pack.load(a, id));
+        for (String id : Pack.ids(a)) {
+            // Load falls back to another pack when one is broken: that one isn't offered.
+            Pack o = Pack.load(a, id);
+            if (o.id.equals(id)) packs.add(o);
+        }
         String brand = a.pack.brand;
         if (!packs.isEmpty() && !SettingsActivity.sameBrand(packs)) {
             List<String> ids = new ArrayList<>(), names = new ArrayList<>();
@@ -137,6 +145,7 @@ final class CarSection extends SettingsSection {
                 names.add(o.brand.isEmpty() ? a.getString(R.string.brand_other) : o.brand);
             }
             f.chips(R.string.f_brand, 0, ids, names, brand, id -> {
+                if (id.equals(brand)) return;
                 for (Pack o : packs) {
                     if (o.brand.equals(id)) {
                         choose(o.id);
@@ -157,6 +166,7 @@ final class CarSection extends SettingsSection {
     private void choose(String id) {
         if (id.equals(p.pack)) return;
         p.pack = id;
+        if (!p.customPhoto) p.title = ""; // with a photo, the name is what keeps the pack's logo off it
         p.engine = "";
         p.year = "";
         p.body = "";

@@ -102,7 +102,7 @@
     <string name="f_photo">Foto do carro</string>
     <string name="photo_pick">Escolher</string>
     <string name="photo_reset">Usar a foto do modelo</string>
-    <string name="photo_reset_button">Voltar</string>
+    <string name="photo_reset_button">Usar</string>
     <string name="photo_tip">Melhor um PNG sem fundo. Procuramos no pendrive, na pasta EcliptaLauncher e em Downloads.</string>
     <string name="grp_plate">Placa</string>
     <string name="f_plate">Placa</string>

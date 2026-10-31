@@ -43,6 +43,9 @@ abstract class SettingsSection {
         f.into(form);
     }
 
+    void onReturn() {
+    }
+
     final void roots(LinearLayout... roots) {
         this.roots = roots;
     }

@@ -131,13 +131,26 @@ public class RemindersTest {
     }
 
     @Test
-    public void oldProfileKeys() throws Exception {
+    public void oldProfileKeepsTheRest() throws Exception {
+        List<Reminders.Item> current = Reminders.catalog();
+        find(current, "belt").due = "2030-01-01";
+        find(current, "insurance").due = "2028-01-01";
+        Reminders.Item custom = Reminders.addCustom(current, "x");
         List<Reminders.Item> back = Reminders.fromProfile(new JSONObject(
-                "{\"dueVtv\":\"2026-10-31\",\"dueInsurance\":\"\",\"dueService\":\"2026-11-28\"}"));
+                "{\"dueVtv\":\"2026-10-31\",\"dueInsurance\":\"\",\"dueService\":\"2026-11-28\"}"), current);
         assertEquals("2026-10-31", find(back, "vtv").due);
-        assertEquals("", find(back, "insurance").due);
         assertEquals("2026-11-28", find(back, "service").due);
-        assertNull(Reminders.fromProfile(new JSONObject("{\"greeting\":\"x\"}")));
+        assertEquals("2028-01-01", find(back, "insurance").due);
+        assertEquals("2030-01-01", find(back, "belt").due);
+        assertNotNull(find(back, custom.id));
+    }
+
+    @Test
+    public void profileWithoutRemindersChangesNothing() throws Exception {
+        List<Reminders.Item> current = Reminders.catalog();
+        assertNull(Reminders.fromProfile(new JSONObject("{\"greeting\":\"x\"}"), current));
+        assertNull(Reminders.fromProfile(new JSONObject("{\"reminders\":null}"), current));
+        assertNull(Reminders.fromProfile(new JSONObject("{\"reminders\":{}}"), current));
     }
 
     @Test
