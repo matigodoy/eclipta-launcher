@@ -28,7 +28,7 @@
             android:layout_marginLeft="16dp"
             android:fontFamily="sans-serif-condensed"
             android:includeFontPadding="false"
-            android:textColor="?attr/a3Text"
+            android:textColor="?attr/uiText"
             android:textSize="30sp" />
 
         <TextView
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:fontFamily="sans-serif-condensed"
-            android:textColor="?attr/a3Text2"
+            android:textColor="?attr/uiText2"
             android:textSize="15sp" />
 
         <Space
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="16dp"
             android:fontFamily="sans-serif-condensed"
-            android:textColor="?attr/a3Accent"
+            android:textColor="?attr/uiAccent"
             android:textSize="15sp"
             android:visibility="gone" />
 
@@ -68,7 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
-                android:textColor="?attr/a3Text2"
+                android:textColor="?attr/uiText2"
                 android:textSize="15sp" />
         </LinearLayout>
 
@@ -77,14 +77,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-condensed"
-            android:textColor="?attr/a3Text"
+            android:textColor="?attr/uiText"
             android:textSize="16sp" />
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="?attr/a3Accent" />
+        android:background="?attr/uiAccent" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -186,7 +186,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
                 android:includeFontPadding="false"
-                android:textColor="?attr/a3Text"
+                android:textColor="?attr/uiText"
                 android:textSize="22sp" />
 
             <TextView
@@ -194,7 +194,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
-                android:textColor="?attr/a3Text2"
+                android:textColor="?attr/uiText2"
                 android:textSize="14sp" />
 
             <FrameLayout
@@ -230,7 +230,7 @@
                     android:fontFamily="sans-serif-condensed"
                     android:includeFontPadding="false"
                     android:text="0"
-                    android:textColor="?attr/a3Text"
+                    android:textColor="?attr/uiText"
                     android:textSize="52sp" />
 
                 <TextView
@@ -239,7 +239,7 @@
                     android:layout_marginLeft="8dp"
                     android:fontFamily="sans-serif-condensed"
                     android:text="@string/kmh"
-                    android:textColor="?attr/a3Text2"
+                    android:textColor="?attr/uiText2"
                     android:textSize="16sp" />
 
                 <LinearLayout
@@ -264,7 +264,7 @@
                         android:layout_marginTop="4dp"
                         android:fontFamily="sans-serif-condensed"
                         android:text="@string/no_gps"
-                        android:textColor="?attr/a3Text2"
+                        android:textColor="?attr/uiText2"
                         android:textSize="13sp"
                         android:visibility="invisible" />
                 </LinearLayout>
@@ -335,7 +335,7 @@
                             android:ellipsize="end"
                             android:fontFamily="sans-serif-condensed"
                             android:maxLines="2"
-                            android:textColor="?attr/a3Text"
+                            android:textColor="?attr/uiText"
                             android:textSize="17sp" />
 
                         <TextView
@@ -345,7 +345,7 @@
                             android:ellipsize="end"
                             android:fontFamily="sans-serif-condensed"
                             android:singleLine="true"
-                            android:textColor="?attr/a3Text2"
+                            android:textColor="?attr/uiText2"
                             android:textSize="14sp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -367,7 +367,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left|top"
-                        android:textColor="?attr/a3Text2"
+                        android:textColor="?attr/uiText2"
                         android:textSize="11sp" />
 
                     <TextView
@@ -375,7 +375,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="right|top"
-                        android:textColor="?attr/a3Text2"
+                        android:textColor="?attr/uiText2"
                         android:textSize="11sp" />
 
                     <LinearLayout
@@ -441,7 +441,7 @@
                         android:fontFamily="sans-serif-condensed"
                         android:includeFontPadding="false"
                         android:text="--.-"
-                        android:textColor="?attr/a3Text"
+                        android:textColor="?attr/uiText"
                         android:textSize="36sp" />
 
                     <LinearLayout
@@ -456,7 +456,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="MHz"
-                            android:textColor="?attr/a3Text2"
+                            android:textColor="?attr/uiText2"
                             android:textSize="12sp" />
 
                         <TextView
@@ -464,7 +464,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="FM"
-                            android:textColor="?attr/a3Accent"
+                            android:textColor="?attr/uiAccent"
                             android:textSize="12sp" />
                     </LinearLayout>
 

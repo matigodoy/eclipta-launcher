@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="a3Bg" format="color" />
-    <attr name="a3Accent" format="color" />
-    <attr name="a3Text" format="color" />
-    <attr name="a3Text2" format="color" />
-    <attr name="a3GlassFill" format="color" />
-    <attr name="a3GlassStroke" format="color" />
-    <attr name="a3GlassHi" format="color" />
-    <attr name="a3Track" format="color" />
-    <attr name="a3Floor" format="color" />
+    <attr name="uiBg" format="color" />
+    <attr name="uiAccent" format="color" />
+    <attr name="uiText" format="color" />
+    <attr name="uiText2" format="color" />
+    <attr name="uiGlassFill" format="color" />
+    <attr name="uiGlassStroke" format="color" />
+    <attr name="uiGlassHi" format="color" />
+    <attr name="uiTrack" format="color" />
+    <attr name="uiFloor" format="color" />
 </resources>

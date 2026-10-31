@@ -29,7 +29,7 @@
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-medium"
                 android:text="@string/apps"
-                android:textColor="?attr/a3Text"
+                android:textColor="?attr/uiText"
                 android:textSize="20sp" />
 
             <ImageButton

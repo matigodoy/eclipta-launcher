@@ -35,7 +35,7 @@
     <string name="f_photo">Car photo</string>
     <string name="photo_pick">Pick photo (USB)</string>
     <string name="photo_reset">Use the model photo</string>
-    <string name="photo_tip">A PNG without background works best. We look on the USB stick, its A3Launcher folder and Downloads.</string>
+    <string name="photo_tip">A PNG without background works best. We look on the USB stick, its EcliptaLauncher folder and Downloads.</string>
     <string name="photo_none">No photos found. Copy a PNG to the USB stick.</string>
     <string name="photo_error">Couldn\'t read that image</string>
     <string name="f_splash">Logo animation</string>

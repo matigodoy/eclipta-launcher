@@ -2,14 +2,14 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">
-            <solid android:color="?attr/a3Track" />
+            <solid android:color="?attr/uiTrack" />
             <corners android:radius="999dp" />
         </shape>
     </item>
     <item android:id="@android:id/progress">
         <clip>
             <shape android:shape="rectangle">
-                <solid android:color="?attr/a3Accent" />
+                <solid android:color="?attr/uiAccent" />
                 <corners android:radius="999dp" />
             </shape>
         </clip>

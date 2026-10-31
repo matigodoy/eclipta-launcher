@@ -20,10 +20,10 @@ grep -q "versionName '$version'" app/build.gradle || { echo "app/build.gradle ve
 # -PpublicBuild: ignore launcher/private-res so the public APK has no personal overrides.
 ./gradlew --no-daemon -q -PpublicBuild clean assembleRelease
 apk="$root/launcher/app/build/outputs/apk/release/app-release.apk"
-out="$root/launcher/app/build/A3Launcher-v$version.apk"
+out="$root/launcher/app/build/EcliptaLauncher-v$version.apk"
 cp "$apk" "$out"
 (cd "$(dirname "$out")" && shasum -a 256 "$(basename "$out")" > "$(basename "$out").sha256")
 
-git tag -a "v$version" -m "A3 Launcher v$version"
+git tag -a "v$version" -m "Eclipta Launcher v$version"
 git push origin "v$version"
-gh release create "v$version" "$out" "$out.sha256" --title "A3 Launcher v$version" --generate-notes ${PRERELEASE:+--prerelease}
+gh release create "v$version" "$out" "$out.sha256" --title "Eclipta Launcher v$version" --generate-notes ${PRERELEASE:+--prerelease}

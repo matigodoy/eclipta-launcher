@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.mati.a3launcher'
+    namespace 'ar.com.eclipta.launcher'
     compileSdk 36
 
     defaultConfig {
-        applicationId 'com.mati.a3launcher'
+        applicationId 'ar.com.eclipta.launcher'
         minSdk 28
         // Deliberately low: manifest receivers keep getting JanCar's implicit broadcasts. Sideload only.
         //noinspection ExpiredTargetSdkVersion

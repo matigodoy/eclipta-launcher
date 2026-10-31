@@ -35,7 +35,7 @@
     <string name="f_photo">Foto do carro</string>
     <string name="photo_pick">Escolher foto (pendrive)</string>
     <string name="photo_reset">Usar a foto do modelo</string>
-    <string name="photo_tip">Melhor um PNG sem fundo. Procuramos no pendrive, na pasta A3Launcher e em Downloads.</string>
+    <string name="photo_tip">Melhor um PNG sem fundo. Procuramos no pendrive, na pasta EcliptaLauncher e em Downloads.</string>
     <string name="photo_none">Nenhuma foto encontrada. Copie um PNG para o pendrive.</string>
     <string name="photo_error">Não foi possível ler a imagem</string>
     <string name="f_splash">Animação do logo</string>

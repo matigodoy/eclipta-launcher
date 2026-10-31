@@ -22,14 +22,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
-            android:textColor="?attr/a3Text"
+            android:textColor="?attr/uiText"
             android:textSize="24sp" />
 
         <TextView
             android:id="@+id/previewSub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="?attr/a3Text2"
+            android:textColor="?attr/uiText2"
             android:textSize="13sp" />
 
         <ImageView
@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textColor="?attr/a3Text2"
+            android:textColor="?attr/uiText2"
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -74,7 +74,7 @@
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-medium"
                 android:text="@string/customize"
-                android:textColor="?attr/a3Text"
+                android:textColor="?attr/uiText"
                 android:textSize="20sp" />
 
             <ImageButton
