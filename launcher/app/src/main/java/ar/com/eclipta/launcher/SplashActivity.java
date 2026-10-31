@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-/** Wake animation: plays the brand's sting once over whatever is on screen, then finishes itself (and opens CarPlay if asked). */
+/** Wake animation: plays the brand's sting once over whatever is on screen, then hands over to Startup. */
 public class SplashActivity extends Activity {
     private static final long FALLBACK_MS = 4000;
 
@@ -24,7 +24,8 @@ public class SplashActivity extends Activity {
         public void run() {
             if (isFinishing()) return;
             finish();
-            if (Profile.load(SplashActivity.this).carplayOnAcc) Launch.start(SplashActivity.this, Launch.CARPLAY);
+            Startup.splashRunning = false;
+            Startup.next(SplashActivity.this);
         }
     };
 
@@ -73,11 +74,15 @@ public class SplashActivity extends Activity {
     protected void onStop() {
         super.onStop();
         // Never linger in the background.
-        if (!isFinishing()) finish();
+        if (isFinishing()) return;
+        finish();
+        Startup.splashRunning = false;
+        if (((android.os.PowerManager) getSystemService(POWER_SERVICE)).isInteractive()) Startup.afterInterruptedSplash(this);
     }
 
     @Override
     protected void onDestroy() {
+        Startup.splashRunning = false;
         handler.removeCallbacks(finisher);
         if (anim != null) {
             anim.clearAnimationCallbacks();

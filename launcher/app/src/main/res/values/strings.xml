@@ -53,12 +53,6 @@
     <string name="done">Listo</string>
     <string name="need_storage">Hace falta permiso de almacenamiento</string>
     <string name="hello">Hola, %1$s</string>
-    <string name="due_vtv">VTV</string>
-    <string name="due_insurance">Seguro</string>
-    <string name="due_service">Service</string>
-    <string name="due_overdue">%1$s vencido</string>
-    <string name="due_today">%1$s vence hoy</string>
-    <string name="due_in_days">%1$s: faltan %2$d días</string>
     <string name="sec_look">Aspecto</string>
     <string name="sec_drive">Al manejar</string>
     <string name="sec_reminders">Recordatorios</string>
@@ -101,4 +95,38 @@
     <string name="lang_pt" translatable="false">Português</string>
     <string name="diag_export">Exportar diagnóstico</string>
     <string name="diag_tip">Guarda la placa, el firmware y la pantalla para adjuntar a un reporte. No incluye seriales, MAC ni ubicación.</string>
+    <string name="rem_vtv">VTV / ITV</string>
+    <string name="rem_insurance">Seguro</string>
+    <string name="rem_service">Service</string>
+    <string name="rem_oil">Aceite y filtros</string>
+    <string name="rem_belt">Correa de distribución</string>
+    <string name="rem_brakes">Frenos</string>
+    <string name="rem_tires">Neumáticos</string>
+    <string name="rem_battery">Batería</string>
+    <string name="rem_extinguisher">Matafuego</string>
+    <string name="rem_none">sin fecha</string>
+    <string name="rem_today">vence hoy</string>
+    <string name="rem_on">vence el %1$s</string>
+    <plurals name="rem_overdue">
+        <item quantity="one">venció hace %d día</item>
+        <item quantity="other">venció hace %d días</item>
+    </plurals>
+    <plurals name="rem_left">
+        <item quantity="one">falta %d día</item>
+        <item quantity="other">faltan %d días</item>
+    </plurals>
+    <string name="rem_pill">%1$s: %2$s</string>
+    <string name="rem_pill_more"> +%1$d</string>
+    <string name="rem_done">Ya lo hice</string>
+    <string name="rem_undo">Deshacer</string>
+    <string name="rem_done_next">Listo. Próximo vencimiento: %1$s</string>
+    <string name="rem_done_none">Listo. Sin próxima fecha.</string>
+    <plurals name="alert_title">
+        <item quantity="one">Tenés %d vencimiento</item>
+        <item quantity="other">Tenés %d vencimientos</item>
+    </plurals>
+    <string name="alert_sub">Este aviso vuelve a aparecer al dar contacto hasta que marques que ya lo hiciste.</string>
+    <string name="alert_later">Ahora no</string>
+    <string name="alert_continue">Continuar</string>
+    <string name="alert_open">Ver mantenimiento</string>
 </resources>

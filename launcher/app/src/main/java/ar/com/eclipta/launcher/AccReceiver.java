@@ -7,8 +7,8 @@ import android.os.SystemClock;
 
 /**
  * Wake signals: JanCar ACC broadcast "com.jancar.services.action.acc" (boolean extra "acc")
- * and AutoChips "autochips.intent.action.QB_POWERON". On wake, shows the animation once
- * (debounced) and optionally opens CarPlay. Returns immediately.
+ * and AutoChips "autochips.intent.action.QB_POWERON". Starts the wake chain once per ignition
+ * (debounced, see Startup). Returns immediately.
  */
 public class AccReceiver extends BroadcastReceiver {
     private static final long DEBOUNCE_MS = 20_000;
@@ -34,16 +34,6 @@ public class AccReceiver extends BroadcastReceiver {
         long now = SystemClock.elapsedRealtime();
         if (now - lastShown < DEBOUNCE_MS) return;
         lastShown = now;
-        Profile p = Profile.load(context);
-        if (!p.splash || Brand.sting(context, Pack.load(context, p.pack), p) == null) {
-            if (p.carplayOnAcc) Launch.start(context, Launch.CARPLAY);
-            return;
-        }
-        try {
-            context.startActivity(new Intent(context, SplashActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION));
-        } catch (Throwable t) {
-            DebugLog.log("splash start error: " + t);
-        }
+        Startup.onWake(context);
     }
 }

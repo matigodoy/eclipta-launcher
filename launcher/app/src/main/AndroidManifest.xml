@@ -58,6 +58,15 @@
             android:taskAffinity=""
             android:theme="@style/Theme.Launcher.Splash" />
 
+        <activity
+            android:name=".MaintenanceAlertActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:screenOrientation="landscape"
+            android:taskAffinity="" />
+
         <receiver
             android:name=".AccReceiver"
             android:exported="true">

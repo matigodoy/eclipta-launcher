@@ -17,6 +17,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -36,6 +37,10 @@ import java.util.Locale;
 
 /** HOME screen. All bindings, listeners and timers live only between onStart and onStop. */
 public class MainActivity extends BaseActivity implements JanCar.MediaListener, JanCar.GpsListener {
+    static final String EXTRA_OPEN_MAINTENANCE = "open_maintenance";
+    // JanCar restarts Home during power-off and just before the wake broadcast: let those pass first.
+    private static final long ALERT_CHECK_DELAY_MS = 3000;
+    private static final long OPEN_DELAY_MS = 800;
     private static final long JANCAR_GPS_GRACE_MS = 15_000;
     private static final long TICK_PLAYING_MS = 1000, TICK_IDLE_MS = 5000;
     private static final int WIDE_DP = 1180;
@@ -117,6 +122,11 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         @Override
         public void onReceive(Context context, Intent intent) {
             updateClock();
+            if (!Intent.ACTION_TIME_TICK.equals(intent.getAction())) {
+                updateReminder();
+                main.removeCallbacks(alertCheck);
+                main.postDelayed(alertCheck, ALERT_CHECK_DELAY_MS);
+            }
         }
     };
 
@@ -125,6 +135,22 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         public void run() {
             tick();
             main.postDelayed(this, playing ? TICK_PLAYING_MS : TICK_IDLE_MS);
+        }
+    };
+
+    private final Runnable alertCheck = new Runnable() {
+        @Override
+        public void run() {
+            if (started && ((PowerManager) getSystemService(POWER_SERVICE)).isInteractive()) {
+                Startup.fromHome(MainActivity.this, isMoving());
+            }
+        }
+    };
+
+    private final Runnable openMaintenance = new Runnable() {
+        @Override
+        public void run() {
+            openCustomize(SettingsActivity.SECTION_MAINTENANCE);
         }
     };
 
@@ -201,6 +227,21 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
             askLocation();
         }
         fitWideScreen();
+        handleOpenExtra(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleOpenExtra(intent);
+    }
+
+    /** One shot: recreate() keeps the same Intent, and Settings must not reopen by itself. */
+    private void handleOpenExtra(Intent intent) {
+        if (intent == null || !intent.hasExtra(EXTRA_OPEN_MAINTENANCE)) return;
+        intent.removeExtra(EXTRA_OPEN_MAINTENANCE);
+        main.removeCallbacks(openMaintenance);
+        main.postDelayed(openMaintenance, OPEN_DELAY_MS);
     }
 
     /** JanCar gives speed and position without any permission. Other units need this. */
@@ -236,6 +277,9 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         } catch (Throwable ignored) {
         }
         startedAt = SystemClock.elapsedRealtime();
+        shownSpeed = -1; // whatever it was the last time Home was visible
+        Startup.noteBoot(this);
+        main.postDelayed(alertCheck, ALERT_CHECK_DELAY_MS);
         if (trimmed) {
             trimmed = false;
             showCar();
@@ -255,6 +299,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
     protected void onStop() {
         started = false;
         main.removeCallbacks(ticker);
+        main.removeCallbacks(alertCheck);
         stopLocation();
         mediaLink.unbind(this);
         systemLink.unbind(this);
@@ -302,17 +347,6 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-        }
-    }
-
-    @Override
     public void onBackPressed() {
         // Home screen: back does nothing.
     }
@@ -337,25 +371,25 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
     }
 
     private void updateReminder() {
-        String[] names = {getString(R.string.due_vtv), getString(R.string.due_insurance), getString(R.string.due_service)};
-        String[] dates = {profile.dueVtv, profile.dueInsurance, profile.dueService};
-        int best = Reminders.DUE_NONE, which = -1;
-        long today = System.currentTimeMillis();
-        for (int i = 0; i < dates.length; i++) {
-            int d = Reminders.daysLeft(dates[i], today, java.util.TimeZone.getDefault());
-            if (d != Reminders.DUE_NONE && d <= Reminders.WARN_DAYS && d < best) {
-                best = d;
-                which = i;
-            }
-        }
-        if (which < 0) {
-            reminderPill.setVisibility(View.GONE);
+        View touch = findViewById(R.id.reminderTouch);
+        long now = System.currentTimeMillis();
+        java.util.TimeZone tz = java.util.TimeZone.getDefault();
+        // The common case: nothing close. No need to parse the list.
+        int soonest = Reminders.soonestDays(this, now, tz);
+        if (!profile.remindHome || soonest == Reminders.DUE_NONE || soonest > profile.remindLead) {
+            touch.setVisibility(View.GONE);
             return;
         }
-        reminderPill.setText(best < 0 ? getString(R.string.due_overdue, names[which])
-                : best == 0 ? getString(R.string.due_today, names[which])
-                : getString(R.string.due_in_days, names[which], best));
-        reminderPill.setVisibility(View.VISIBLE);
+        List<Reminders.Item> due = Reminders.upcoming(Reminders.load(this), profile.remindLead, now, tz);
+        if (due.isEmpty()) {
+            touch.setVisibility(View.GONE);
+            return;
+        }
+        Reminders.Item first = due.get(0);
+        String line = getString(R.string.rem_pill, Reminders.name(this, first),
+                Reminders.status(this, first, profile.remindLead, now, tz));
+        reminderPill.setText(due.size() > 1 ? line + getString(R.string.rem_pill_more, due.size() - 1) : line);
+        touch.setVisibility(View.VISIBLE);
     }
 
     private void updateClock() {
@@ -452,13 +486,25 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         findViewById(R.id.btnCustomize).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isMoving()) {
-                    Toast.makeText(MainActivity.this, R.string.stopped_only, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), REQ_CUSTOMIZE);
+                openCustomize(null);
             }
         });
+        findViewById(R.id.reminderTouch).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openCustomize(SettingsActivity.SECTION_MAINTENANCE);
+            }
+        });
+    }
+
+    private void openCustomize(String section) {
+        if (isMoving()) {
+            Toast.makeText(this, R.string.stopped_only, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent i = new Intent(this, SettingsActivity.class);
+        if (section != null) i.putExtra(SettingsActivity.EXTRA_SECTION, section);
+        startActivityForResult(i, REQ_CUSTOMIZE);
     }
 
     private void setupSlot(final int i) {

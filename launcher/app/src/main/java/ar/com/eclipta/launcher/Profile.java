@@ -22,7 +22,7 @@ final class Profile {
     boolean plateShow;
     boolean customPhoto;
     boolean splash;
-    boolean carplayOnAcc;
+    String accApp;                  // flattened component opened on ignition, empty = none
     final String[] slots = new String[SLOTS]; // flattened component, empty = default
     String paint;                   // pack paint id
     String wheels;                  // wheel id, "original" = the photo's
@@ -31,7 +31,8 @@ final class Profile {
     String night;                   // "off", "on", "sun" or "lights"
     int speedLimit;                 // km/h, 0 = off
     String lang;                    // "auto", "es", "en" or "pt"
-    String dueVtv, dueInsurance, dueService; // yyyy-MM-dd, empty = off
+    boolean remindHome, remindAlert;
+    int remindLead;                 // days before a due date the home screen starts warning
 
     static Profile load(Context c) {
         SharedPreferences p = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
@@ -46,7 +47,7 @@ final class Profile {
         o.plateShow = p.getBoolean("p_plate_show", false);
         o.customPhoto = p.getBoolean("p_custom_photo", false);
         o.splash = p.getBoolean("p_splash", true);
-        o.carplayOnAcc = p.getBoolean("p_carplay_acc", false);
+        o.accApp = p.getString("p_acc_app", "");
         for (int i = 0; i < SLOTS; i++) o.slots[i] = p.getString("p_slot" + i, "");
         o.paint = p.getString("p_paint", "original");
         o.wheels = p.getString("p_wheels", "original");
@@ -55,9 +56,9 @@ final class Profile {
         o.night = p.getString("p_night", "off");
         o.speedLimit = p.getInt("p_speed_limit", 0);
         o.lang = p.getString("p_lang", "auto");
-        o.dueVtv = p.getString("p_due_vtv", "");
-        o.dueInsurance = p.getString("p_due_insurance", "");
-        o.dueService = p.getString("p_due_service", "");
+        o.remindHome = p.getBoolean("p_remind_home", true);
+        o.remindAlert = p.getBoolean("p_remind_alert", true);
+        o.remindLead = p.getInt("p_remind_lead", 30);
         return o;
     }
 
@@ -67,12 +68,12 @@ final class Profile {
                 .putString("p_body", body).putString("p_engine", engine).putString("p_year", year)
                 .putString("p_plate", plate).putBoolean("p_plate_show", plateShow)
                 .putBoolean("p_custom_photo", customPhoto).putBoolean("p_splash", splash)
-                .putBoolean("p_carplay_acc", carplayOnAcc);
+                .putString("p_acc_app", accApp);
         for (int i = 0; i < SLOTS; i++) e.putString("p_slot" + i, slots[i]);
         e.putString("p_paint", paint).putString("p_wheels", wheels).putString("p_layout", layout)
                 .putString("p_accent", accent).putString("p_night", night).putInt("p_speed_limit", speedLimit)
-                .putString("p_lang", lang).putString("p_due_vtv", dueVtv).putString("p_due_insurance", dueInsurance)
-                .putString("p_due_service", dueService);
+                .putString("p_lang", lang).putBoolean("p_remind_home", remindHome)
+                .putBoolean("p_remind_alert", remindAlert).putInt("p_remind_lead", remindLead);
         e.apply();
     }
 
@@ -82,8 +83,8 @@ final class Profile {
         o.put("greeting", greeting).put("pack", pack).put("title", title).put("body", body).put("engine", engine).put("year", year);
         o.put("plate", new JSONObject().put("text", plate).put("show", plateShow));
         o.put("paint", paint).put("wheels", wheels).put("layout", layout).put("accent", accent).put("night", night).put("lang", lang);
-        o.put("splash", splash).put("carplayOnAcc", carplayOnAcc).put("speedLimit", speedLimit);
-        o.put("dueVtv", dueVtv).put("dueInsurance", dueInsurance).put("dueService", dueService);
+        o.put("splash", splash).put("accApp", accApp).put("speedLimit", speedLimit);
+        o.put("remindHome", remindHome).put("remindAlert", remindAlert).put("remindLead", remindLead);
         JSONArray rail = new JSONArray();
         for (String s : slots) rail.put(s);
         o.put("rail", rail);
@@ -111,15 +112,27 @@ final class Profile {
         night = oneOf(o, "night", night, "off", "on", "sun", "lights");
         lang = oneOf(o, "lang", lang, "auto", "es", "en", "pt");
         splash = o.optBoolean("splash", splash);
-        carplayOnAcc = o.optBoolean("carplayOnAcc", carplayOnAcc);
+        if (o.has("accApp")) {
+            String app = o.optString("accApp", "");
+            if (app.isEmpty() || validApp(app)) accApp = app;
+        } else if (o.has("carplayOnAcc")) {
+            accApp = o.optBoolean("carplayOnAcc") ? Launch.CARPLAY : "";
+        }
         speedLimit = Math.max(0, Math.min(300, o.optInt("speedLimit", speedLimit)));
-        dueVtv = text(o, "dueVtv", dueVtv, 10);
-        dueInsurance = text(o, "dueInsurance", dueInsurance, 10);
-        dueService = text(o, "dueService", dueService, 10);
+        remindHome = o.optBoolean("remindHome", remindHome);
+        remindAlert = o.optBoolean("remindAlert", remindAlert);
+        int lead = o.optInt("remindLead", remindLead);
+        for (int allowed : Reminders.LEAD_DAYS) if (allowed == lead) remindLead = lead;
         JSONArray rail = o.optJSONArray("rail");
         if (rail != null) {
             for (int i = 0; i < SLOTS && i < rail.length(); i++) slots[i] = rail.optString(i, slots[i]);
         }
+    }
+
+    /** perfil.json is a file people share, and this one runs by itself on every ignition. */
+    static boolean validApp(String flat) {
+        return flat.length() <= 200 && flat.matches("[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+")
+                && !flat.startsWith(BuildConfig.APPLICATION_ID + "/");
     }
 
     private static String text(JSONObject o, String key, String current, int maxLen) {

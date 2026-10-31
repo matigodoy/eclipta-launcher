@@ -45,12 +45,6 @@
     <string name="done">Done</string>
     <string name="need_storage">Storage permission is needed</string>
     <string name="hello">Hi, %1$s</string>
-    <string name="due_vtv">Inspection</string>
-    <string name="due_insurance">Insurance</string>
-    <string name="due_service">Service</string>
-    <string name="due_overdue">%1$s overdue</string>
-    <string name="due_today">%1$s due today</string>
-    <string name="due_in_days">%1$s: %2$d days left</string>
     <string name="sec_look">Look</string>
     <string name="sec_drive">While driving</string>
     <string name="sec_reminders">Reminders</string>
@@ -90,4 +84,38 @@
     <string name="diag_export">Export diagnostics</string>
     <string name="diag_tip">Saves the board, firmware and screen to attach to a report. No serials, MACs or location.</string>
     <string name="date_pattern">EEEE, MMMM d</string>
+    <string name="rem_vtv">Inspection (MOT)</string>
+    <string name="rem_insurance">Insurance</string>
+    <string name="rem_service">Service</string>
+    <string name="rem_oil">Oil and filters</string>
+    <string name="rem_belt">Timing belt</string>
+    <string name="rem_brakes">Brakes</string>
+    <string name="rem_tires">Tires</string>
+    <string name="rem_battery">Battery</string>
+    <string name="rem_extinguisher">Fire extinguisher</string>
+    <string name="rem_none">no date</string>
+    <string name="rem_today">due today</string>
+    <string name="rem_on">due on %1$s</string>
+    <plurals name="rem_overdue">
+        <item quantity="one">%d day overdue</item>
+        <item quantity="other">%d days overdue</item>
+    </plurals>
+    <plurals name="rem_left">
+        <item quantity="one">%d day left</item>
+        <item quantity="other">%d days left</item>
+    </plurals>
+    <string name="rem_pill">%1$s: %2$s</string>
+    <string name="rem_pill_more"> +%1$d</string>
+    <string name="rem_done">I did it</string>
+    <string name="rem_undo">Undo</string>
+    <string name="rem_done_next">Done. Next due date: %1$s</string>
+    <string name="rem_done_none">Done. No next date.</string>
+    <plurals name="alert_title">
+        <item quantity="one">%d item is due</item>
+        <item quantity="other">%d items are due</item>
+    </plurals>
+    <string name="alert_sub">This notice comes back every time you start the car until you mark it as done.</string>
+    <string name="alert_later">Not now</string>
+    <string name="alert_continue">Continue</string>
+    <string name="alert_open">See maintenance</string>
 </resources>

@@ -2,7 +2,6 @@ package ar.com.eclipta.launcher;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -25,9 +24,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * "Personalizar". Only exists while open. Changes are saved right away and the car picture is
@@ -37,6 +34,9 @@ public class SettingsActivity extends BaseActivity {
     private static final int REQ_STORAGE = 1;
     private static final long BAKE_DELAY_MS = 350;
     private static final int ACT_PHOTO = 0, ACT_EXPORT = 1, ACT_IMPORT = 2, ACT_PACKS = 3, ACT_DIAG = 4;
+
+    static final String EXTRA_SECTION = "section";
+    static final String SECTION_MAINTENANCE = "maintenance";
 
     private interface OnChoice {
         void chosen(String id);
@@ -305,12 +305,6 @@ public class SettingsActivity extends BaseActivity {
             }
         });
 
-        section(R.string.sec_reminders);
-        hint(R.string.reminders_tip);
-        dateRow(R.string.due_vtv, 0);
-        dateRow(R.string.due_insurance, 1);
-        dateRow(R.string.due_service, 2);
-
         section(R.string.sec_start);
         check(R.string.f_splash, profile.splash, new OnChoice() {
             @Override
@@ -319,10 +313,10 @@ public class SettingsActivity extends BaseActivity {
                 changed();
             }
         });
-        check(R.string.f_carplay_acc, profile.carplayOnAcc, new OnChoice() {
+        check(R.string.f_carplay_acc, !profile.accApp.isEmpty(), new OnChoice() {
             @Override
             public void chosen(String v) {
-                profile.carplayOnAcc = v != null;
+                profile.accApp = v != null ? Launch.CARPLAY : "";
                 changed();
             }
         });
@@ -379,43 +373,6 @@ public class SettingsActivity extends BaseActivity {
         return out;
     }
 
-    private String due(int i) {
-        return i == 0 ? profile.dueVtv : i == 1 ? profile.dueInsurance : profile.dueService;
-    }
-
-    private void setDue(int i, String v) {
-        if (i == 0) profile.dueVtv = v;
-        else if (i == 1) profile.dueInsurance = v;
-        else profile.dueService = v;
-        changed();
-    }
-
-    private void dateRow(int title, final int i) {
-        label(title);
-        LinearLayout r = row();
-        final String current = due(i);
-        r.addView(chip(current.isEmpty() ? getString(R.string.date_none) : current, !current.isEmpty(), new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar c = Calendar.getInstance();
-                new DatePickerDialog(SettingsActivity.this, (dp1, y, m, d) -> {
-                    setDue(i, String.format(Locale.US, "%04d-%02d-%02d", y, m + 1, d));
-                    buildForm();
-                }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
-            }
-        }));
-        if (!current.isEmpty()) {
-            r.addView(chip(getString(R.string.date_clear), false, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    setDue(i, "");
-                    buildForm();
-                }
-            }));
-        }
-        form.addView(r);
-    }
-
     // ---------------------------------------------------------------- backup
 
     private void withStorage(int action) {
@@ -434,7 +391,7 @@ public class SettingsActivity extends BaseActivity {
 
     private void exportProfile() {
         try {
-            File f = Files.write("perfil.json", profile.toJson().toString(2), this);
+            File f = Files.write("perfil.json", profile.toJson().put("reminders", Reminders.toJson(Reminders.load(this))).toString(2), this);
             Toast.makeText(this, f == null ? getString(R.string.backup_failed)
                     : getString(R.string.backup_saved, f.getPath()), Toast.LENGTH_LONG).show();
         } catch (org.json.JSONException e) {
@@ -461,7 +418,10 @@ public class SettingsActivity extends BaseActivity {
             return;
         }
         try {
-            profile.applyJson(new org.json.JSONObject(Files.readText(found)));
+            org.json.JSONObject imported = new org.json.JSONObject(Files.readText(found));
+            profile.applyJson(imported);
+            List<Reminders.Item> reminders = Reminders.fromProfile(imported);
+            if (reminders != null) Reminders.save(this, reminders);
             profile.customPhoto = profile.customPhoto && CarImage.customFile(this).isFile();
             changed();
             bakeNow.run();

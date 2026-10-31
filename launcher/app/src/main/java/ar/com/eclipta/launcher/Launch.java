@@ -21,14 +21,18 @@ final class Launch {
     private Launch() {}
 
     static String slot(Context c, Profile p, int i) {
-        if (!p.slots[i].isEmpty()) return p.slots[i];
-        if (i == 0 && !installed(c, CARPLAY)) {
+        return p.slots[i].isEmpty() ? resolve(c, DEFAULT_SLOTS[i]) : p.slots[i];
+    }
+
+    /** CarPlay on units with another projection app. */
+    static String resolve(Context c, String flat) {
+        if (CARPLAY.equals(flat) && !installed(c, CARPLAY)) {
             for (String pkg : OTHER_CARPLAY_PACKAGES) {
-                String flat = pkg + "/.unknown";
-                if (installed(c, flat)) return flat;
+                String other = pkg + "/.unknown";
+                if (installed(c, other)) return other;
             }
         }
-        return DEFAULT_SLOTS[i];
+        return flat;
     }
 
     static void openSettings(Context c) {

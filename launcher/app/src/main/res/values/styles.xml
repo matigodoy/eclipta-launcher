@@ -10,6 +10,8 @@
         <item name="uiGlassHi">@color/glass_hi</item>
         <item name="uiTrack">@color/track</item>
         <item name="uiFloor">@color/floor</item>
+        <item name="uiOnAccent">#FFFFFFFF</item>
+        <item name="uiDialogBg">#FF1A1C20</item>
         <item name="android:windowBackground">@color/bg</item>
         <item name="android:colorAccent">?attr/uiAccent</item>
         <item name="android:textColor">?attr/uiText</item>
@@ -39,6 +41,8 @@
         <item name="uiGlassHi">#26FF2A20</item>
         <item name="uiTrack">#1AFF2A20</item>
         <item name="uiFloor">#2EFF2A20</item>
+        <item name="uiOnAccent">#FFFFD9D6</item>
+        <item name="uiDialogBg">#FF140505</item>
         <item name="android:colorAccent">#FFB3241C</item>
         <item name="android:textColor">#FFE8392E</item>
         <item name="android:windowBackground">#FF000000</item>

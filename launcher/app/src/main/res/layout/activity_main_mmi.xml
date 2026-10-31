@@ -45,15 +45,23 @@
             android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <TextView
-            android:id="@+id/reminderPill"
+        <FrameLayout
+            android:id="@+id/reminderTouch"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginRight="16dp"
-            android:fontFamily="sans-serif-condensed"
-            android:textColor="?attr/uiAccent"
-            android:textSize="15sp"
-            android:visibility="gone" />
+            android:clickable="true"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/reminderPill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="?attr/uiAccent"
+                android:textSize="15sp" />
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/locationPill"

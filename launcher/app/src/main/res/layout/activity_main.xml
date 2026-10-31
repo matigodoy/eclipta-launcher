@@ -67,21 +67,29 @@
             android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <TextView
-            android:id="@+id/reminderPill"
+        <FrameLayout
+            android:id="@+id/reminderTouch"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginRight="8dp"
-            android:background="@drawable/glass_pill"
-            android:fontFamily="sans-serif-medium"
-            android:includeFontPadding="false"
-            android:paddingLeft="14dp"
-            android:paddingTop="9dp"
-            android:paddingRight="14dp"
-            android:paddingBottom="9dp"
-            android:textColor="?attr/uiText"
-            android:textSize="13sp"
-            android:visibility="gone" />
+            android:clickable="true"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/reminderPill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/glass_pill"
+                android:fontFamily="sans-serif-medium"
+                android:includeFontPadding="false"
+                android:paddingLeft="14dp"
+                android:paddingTop="9dp"
+                android:paddingRight="14dp"
+                android:paddingBottom="9dp"
+                android:textColor="?attr/uiText"
+                android:textSize="13sp" />
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/locationPill"

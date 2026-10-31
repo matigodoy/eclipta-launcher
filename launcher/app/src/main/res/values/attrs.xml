@@ -9,4 +9,6 @@
     <attr name="uiGlassHi" format="color" />
     <attr name="uiTrack" format="color" />
     <attr name="uiFloor" format="color" />
+    <attr name="uiOnAccent" format="color" />
+    <attr name="uiDialogBg" format="color" />
 </resources>
