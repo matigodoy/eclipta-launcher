@@ -30,7 +30,7 @@ import java.util.TimeZone;
 public class SettingsActivity extends BaseActivity {
     static final String EXTRA_SECTION = "section";
     static final String SECTION_CAR = "car", SECTION_LOOK = "look", SECTION_RAIL = "rail",
-            SECTION_MAINTENANCE = "maintenance", SECTION_DRIVE = "drive", SECTION_SYSTEM = "system";
+            SECTION_MAINTENANCE = "maintenance", SECTION_DRIVE = "drive", SECTION_SYSTEM = "system", SECTION_ABOUT = "about";
     private static final String STATE_SECTION = "section";
     private static final int REQ_STORAGE = 1, REQ_PICK = 2;
     private static final long BAKE_DELAY_MS = 350;
@@ -137,6 +137,7 @@ public class SettingsActivity extends BaseActivity {
         card(functions, SECTION_MAINTENANCE, R.drawable.ic_wrench, R.string.sec_maint, R.string.sec_maint_desc, expiredCount());
         card(functions, SECTION_DRIVE, R.drawable.ic_key, R.string.sec_drive, R.string.sec_drive_desc, 0);
         card(functions, SECTION_SYSTEM, R.drawable.ic_settings, R.string.sec_system, R.string.sec_system_desc, 0);
+        card(functions, SECTION_ABOUT, R.drawable.ic_info, R.string.sec_about, R.string.sec_about_desc, 0);
     }
 
     private int expiredCount() {
@@ -178,6 +179,8 @@ public class SettingsActivity extends BaseActivity {
                 return new DriveSection(this);
             case SECTION_SYSTEM:
                 return new SystemSection(this);
+            case SECTION_ABOUT:
+                return new AboutSection(this);
             default:
                 return null;
         }
@@ -358,6 +361,10 @@ public class SettingsActivity extends BaseActivity {
         afterStorage = null;
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && action != null) action.run();
         else Toast.makeText(this, R.string.need_storage, Toast.LENGTH_SHORT).show();
+    }
+
+    boolean isNight() {
+        return night;
     }
 
     boolean alive() {

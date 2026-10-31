@@ -206,4 +206,14 @@
         <item quantity="one">%d mês</item>
         <item quantity="other">%d meses</item>
     </plurals>
+    <string name="sec_about">Sobre</string>
+    <string name="sec_about_desc">Quem fez isto, versão e links do projeto.</string>
+    <string name="about_version">Versão %1$s</string>
+    <string name="about_desc">Tela inicial leve para centrais Android. Funciona sem internet e não tira recursos do CarPlay.</string>
+    <string name="about_by">Desenvolvido por %1$s</string>
+    <string name="about_license">Código aberto sob a licença GPL-3.0.</string>
+    <string name="about_legal">Projeto independente. Marcas e logos de carros pertencem a seus donos; sem afiliação com nenhum fabricante.</string>
+    <string name="about_scan">Escaneie com o celular</string>
+    <string name="about_portfolio">Meu portfólio</string>
+    <string name="about_github">Código no GitHub</string>
 </resources>

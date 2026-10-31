@@ -206,4 +206,14 @@
         <item quantity="one">%d month</item>
         <item quantity="other">%d months</item>
     </plurals>
+    <string name="sec_about">About</string>
+    <string name="sec_about_desc">Who made this, version and project links.</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_desc">A lightweight home screen for Android car stereos. Works without internet and takes no resources from CarPlay.</string>
+    <string name="about_by">Developed by %1$s</string>
+    <string name="about_license">Open source under the GPL-3.0 license.</string>
+    <string name="about_legal">Independent project. Car brands and logos belong to their owners; no affiliation with any manufacturer.</string>
+    <string name="about_scan">Scan with your phone</string>
+    <string name="about_portfolio">My portfolio</string>
+    <string name="about_github">Code on GitHub</string>
 </resources>

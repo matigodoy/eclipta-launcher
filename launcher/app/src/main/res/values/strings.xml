@@ -217,4 +217,17 @@
         <item quantity="one">%d mes</item>
         <item quantity="other">%d meses</item>
     </plurals>
+    <string name="sec_about">Acerca de</string>
+    <string name="sec_about_desc">Quién hizo esto, versión y links del proyecto.</string>
+    <string name="about_version">Versión %1$s</string>
+    <string name="about_desc">Pantalla de inicio liviana para estéreos Android. Funciona sin internet y no le saca recursos a CarPlay.</string>
+    <string name="about_by">Desarrollado por %1$s</string>
+    <string name="about_license">Código abierto bajo licencia GPL-3.0.</string>
+    <string name="about_legal">Proyecto independiente. Las marcas y logos de autos pertenecen a sus dueños; no hay afiliación con ningún fabricante.</string>
+    <string name="about_scan">Escaneá con tu celular</string>
+    <string name="about_portfolio">Mi portfolio</string>
+    <string name="about_github">Código en GitHub</string>
+    <string name="about_company" translatable="false">Eclipta · eclipta.com.ar</string>
+    <string name="about_portfolio_url" translatable="false">matigodoy.com.ar</string>
+    <string name="about_github_url" translatable="false">github.com/matigodoy/eclipta-launcher</string>
 </resources>
