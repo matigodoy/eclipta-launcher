@@ -36,7 +36,7 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 | `CarImage` | Hornea las capas en un solo PNG (`files/car_baked.png`) y carga lo que muestra el inicio |
 | `SettingsActivity` | Pantalla Personalizar; solo vive mientras está abierta. No se abre con el auto en movimiento |
 | `BaseActivity`, `Theming`, `Sun` | Paleta del usuario antes de crear vistas; modo noche con cálculo solar offline |
-| `PaintMath`, `Reminders` | Cuentas puras (con tests en `app/src/test`) |
+| `PaintMath`, `Reminders`, `CityName` | Cuentas puras (con tests en `app/src/test`) |
 | `Launch`, `Files`, `PlateFormat` | Abrir apps y resolver accesos; buscar archivos en pendrive; formato de patente |
 | `GlowBackground` | Fondo estático: #060708 + 3 óvalos con degradado radial |
 | `DebugLog` | Log a `/sdcard/Android/data/com.mati.a3launcher/files/a3l-log.txt`, como máximo 200 líneas por proceso; `ENABLED=false` para apagarlo |

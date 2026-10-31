@@ -191,7 +191,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         showCar();
 
         String cachedCity = prefs.getString("city", null);
-        if (!TextUtils.isEmpty(cachedCity)) showCity(cachedCity);
+        if (CityName.isPlace(cachedCity)) showCity(cachedCity);
         showRadio(prefs.getString("radio_band", null), prefs.getString("radio_freq", null));
         showNothingPlaying();
 
@@ -406,9 +406,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
                     List<Address> list = new Geocoder(app, geoLocale).getFromLocation(lat, lon, 1);
                     if (list != null && !list.isEmpty()) {
                         Address a = list.get(0);
-                        name = a.getLocality();
-                        if (TextUtils.isEmpty(name)) name = a.getSubAdminArea();
-                        if (TextUtils.isEmpty(name)) name = a.getAdminArea();
+                        name = CityName.pick(a.getLocality(), a.getSubAdminArea(), a.getAdminArea());
                     }
                 } catch (Throwable t) {
                     DebugLog.log("geocoder error: " + t);
