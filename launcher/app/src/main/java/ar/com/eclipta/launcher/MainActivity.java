@@ -30,7 +30,6 @@ import android.widget.Toast;
 
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -388,7 +387,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         Reminders.Item first = due.get(0);
         String line = getString(R.string.rem_pill, Reminders.name(this, first),
                 Reminders.status(this, first, profile.remindLead, now, tz));
-        reminderPill.setText(due.size() > 1 ? line + getString(R.string.rem_pill_more, due.size() - 1) : line);
+        reminderPill.setText(due.size() > 1 ? line + " " + getString(R.string.rem_pill_more, due.size() - 1) : line);
         touch.setVisibility(View.VISIBLE);
     }
 
@@ -398,10 +397,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         if (isFinishing()) return;
         Date now = new Date();
         time.setText(new SimpleDateFormat("HH:mm", locale).format(now));
-        int h = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        String g = getString(h >= 6 && h < 13 ? R.string.good_morning : h >= 13 && h < 20 ? R.string.good_afternoon : R.string.good_evening);
-        String name = profile.greeting;
-        greeting.setText(name.isEmpty() ? g : g + ", " + name);
+        greeting.setText(profile.greetingLine(this));
         String d = new SimpleDateFormat(getString(R.string.date_pattern), locale).format(now);
         date.setText(d.isEmpty() ? d : Character.toUpperCase(d.charAt(0)) + d.substring(1));
     }

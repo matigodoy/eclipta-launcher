@@ -1,630 +1,376 @@
 package ar.com.eclipta.launcher;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.TextWatcher;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.HorizontalScrollView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
- * "Personalizar". Only exists while open. Changes are saved right away and the car picture is
- * re-baked once, in the background, shortly after the last change.
+ * "Personalizar": a hub of sections, each one a page of this activity. Only exists while open.
+ * Changes are saved right away; the car picture is re-baked in the background after the last one.
  */
 public class SettingsActivity extends BaseActivity {
-    private static final int REQ_STORAGE = 1;
-    private static final long BAKE_DELAY_MS = 350;
-    private static final int ACT_PHOTO = 0, ACT_EXPORT = 1, ACT_IMPORT = 2, ACT_PACKS = 3, ACT_DIAG = 4;
-
     static final String EXTRA_SECTION = "section";
-    static final String SECTION_MAINTENANCE = "maintenance";
-
-    private interface OnChoice {
-        void chosen(String id);
-    }
+    static final String SECTION_CAR = "car", SECTION_LOOK = "look", SECTION_RAIL = "rail",
+            SECTION_MAINTENANCE = "maintenance", SECTION_DRIVE = "drive", SECTION_SYSTEM = "system";
+    private static final String STATE_SECTION = "section";
+    private static final int REQ_STORAGE = 1, REQ_PICK = 2;
+    private static final long BAKE_DELAY_MS = 350;
 
     private final Handler main = new Handler(Looper.getMainLooper());
-    private Profile profile;
-    private Pack pack;
-    private LinearLayout form;
+    Profile profile;
+    Pack pack;
+    /** Opened from a shortcut rather than from the hub. */
+    boolean deepLinked;
+    private String current;
+    private SettingsSection section;
     private ImageView previewCar;
     private Bitmap previewBitmap;
-    private float dp;
-    private volatile boolean destroyed;
-    private int bakeGeneration;
-    private int pendingAction;
+    private int previewGeneration;
+    private boolean bakePending, closing;
+    private Runnable afterStorage;
+    private SettingsSection.OnResult onPicked;
 
     private final Runnable bakeNow = new Runnable() {
         @Override
         public void run() {
-            final int generation = ++bakeGeneration;
-            final Profile snapshot = Profile.load(SettingsActivity.this);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    CarImage.bake(getApplicationContext(), snapshot);
-                    final Bitmap b = CarImage.loadForDisplay(getApplicationContext(), dp);
-                    main.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (destroyed || generation != bakeGeneration) {
-                                if (b != null) b.recycle();
-                                return;
-                            }
-                            showPreview(b);
-                        }
-                    });
-                }
-            }, "launcher-bake").start();
+            bakePending = false;
+            CarBaker.bake(SettingsActivity.this);
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dp = getResources().getDisplayMetrics().density;
         getWindow().setBackgroundDrawable(new GlowBackground(this, !night));
-        setContentView(R.layout.activity_settings);
         profile = Profile.load(this);
         pack = Pack.load(this, profile.pack);
-        form = findViewById(R.id.form);
-        // No field takes focus (and pops the keyboard) until touched.
-        form.setFocusableInTouchMode(true);
-        form.requestFocus();
-        previewCar = findViewById(R.id.previewCar);
-        findViewById(R.id.btnClose).setOnClickListener(new View.OnClickListener() {
+        CarBaker.setListener(new CarBaker.Listener() {
             @Override
-            public void onClick(View v) {
-                finish();
+            public void onBaked() {
+                if (closing) reallyFinish();
+                else loadPreview();
             }
         });
-        buildForm();
-        updateTexts();
-        changed();
+        String start = savedInstanceState != null ? savedInstanceState.getString(STATE_SECTION)
+                : getIntent().getStringExtra(EXTRA_SECTION);
+        deepLinked = savedInstanceState == null && start != null;
+        if (start == null) showHub();
+        else showSection(start);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle out) {
+        super.onSaveInstanceState(out);
+        out.putString(STATE_SECTION, current);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Home key, or QuickBoot taking over at ignition off: finish() never runs.
+        flushBake();
     }
 
     @Override
     protected void onDestroy() {
-        destroyed = true;
+        flushBake();
+        CarBaker.setListener(null);
         main.removeCallbacksAndMessages(null);
-        previewCar.setImageDrawable(null);
-        if (previewBitmap != null) previewBitmap.recycle();
+        releasePreview();
         super.onDestroy();
     }
 
+    /** Home recreates itself when this closes, so it has to find the final picture. */
     @Override
     public void finish() {
+        flushBake();
+        if (CarBaker.isBusy()) {
+            closing = true;
+            return;
+        }
+        reallyFinish();
+    }
+
+    private void reallyFinish() {
         setResult(RESULT_OK);
         super.finish();
     }
 
-    private void showPreview(Bitmap b) {
-        previewCar.setImageBitmap(b);
-        if (previewBitmap != null) previewBitmap.recycle();
-        previewBitmap = b;
+    @Override
+    public void onBackPressed() {
+        if (current == null) finish();
+        else showHub();
     }
 
-    /** Persists the profile and schedules one bake. */
-    private void changed() {
+    // ---------------------------------------------------------------- hub
+
+    private void showHub() {
+        releasePreview();
+        current = null;
+        section = null;
+        deepLinked = false;
+        setContentView(R.layout.settings_hub);
+        findViewById(R.id.btnClose).setOnClickListener(v -> finish());
+        LinearLayout look = findViewById(R.id.rowLook), functions = findViewById(R.id.rowFunctions);
+        card(look, SECTION_CAR, R.drawable.ic_car, R.string.sec_car, R.string.sec_car_desc, 0);
+        card(look, SECTION_LOOK, R.drawable.ic_palette, R.string.sec_look, R.string.sec_look_desc, 0);
+        card(look, SECTION_RAIL, R.drawable.ic_rail, R.string.sec_rail, R.string.sec_rail_desc, 0);
+        card(functions, SECTION_MAINTENANCE, R.drawable.ic_wrench, R.string.sec_maint, R.string.sec_maint_desc, expiredCount());
+        card(functions, SECTION_DRIVE, R.drawable.ic_key, R.string.sec_drive, R.string.sec_drive_desc, 0);
+        card(functions, SECTION_SYSTEM, R.drawable.ic_settings, R.string.sec_system, R.string.sec_system_desc, 0);
+    }
+
+    private int expiredCount() {
+        long now = System.currentTimeMillis();
+        TimeZone tz = TimeZone.getDefault();
+        int soonest = Reminders.soonestDays(this, now, tz);
+        return soonest == Reminders.DUE_NONE || soonest > 0 ? 0 : Reminders.expired(Reminders.load(this), now, tz).size();
+    }
+
+    private void card(LinearLayout row, final String id, int icon, int title, int desc, int badge) {
+        View v = LayoutInflater.from(this).inflate(R.layout.item_settings_card, row, false);
+        ((ImageView) v.findViewById(R.id.icon)).setImageResource(icon);
+        ((TextView) v.findViewById(R.id.title)).setText(title);
+        ((TextView) v.findViewById(R.id.desc)).setText(desc);
+        TextView b = v.findViewById(R.id.badge);
+        if (badge > 0) {
+            b.setText(String.valueOf(badge));
+            b.setVisibility(View.VISIBLE);
+        }
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1);
+        if (row.getChildCount() > 0) lp.leftMargin = Math.round(12 * getResources().getDisplayMetrics().density);
+        v.setOnClickListener(view -> showSection(id));
+        row.addView(v, lp);
+    }
+
+    // ---------------------------------------------------------------- pages
+
+    private SettingsSection create(String id) {
+        switch (id) {
+            case SECTION_CAR:
+                return new CarSection(this);
+            case SECTION_LOOK:
+                return new LookSection(this);
+            case SECTION_RAIL:
+                return new RailSection(this);
+            case SECTION_MAINTENANCE:
+                return new MaintenanceSection(this);
+            case SECTION_DRIVE:
+                return new DriveSection(this);
+            case SECTION_SYSTEM:
+                return new SystemSection(this);
+            default:
+                return null;
+        }
+    }
+
+    private void showSection(String id) {
+        SettingsSection s = create(id);
+        if (s == null) {
+            showHub();
+            return;
+        }
+        releasePreview();
+        current = id;
+        section = s;
+        setContentView(s.split() ? R.layout.settings_split : R.layout.settings_full);
+        findViewById(R.id.btnClose).setOnClickListener(v -> finish());
+        findViewById(R.id.btnBack).setOnClickListener(v -> showHub());
+        ((TextView) findViewById(R.id.sectionTitle)).setText(s.title());
+        ((TextView) findViewById(R.id.sectionDesc)).setText(s.description());
+        if (s.split()) {
+            previewCar = findViewById(R.id.previewCar);
+            if (night) previewCar.setAlpha(0.7f);
+            s.attachForm(findViewById(R.id.form));
+            updatePreview();
+            loadPreview();
+        } else {
+            s.attach(findViewById(R.id.content));
+        }
+        s.rebuild();
+    }
+
+    void rebuild() {
+        if (section != null) section.rebuild();
+    }
+
+    /** Saves a change that doesn't touch the car picture. */
+    void saved() {
         profile.save(this);
-        updateTexts();
+        updatePreview();
+    }
+
+    /** Saves a change the car picture depends on, and schedules one bake. */
+    void carChanged() {
+        profile.save(this);
+        CarBaker.markDirty(this);
+        updatePreview();
+        bakePending = true;
         main.removeCallbacks(bakeNow);
         main.postDelayed(bakeNow, BAKE_DELAY_MS);
     }
 
-    private void updateTexts() {
-        ((TextView) findViewById(R.id.previewTitle)).setText(pack.title);
+    private void flushBake() {
+        if (!bakePending) return;
+        main.removeCallbacks(bakeNow);
+        bakeNow.run();
+    }
+
+    // ---------------------------------------------------------------- preview
+
+    /** The texts around the car, plus what each page adds to show its own options. */
+    void updatePreview() {
+        if (previewCar == null) return;
+        ((TextView) findViewById(R.id.previewTitle)).setText(profile.displayTitle(pack));
         ((TextView) findViewById(R.id.previewSub)).setText(profile.subtitle(pack));
         ((TextView) findViewById(R.id.previewGreeting)).setText(
                 profile.greeting.isEmpty() ? "" : getString(R.string.hello, profile.greeting));
     }
 
-    private void buildForm() {
-        form.removeAllViews();
-        section(R.string.sec_car);
-        List<String> ids = Pack.ids(this);
-        List<String> names = new ArrayList<>();
-        for (String id : ids) {
-            Pack p = Pack.load(this, id);
-            names.add(p.title);
-        }
-        chips(R.string.f_model, ids, names, profile.pack, new OnChoice() {
-            @Override
-            public void chosen(String id) {
-                profile.pack = id;
-                profile.engine = "";
-                profile.year = "";
-                profile.body = "";
-                profile.paint = "original";
-                profile.wheels = "original";
-                pack = Pack.load(SettingsActivity.this, id);
-                buildForm();
-                changed();
-            }
-        });
-        chips(R.string.f_body, list(pack.bodies), list(pack.bodies), pick(profile.body, pack.defBody), new OnChoice() {
-            @Override
-            public void chosen(String id) {
-                profile.body = id;
-                changed();
-            }
-        });
-        chips(R.string.f_engine, list(pack.engines), list(pack.engines), pick(profile.engine, pack.defEngine), new OnChoice() {
-            @Override
-            public void chosen(String id) {
-                profile.engine = id;
-                changed();
-            }
-        });
-        field(R.string.f_year, pick(profile.year, pack.defYear), InputType.TYPE_CLASS_NUMBER, 4, new OnChoice() {
-            @Override
-            public void chosen(String v) {
-                profile.year = v;
-                changed();
-            }
-        });
-        label(R.string.f_photo);
-        LinearLayout photo = row();
-        photo.addView(chip(getString(R.string.photo_pick), false, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pickPhoto();
-            }
-        }));
-        if (profile.customPhoto) {
-            photo.addView(chip(getString(R.string.photo_reset), false, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    profile.customPhoto = false;
-                    CarImage.customFile(SettingsActivity.this).delete();
-                    buildForm();
-                    changed();
-                }
-            }));
-        }
-        form.addView(photo);
-        hint(R.string.photo_tip);
-
-        section(R.string.sec_you);
-        field(R.string.f_greeting, profile.greeting, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS, 20, new OnChoice() {
-            @Override
-            public void chosen(String v) {
-                profile.greeting = v.trim();
-                changed();
-            }
-        });
-        field(R.string.f_plate, profile.plate, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS, 10, new OnChoice() {
-            @Override
-            public void chosen(String v) {
-                profile.plate = v;
-                changed();
-            }
-        });
-        check(R.string.f_plate_show, profile.plateShow, new OnChoice() {
-            @Override
-            public void chosen(String v) {
-                profile.plateShow = v != null;
-                changed();
-            }
-        });
-
-        section(R.string.sec_look);
-        if (!profile.customPhoto) {
-            List<String> paintIds = new ArrayList<>(), paintNames = new ArrayList<>();
-            for (Pack.Option o : pack.paints) {
-                paintIds.add(o.id);
-                paintNames.add(o.name);
-            }
-            chips(R.string.f_paint, paintIds, paintNames, profile.paint, new OnChoice() {
-                @Override
-                public void chosen(String id) {
-                    profile.paint = id;
-                    changed();
-                }
-            });
-            List<String> wheelIds = new ArrayList<>(), wheelNames = new ArrayList<>();
-            for (Pack.Option o : pack.wheels) {
-                wheelIds.add(o.id);
-                wheelNames.add(o.name);
-            }
-            chips(R.string.f_wheels, wheelIds, wheelNames, profile.wheels, new OnChoice() {
-                @Override
-                public void chosen(String id) {
-                    profile.wheels = id;
-                    changed();
-                }
-            });
-        }
-        chips(R.string.f_layout, list(new String[]{"glass", "mmi"}),
-                strings(R.string.layout_glass, R.string.layout_mmi), profile.layout, new OnChoice() {
-                    @Override
-                    public void chosen(String id) {
-                        profile.layout = id;
-                        changed();
-                    }
-                });
-        chips(R.string.f_accent, list(new String[]{"red", "blue", "gray"}),
-                strings(R.string.accent_red, R.string.accent_blue, R.string.accent_gray), profile.accent, new OnChoice() {
-                    @Override
-                    public void chosen(String id) {
-                        profile.accent = id;
-                        changed();
-                        recreate();
-                    }
-                });
-        chips(R.string.f_night, list(new String[]{"off", "on", "sun", "lights"}),
-                strings(R.string.night_off, R.string.night_on, R.string.night_sun, R.string.night_lights),
-                profile.night, new OnChoice() {
-                    @Override
-                    public void chosen(String id) {
-                        profile.night = id;
-                        changed();
-                        recreate();
-                    }
-                });
-
-        chips(R.string.f_lang, list(new String[]{"auto", "es", "en", "pt"}),
-                strings(R.string.lang_auto, R.string.lang_es, R.string.lang_en, R.string.lang_pt), profile.lang, new OnChoice() {
-                    @Override
-                    public void chosen(String id) {
-                        profile.lang = id;
-                        changed();
-                        recreate();
-                    }
-                });
-
-        section(R.string.sec_drive);
-        field(R.string.f_speed_limit, String.valueOf(profile.speedLimit), InputType.TYPE_CLASS_NUMBER, 3, new OnChoice() {
-            @Override
-            public void chosen(String v) {
-                try {
-                    profile.speedLimit = v.isEmpty() ? 0 : Integer.parseInt(v);
-                } catch (NumberFormatException e) {
-                    profile.speedLimit = 0;
-                }
-                changed();
-            }
-        });
-
-        section(R.string.sec_start);
-        check(R.string.f_splash, profile.splash, new OnChoice() {
-            @Override
-            public void chosen(String v) {
-                profile.splash = v != null;
-                changed();
-            }
-        });
-        check(R.string.f_carplay_acc, !profile.accApp.isEmpty(), new OnChoice() {
-            @Override
-            public void chosen(String v) {
-                profile.accApp = v != null ? Launch.CARPLAY : "";
-                changed();
-            }
-        });
-
-        section(R.string.sec_rail);
-        hint(R.string.rail_tip);
-        LinearLayout rail = row();
-        rail.addView(chip(getString(R.string.rail_reset), false, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (int i = 0; i < Profile.SLOTS; i++) profile.slots[i] = "";
-                changed();
-                Toast.makeText(SettingsActivity.this, R.string.done, Toast.LENGTH_SHORT).show();
-            }
-        }));
-        form.addView(rail);
-
-        section(R.string.sec_backup);
-        LinearLayout backup = row();
-        backup.addView(chip(getString(R.string.backup_export), false, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                withStorage(ACT_EXPORT);
-            }
-        }));
-        backup.addView(chip(getString(R.string.backup_import), false, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                withStorage(ACT_IMPORT);
-            }
-        }));
-        backup.addView(chip(getString(R.string.packs_import), false, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                withStorage(ACT_PACKS);
-            }
-        }));
-        form.addView(backup);
-        LinearLayout support = row();
-        support.setPadding(0, px(8), 0, 0);
-        support.addView(chip(getString(R.string.diag_export), false, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                withStorage(ACT_DIAG);
-            }
-        }));
-        form.addView(support);
-        hint(R.string.diag_tip);
+    /** A small version of Home's header, so the look chips show what they do. */
+    void showLookPreview() {
+        boolean mmi = "mmi".equals(profile.layout);
+        findViewById(R.id.previewPanel).setBackgroundResource(mmi ? R.drawable.mmi_panel : R.drawable.glass_panel);
+        Typeface face = Typeface.create(mmi ? "sans-serif-condensed" : "sans-serif-light", Typeface.NORMAL);
+        findViewById(R.id.previewHeader).setVisibility(View.VISIBLE);
+        ImageView logo = findViewById(R.id.previewLogo);
+        logo.setImageDrawable(Brand.logo(this, pack, profile));
+        logo.setImageTintList(ColorStateList.valueOf(Theming.color(this, R.attr.uiText)));
+        TextView time = findViewById(R.id.previewTime);
+        time.setText(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()));
+        time.setTypeface(face);
+        TextView hello = findViewById(R.id.previewHello);
+        hello.setText(profile.greetingLine(this));
+        hello.setTypeface(Typeface.create(mmi ? "sans-serif-condensed" : "sans-serif-medium", Typeface.NORMAL));
+        ((TextView) findViewById(R.id.previewTitle)).setTypeface(Typeface.create(mmi ? "sans-serif-condensed" : "sans-serif-medium", Typeface.NORMAL));
+        ImageView home = findViewById(R.id.previewHome);
+        home.setVisibility(View.VISIBLE);
+        home.setBackgroundResource(mmi ? R.drawable.mmi_row_on : R.drawable.accent_circle);
     }
 
-    private List<String> strings(int... ids) {
-        List<String> out = new ArrayList<>();
-        for (int id : ids) out.add(getString(id));
-        return out;
+    /** The rail's four shortcuts under the car. */
+    void showRailPreview() {
+        LinearLayout row = findViewById(R.id.previewRail);
+        row.removeAllViews();
+        row.setVisibility(View.VISIBLE);
+        int size = Math.round(44 * getResources().getDisplayMetrics().density);
+        int gap = Math.round(10 * getResources().getDisplayMetrics().density);
+        for (int i = 0; i < Profile.SLOTS; i++) {
+            ImageView icon = new ImageView(this);
+            String flat = Launch.slot(this, profile, i);
+            icon.setImageDrawable(Launch.icon(this, flat));
+            icon.setBackgroundResource(R.drawable.glass_circle);
+            icon.setScaleType(Launch.RADIO.equals(flat) || Launch.MUSIC.equals(flat)
+                    ? ImageView.ScaleType.CENTER : ImageView.ScaleType.FIT_CENTER);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
+            if (i > 0) lp.leftMargin = gap;
+            row.addView(icon, lp);
+        }
     }
 
-    // ---------------------------------------------------------------- backup
-
-    private void withStorage(int action) {
-        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            pendingAction = action;
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_STORAGE);
+    private void loadPreview() {
+        if (previewCar == null) return;
+        if (CarBaker.needsBake(this)) {
+            CarBaker.bake(this);
             return;
         }
-        if (action == ACT_EXPORT) exportProfile();
-        else if (action == ACT_IMPORT) importProfile();
-        else if (action == ACT_PACKS) importPacks();
-        else if (action == ACT_DIAG) exportDiagnostics();
-        else pickPhoto();
-    }
-
-    private void exportProfile() {
-        try {
-            File f = Files.write("perfil.json", profile.toJson().put("reminders", Reminders.toJson(Reminders.load(this))).toString(2), this);
-            Toast.makeText(this, f == null ? getString(R.string.backup_failed)
-                    : getString(R.string.backup_saved, f.getPath()), Toast.LENGTH_LONG).show();
-        } catch (org.json.JSONException e) {
-            Toast.makeText(this, R.string.backup_failed, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void exportDiagnostics() {
-        File f = Files.write("diagnostico.txt", Diagnostics.report(this), this);
-        Toast.makeText(this, f == null ? getString(R.string.backup_failed)
-                : getString(R.string.backup_saved, f.getPath()), Toast.LENGTH_LONG).show();
-    }
-
-    private void importProfile() {
-        File found = null;
-        for (File f : Files.find(".json")) {
-            if (f.getName().equalsIgnoreCase("perfil.json")) {
-                found = f;
-                break;
-            }
-        }
-        if (found == null) {
-            Toast.makeText(this, R.string.import_none, Toast.LENGTH_LONG).show();
-            return;
-        }
-        try {
-            org.json.JSONObject imported = new org.json.JSONObject(Files.readText(found));
-            profile.applyJson(imported);
-            List<Reminders.Item> reminders = Reminders.fromProfile(imported);
-            if (reminders != null) Reminders.save(this, reminders);
-            profile.customPhoto = profile.customPhoto && CarImage.customFile(this).isFile();
-            changed();
-            bakeNow.run();
-            recreate();
-        } catch (Exception e) {
-            Toast.makeText(this, R.string.import_bad, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void importPacks() {
-        final Context app = getApplicationContext();
+        final int generation = ++previewGeneration;
+        final float density = getResources().getDisplayMetrics().density;
+        final android.content.Context app = getApplicationContext();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final int n = Files.importPacks(app);
+                final Bitmap b = CarImage.loadForDisplay(app, density);
                 main.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (destroyed) return;
-                        Toast.makeText(app, getString(R.string.packs_done, n), Toast.LENGTH_LONG).show();
-                        buildForm();
-                    }
-                });
-            }
-        }, "launcher-packs").start();
-    }
-
-    private static String pick(String a, String fallback) {
-        return a == null || a.isEmpty() ? fallback : a;
-    }
-
-    private static List<String> list(String[] a) {
-        List<String> out = new ArrayList<>();
-        for (String s : a) out.add(s);
-        return out;
-    }
-
-    // ---------------------------------------------------------------- photo
-
-    private void pickPhoto() {
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            pendingAction = ACT_PHOTO;
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQ_STORAGE);
-            return;
-        }
-        final List<File> files = Files.find(".png", ".webp", ".jpg", ".jpeg");
-        if (files.isEmpty()) {
-            Toast.makeText(this, R.string.photo_none, Toast.LENGTH_LONG).show();
-            return;
-        }
-        CharSequence[] names = new CharSequence[files.size()];
-        for (int i = 0; i < names.length; i++) names[i] = files.get(i).getName();
-        new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
-                .setTitle(R.string.f_photo)
-                .setItems(names, (d, which) -> importPhoto(files.get(which)))
-                .show();
-    }
-
-    private void importPhoto(final File f) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final boolean ok = CarImage.importPhoto(getApplicationContext(), f.getPath());
-                main.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (destroyed) return;
-                        if (!ok) {
-                            Toast.makeText(SettingsActivity.this, R.string.photo_error, Toast.LENGTH_SHORT).show();
+                        if (previewCar == null || generation != previewGeneration) {
+                            if (b != null) b.recycle();
                             return;
                         }
-                        profile.customPhoto = true;
-                        buildForm();
-                        changed();
+                        previewCar.setImageBitmap(b);
+                        if (previewBitmap != null) previewBitmap.recycle();
+                        previewBitmap = b;
                     }
                 });
             }
-        }, "launcher-photo").start();
+        }, "launcher-preview").start();
+    }
+
+    private void releasePreview() {
+        previewGeneration++;
+        if (previewCar != null) previewCar.setImageDrawable(null);
+        previewCar = null;
+        if (previewBitmap != null) previewBitmap.recycle();
+        previewBitmap = null;
+    }
+
+    // ---------------------------------------------------------------- what pages need from the activity
+
+    /** Opens the app drawer in pick mode. */
+    void pickApp(SettingsSection.OnResult cb) {
+        onPicked = cb;
+        startActivityForResult(new Intent(this, AppsActivity.class).putExtra(AppsActivity.EXTRA_PICK, true), REQ_PICK);
+        Toast.makeText(this, R.string.pick_for_slot, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        SettingsSection.OnResult cb = onPicked;
+        onPicked = null;
+        if (requestCode == REQ_PICK && resultCode == RESULT_OK && data != null && cb != null) cb.result(data);
+    }
+
+    void withStorage(Runnable action) {
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            action.run();
+            return;
+        }
+        afterStorage = action;
+        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_STORAGE);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode != REQ_STORAGE) return;
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) withStorage(pendingAction);
+        Runnable action = afterStorage;
+        afterStorage = null;
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && action != null) action.run();
         else Toast.makeText(this, R.string.need_storage, Toast.LENGTH_SHORT).show();
     }
 
-    // ---------------------------------------------------------------- form helpers
-
-    private int px(int v) {
-        return Math.round(v * dp);
+    boolean alive() {
+        return !isDestroyed();
     }
 
-    private void section(int text) {
-        TextView t = new TextView(this);
-        t.setText(getString(text).toUpperCase());
-        t.setTextAppearance(R.style.Label);
-        t.setPadding(0, px(18), 0, px(2));
-        form.addView(t);
+    Handler handler() {
+        return main;
     }
 
-    private void label(int text) {
-        TextView t = new TextView(this);
-        t.setText(text);
-        t.setTextColor(Theming.color(this, R.attr.uiText2));
-        t.setTextSize(13);
-        t.setPadding(0, px(10), 0, px(6));
-        form.addView(t);
-    }
-
-    private void hint(int text) {
-        TextView t = new TextView(this);
-        t.setText(text);
-        t.setTextColor(Theming.color(this, R.attr.uiText2));
-        t.setTextSize(12);
-        t.setPadding(0, px(6), 0, px(6));
-        form.addView(t);
-    }
-
-    private LinearLayout row() {
-        LinearLayout l = new LinearLayout(this);
-        l.setOrientation(LinearLayout.HORIZONTAL);
-        return l;
-    }
-
-    private TextView chip(String text, boolean selected, View.OnClickListener click) {
-        TextView t = new TextView(this);
-        t.setText(text);
-        t.setTextColor(Theming.color(this, R.attr.uiText));
-        t.setTextSize(14);
-        t.setGravity(Gravity.CENTER);
-        t.setBackgroundResource(R.drawable.chip_bg);
-        t.setSelected(selected);
-        t.setMinHeight(px(44));
-        t.setPadding(px(16), 0, px(16), 0);
-        t.setOnClickListener(click);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, px(44));
-        lp.rightMargin = px(8);
-        t.setLayoutParams(lp);
-        return t;
-    }
-
-    private void chips(int title, List<String> ids, List<String> names, String selected, final OnChoice cb) {
-        if (ids.isEmpty()) return;
-        label(title);
-        HorizontalScrollView scroll = new HorizontalScrollView(this);
-        scroll.setHorizontalScrollBarEnabled(false);
-        final LinearLayout l = row();
-        for (int i = 0; i < ids.size(); i++) {
-            final String id = ids.get(i);
-            l.addView(chip(names.get(i), id.equals(selected), new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    for (int k = 0; k < l.getChildCount(); k++) l.getChildAt(k).setSelected(false);
-                    v.setSelected(true);
-                    cb.chosen(id);
-                }
-            }));
-        }
-        scroll.addView(l);
-        form.addView(scroll);
-    }
-
-    private void field(int title, String value, int inputType, int maxLen, final OnChoice cb) {
-        label(title);
-        EditText e = new EditText(this);
-        e.setText(value);
-        e.setSingleLine(true);
-        e.setInputType(inputType);
-        e.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(maxLen)});
-        e.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI | EditorInfo.IME_ACTION_DONE);
-        e.setTextColor(Theming.color(this, R.attr.uiText));
-        e.setTextSize(16);
-        e.setBackgroundResource(R.drawable.field_bg);
-        e.setPadding(px(14), 0, px(14), 0);
-        e.setMinHeight(px(44));
-        e.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int a, int b, int c) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                cb.chosen(s.toString());
-            }
-        });
-        form.addView(e, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, px(44)));
-    }
-
-    /** cb gets "" when checked and null when not. */
-    private void check(int title, boolean value, final OnChoice cb) {
-        CheckBox c = new CheckBox(this);
-        c.setText(title);
-        c.setChecked(value);
-        c.setTextColor(Theming.color(this, R.attr.uiText));
-        c.setTextSize(15);
-        c.setMinHeight(px(44));
-        c.setOnCheckedChangeListener((b, on) -> cb.chosen(on ? "" : null));
-        form.addView(c);
+    /** Packs whose chips belong to one brand. */
+    static boolean sameBrand(List<Pack> packs) {
+        for (Pack p : packs) if (!p.brand.equals(packs.get(0).brand)) return false;
+        return true;
     }
 }

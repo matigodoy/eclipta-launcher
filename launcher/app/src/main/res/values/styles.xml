@@ -18,6 +18,8 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/black</item>
         <item name="android:windowDisablePreview">false</item>
+        <item name="android:alertDialogTheme">@style/Dialog.Launcher</item>
+        <item name="android:datePickerDialogTheme">@style/Dialog.Launcher</item>
     </style>
 
     <style name="Theme.Launcher.Blue">
@@ -53,6 +55,22 @@
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="Dialog.Launcher" parent="@android:style/Theme.Material.Dialog.Alert">
+        <item name="android:colorAccent">?attr/uiAccent</item>
+        <item name="android:colorBackgroundFloating">?attr/uiDialogBg</item>
+        <item name="android:textColorPrimary">?attr/uiText</item>
+        <item name="android:textColorSecondary">?attr/uiText2</item>
+        <item name="android:textColor">?attr/uiText</item>
+        <item name="android:datePickerStyle">@style/DatePicker.Launcher</item>
+    </style>
+
+    <!-- Spinner: bigger touch rows than the calendar at 600 dp high, and years are one flick away. -->
+    <style name="DatePicker.Launcher" parent="@android:style/Widget.Material.DatePicker">
+        <item name="android:datePickerMode">spinner</item>
+        <item name="android:calendarViewShown">false</item>
+        <item name="android:spinnersShown">true</item>
     </style>
 
     <style name="Label">

@@ -69,6 +69,8 @@ public class MaintenanceAlertActivity extends BaseActivity {
                 getResources().getQuantityString(R.plurals.alert_title, expired.size(), expired.size()));
         LinearLayout rows = findViewById(R.id.rows);
         for (Reminders.Item item : expired) rows.addView(row(item));
+        // The panel fits its rows, up to what keeps the buttons on screen.
+        if (expired.size() > 3) findViewById(R.id.rowsScroll).getLayoutParams().height = px(330);
         handler.postDelayed(timeout, AUTO_CLOSE_MS);
     }
 

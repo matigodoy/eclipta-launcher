@@ -147,6 +147,13 @@ final class Profile {
         return current;
     }
 
+    /** "Buenas noches, Mati". */
+    String greetingLine(Context c) {
+        int h = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
+        String g = c.getString(h >= 6 && h < 13 ? R.string.good_morning : h >= 13 && h < 20 ? R.string.good_afternoon : R.string.good_evening);
+        return greeting.isEmpty() ? g : g + ", " + greeting;
+    }
+
     /** A named custom photo: the car isn't the pack's, so nothing of the pack shows up with it. */
     boolean customCar() {
         return customPhoto && !title.isEmpty();

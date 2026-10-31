@@ -6,7 +6,7 @@
 
     <LinearLayout
         android:layout_width="720dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@drawable/glass_panel"
         android:orientation="vertical"
@@ -51,10 +51,10 @@
         </LinearLayout>
 
         <ScrollView
+            android:id="@+id/rowsScroll"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:layout_weight="1"
             android:fadingEdgeLength="16dp"
             android:requiresFadingEdge="vertical"
             android:scrollbars="none">
