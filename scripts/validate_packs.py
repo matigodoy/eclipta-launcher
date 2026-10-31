@@ -6,7 +6,7 @@ import re
 import sys
 
 MAX_BYTES = 200 * 1024
-REQUIRED = ("title", "ref_width", "defaults", "paints", "wheels")
+REQUIRED = ("title", "brand", "ref_width", "defaults", "paints", "wheels")
 
 
 def check(path):
@@ -23,6 +23,11 @@ def check(path):
             errors.append(f"pack.json: missing {key}")
     if pack.get("id", name) != name:
         errors.append("pack.json: id must match the folder name")
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 -]{0,23}", str(pack.get("brand", "x"))):
+        errors.append("pack.json: bad brand")
+    for f in ("logo.webp", "sting.webp"):
+        if os.path.exists(os.path.join(path, f)):
+            errors.append(f"{f}: third-party logos and animations are not accepted in the repo (see docs/08-packs.md)")
     if "plate" in pack and len(pack["plate"]) != 8:
         errors.append("pack.json: plate needs 8 numbers")
     for p in pack.get("paints", []):

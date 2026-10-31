@@ -20,11 +20,11 @@
             android:layout_height="match_parent">
 
             <ImageView
+                android:id="@+id/logo"
                 android:layout_width="46dp"
                 android:layout_height="18dp"
                 android:layout_gravity="center"
-                android:importantForAccessibility="no"
-                android:src="@drawable/ic_rings" />
+                android:importantForAccessibility="no" />
         </FrameLayout>
 
         <TextView
@@ -214,6 +214,8 @@
                         android:id="@+id/carTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:singleLine="true"
                         android:fontFamily="sans-serif-medium"
                         android:includeFontPadding="false"
                         android:textColor="?attr/uiText"

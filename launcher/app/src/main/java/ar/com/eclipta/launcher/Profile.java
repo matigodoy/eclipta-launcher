@@ -16,6 +16,7 @@ final class Profile {
 
     String greeting;
     String pack;
+    String title;                   // empty = pack title
     String body, engine, year;      // empty = pack default
     String plate;
     boolean plateShow;
@@ -37,6 +38,7 @@ final class Profile {
         Profile o = new Profile();
         o.greeting = p.getString("p_greeting", c.getString(R.string.greeting_name));
         o.pack = p.getString("p_pack", DEFAULT_PACK);
+        o.title = p.getString("p_title", "");
         o.body = p.getString("p_body", "");
         o.engine = p.getString("p_engine", "");
         o.year = p.getString("p_year", "");
@@ -61,7 +63,7 @@ final class Profile {
 
     void save(Context c) {
         SharedPreferences.Editor e = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit();
-        e.putString("p_greeting", greeting).putString("p_pack", pack)
+        e.putString("p_greeting", greeting).putString("p_pack", pack).putString("p_title", title)
                 .putString("p_body", body).putString("p_engine", engine).putString("p_year", year)
                 .putString("p_plate", plate).putBoolean("p_plate_show", plateShow)
                 .putBoolean("p_custom_photo", customPhoto).putBoolean("p_splash", splash)
@@ -77,7 +79,7 @@ final class Profile {
     /** The file users share: perfil.json. Paths and photos stay out of it. */
     JSONObject toJson() throws JSONException {
         JSONObject o = new JSONObject();
-        o.put("greeting", greeting).put("pack", pack).put("body", body).put("engine", engine).put("year", year);
+        o.put("greeting", greeting).put("pack", pack).put("title", title).put("body", body).put("engine", engine).put("year", year);
         o.put("plate", new JSONObject().put("text", plate).put("show", plateShow));
         o.put("paint", paint).put("wheels", wheels).put("layout", layout).put("accent", accent).put("night", night).put("lang", lang);
         o.put("splash", splash).put("carplayOnAcc", carplayOnAcc).put("speedLimit", speedLimit);
@@ -91,7 +93,9 @@ final class Profile {
     /** Applies a perfil.json. Unknown or missing keys leave the current value alone. */
     void applyJson(JSONObject o) {
         greeting = text(o, "greeting", greeting, 20);
-        pack = text(o, "pack", pack, 64);
+        String importedPack = text(o, "pack", pack, 64);
+        if (importedPack.matches(Files.PACK_ID)) pack = importedPack;
+        title = text(o, "title", title, 24);
         body = text(o, "body", body, 24);
         engine = text(o, "engine", engine, 32);
         year = text(o, "year", year, 4);
@@ -119,7 +123,7 @@ final class Profile {
     }
 
     private static String text(JSONObject o, String key, String current, int maxLen) {
-        if (!o.has(key)) return current;
+        if (!o.has(key) || o.isNull(key)) return current;
         String v = o.optString(key, current);
         return v.length() > maxLen ? v.substring(0, maxLen) : v;
     }
@@ -130,10 +134,21 @@ final class Profile {
         return current;
     }
 
+    /** A named custom photo: the car isn't the pack's, so nothing of the pack shows up with it. */
+    boolean customCar() {
+        return customPhoto && !title.isEmpty();
+    }
+
+    String displayTitle(Pack p) {
+        return title.isEmpty() ? p.title : title;
+    }
+
     /** "Sportback · 2.0 TDI · 2008", skipping empty parts. */
     String subtitle(Pack p) {
+        boolean custom = customCar();
         StringBuilder b = new StringBuilder();
-        for (String s : new String[]{or(body, p.defBody), or(engine, p.defEngine), or(year, p.defYear)}) {
+        for (String s : new String[]{or(body, custom ? "" : p.defBody), or(engine, custom ? "" : p.defEngine),
+                or(year, custom ? "" : p.defYear)}) {
             if (TextUtils.isEmpty(s)) continue;
             if (b.length() > 0) b.append(" · ");
             b.append(s);

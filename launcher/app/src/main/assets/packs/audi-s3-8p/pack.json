@@ -1,5 +1,5 @@
 {
-  "id": "audi-s3-8p", "title": "Audi S3", "years": "2006-2013", "ref_width": 920,
+  "id": "audi-s3-8p", "brand": "Audi", "title": "Audi S3", "years": "2006-2013", "ref_width": 920,
   "defaults": {"body": "Sportback", "engine": "2.0 TFSI quattro", "year": "2010"},
   "bodies": ["3 puertas", "Sportback", "Cabrio"],
   "engines": ["2.0 TFSI quattro"],

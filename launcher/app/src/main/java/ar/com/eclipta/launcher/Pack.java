@@ -32,8 +32,8 @@ final class Pack {
         }
     }
 
-    String id, title, defBody, defEngine, defYear;
-    String[] bodies, engines;
+    String id = "", title = "", brand = "", defBody = "", defEngine = "", defYear = "";
+    String[] bodies = new String[0], engines = new String[0];
     float refWidth, gain, gamma, spec;
     final List<Option> paints = new ArrayList<>();
     final List<Option> wheels = new ArrayList<>();
@@ -55,10 +55,28 @@ final class Pack {
         return out;
     }
 
-    /** Falls back to the default pack, so callers always get something drawable. */
+    /** Falls back to the default pack, then any pack, then an empty one: never null. */
     static Pack load(Context c, String id) {
         Pack p = tryLoad(c, id);
-        return p != null ? p : tryLoad(c, Profile.DEFAULT_PACK);
+        if (p == null) p = tryLoad(c, Profile.DEFAULT_PACK);
+        if (p == null) {
+            for (String other : ids(c)) {
+                p = tryLoad(c, other);
+                if (p != null) break;
+            }
+        }
+        return p != null ? p : new Pack();
+    }
+
+    /** Folder name under assets/brands: "Alfa Romeo" is alfa-romeo. Empty when the pack has no usable brand. */
+    String brandKey() {
+        String key = brand.trim().toLowerCase(java.util.Locale.ROOT).replace(' ', '-');
+        return key.matches("[a-z0-9-]+") ? key : "";
+    }
+
+    /** A file in an imported pack's folder. Null for built-in packs. */
+    File localFile(String name) {
+        return dir == null ? null : new File(dir, name);
     }
 
     private static Pack tryLoad(Context c, String id) {
@@ -77,6 +95,7 @@ final class Pack {
     private void parse(JSONObject o, String fallbackId) throws JSONException {
         id = o.optString("id", fallbackId);
         title = o.getString("title");
+        brand = o.optString("brand", "").trim();
         refWidth = (float) o.optDouble("ref_width", 920);
         JSONObject d = o.optJSONObject("defaults");
         defBody = d == null ? "" : d.optString("body");

@@ -59,6 +59,11 @@ android {
         buildConfig true
     }
 
+    // Already compressed. Stored as is, the wake animation decodes without inflating into memory first.
+    androidResources {
+        noCompress 'webp'
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

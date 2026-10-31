@@ -1,5 +1,5 @@
 {
-  "id": "audi-a3-8p", "title": "Audi A3", "years": "2003-2013", "ref_width": 920,
+  "id": "audi-a3-8p", "brand": "Audi", "title": "Audi A3", "years": "2003-2013", "ref_width": 920,
   "defaults": {"body": "Sportback", "engine": "2.0 TDI", "year": "2008"},
   "bodies": ["3 puertas", "Sportback", "Cabrio"],
   "engines": ["1.4 TFSI", "1.6", "1.8 TFSI", "2.0 TFSI", "1.9 TDI", "2.0 TDI"],

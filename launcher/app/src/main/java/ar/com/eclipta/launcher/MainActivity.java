@@ -277,6 +277,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         if (level < TRIM_MEMORY_UI_HIDDEN || started) return;
         trimmed = true;
         ((ImageView) findViewById(R.id.car)).setImageDrawable(null);
+        ((ImageView) findViewById(R.id.logo)).setImageDrawable(null);
         if (carBitmap != null) {
             carBitmap.recycle();
             carBitmap = null;
@@ -513,7 +514,10 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
 
     private void showCar() {
         Pack pack = Pack.load(this, profile.pack);
-        ((TextView) findViewById(R.id.carTitle)).setText(pack.title);
+        ImageView logo = findViewById(R.id.logo);
+        logo.setImageDrawable(Brand.logo(this, pack, profile));
+        logo.setImageTintList(android.content.res.ColorStateList.valueOf(Theming.color(this, R.attr.uiText)));
+        ((TextView) findViewById(R.id.carTitle)).setText(profile.displayTitle(pack));
         ((TextView) findViewById(R.id.carSub)).setText(profile.subtitle(pack));
         carBitmap = CarImage.loadForDisplay(this, density);
         ImageView car = findViewById(R.id.car);

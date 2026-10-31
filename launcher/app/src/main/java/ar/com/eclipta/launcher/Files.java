@@ -20,8 +20,9 @@ final class Files {
     /** Sticks prepared for the app's previous name keep working. */
     private static final String[] READ_FOLDERS = {FOLDER, "A3Launcher"};
     private static final long MAX_PACK_FILE = 5 * 1024 * 1024;
-    private static final String PACK_ID = "[a-z0-9][a-z0-9-]{0,63}";
-    private static final String[] PACK_FILES = {"pack.json", "base.webp", "paint.webp"};
+    private static final long MAX_LOGO = 100 * 1024, MAX_STING = 2 * 1024 * 1024;
+    static final String PACK_ID = "[a-z0-9][a-z0-9-]{0,63}";
+    private static final String[] PACK_FILES = {"pack.json", "base.webp", "paint.webp", "logo.webp", "sting.webp"};
 
     private Files() {}
 
@@ -94,7 +95,7 @@ final class Files {
             if (!dst.isDirectory() && !dst.mkdirs()) return false;
             for (String name : PACK_FILES) {
                 File from = new File(src, name);
-                if (!from.isFile() || from.length() > MAX_PACK_FILE) continue;
+                if (!acceptable(from, name)) continue;
                 try (FileInputStream in = new FileInputStream(from);
                      FileOutputStream out = new FileOutputStream(new File(dst, name))) {
                     byte[] buf = new byte[8192];
@@ -107,6 +108,21 @@ final class Files {
             DebugLog.log("pack import " + src + " error: " + e);
             return false;
         }
+    }
+
+    /** Nothing validates a stick's pack before it reaches Home and the wake animation, so limit what those can cost. */
+    private static boolean acceptable(File f, String name) {
+        if (!f.isFile() || f.length() > MAX_PACK_FILE) return false;
+        if (name.equals("logo.webp")) return f.length() <= MAX_LOGO && fits(f, 184, 184);
+        if (name.equals("sting.webp")) return f.length() <= MAX_STING && fits(f, 1024, 600);
+        return true;
+    }
+
+    private static boolean fits(File f, int maxW, int maxH) {
+        android.graphics.BitmapFactory.Options o = new android.graphics.BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        android.graphics.BitmapFactory.decodeFile(f.getPath(), o);
+        return o.outWidth > 0 && o.outWidth <= maxW && o.outHeight <= maxH;
     }
 
     /** Looks in each root, its EcliptaLauncher folder, Download and Pictures. Not recursive: stays fast. */

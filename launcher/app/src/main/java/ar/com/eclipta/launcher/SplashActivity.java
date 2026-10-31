@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-/** Wake animation: plays the Audi sting once over whatever is on screen, then finishes itself (and opens CarPlay if asked). */
+/** Wake animation: plays the brand's sting once over whatever is on screen, then finishes itself (and opens CarPlay if asked). */
 public class SplashActivity extends Activity {
     private static final long FALLBACK_MS = 4000;
 
@@ -46,8 +46,8 @@ public class SplashActivity extends Activity {
         });
         handler.postDelayed(finisher, FALLBACK_MS);
         try {
-            Drawable d = ImageDecoder.decodeDrawable(
-                    ImageDecoder.createSource(getResources(), R.raw.audi_sting));
+            Profile p = Profile.load(this);
+            Drawable d = ImageDecoder.decodeDrawable(Brand.sting(this, Pack.load(this, p.pack), p));
             image.setImageDrawable(d);
             if (d instanceof AnimatedImageDrawable) {
                 anim = (AnimatedImageDrawable) d;
@@ -65,7 +65,7 @@ public class SplashActivity extends Activity {
             DebugLog.init(this);
             DebugLog.log("splash decode error: " + t);
             handler.removeCallbacks(finisher);
-            finish();
+            finisher.run();
         }
     }
 

@@ -35,7 +35,7 @@ public class AccReceiver extends BroadcastReceiver {
         if (now - lastShown < DEBOUNCE_MS) return;
         lastShown = now;
         Profile p = Profile.load(context);
-        if (!p.splash) {
+        if (!p.splash || Brand.sting(context, Pack.load(context, p.pack), p) == null) {
             if (p.carplayOnAcc) Launch.start(context, Launch.CARPLAY);
             return;
         }
