@@ -7,7 +7,11 @@ Pantalla de inicio liviana y documentación abierta para estéreos Android chino
 plus reverse-engineered notes on their system APIs and CAN-bus decoders. Docs are in Spanish;
 contributions in English are welcome.*
 
-![A3 Launcher](design/preview-home.png)
+![A3 Launcher](design/preview-s3-rojo.png)
+
+| MMI clásico | Modo noche |
+|---|---|
+| ![MMI](design/preview-mmi.png) | ![Noche](design/preview-noche.png) |
 
 ## Qué hay acá
 

@@ -10,9 +10,9 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 | 0.1 | 1 | Primera versión (foto recortada a mano) | Reemplazada |
 | 0.1.1 | 2 | Foto del auto sin fondo, de remove.bg | **Instalada en el estéreo** |
 | 0.1.2 | 3 | La animación también se dispara con `QB_POWERON`; el log solo guarda cambios de media; el nombre de archivo se limpia ("a_b.mp3" pasa a "a b") | Publicada |
-| 0.2.0 | 4 | Personalizar (saludo, patente, modelo A3/S3 8P, carrocería, motor, año, foto propia), CarPlay al contacto, animación opcional, barra lateral configurable. Release sin log ni permiso de internet y con R8 | Local, probada en emulador |
-| 0.3.0 | 5 | Color y llantas por capas, patente sobre la foto, sombra; temas glass y MMI clásico, acentos, modo noche (siempre, atardecer, luces); aviso de velocidad; recordatorios; exportar e importar perfil y packs por pendrive; configurador web | Local, probada en emulador |
-| 0.4.0 | 6 | Se adapta a otras pantallas apaisadas; funciona sin servicios JanCar (oculta la radio, GPS estándar, elegís las apps); inglés y portugués; exportar diagnóstico; menos memoria: sin doble GPS en JanCar, reloj interno más lento en reposo, libera bitmaps con CarPlay adelante | Local, probada en emulador |
+| 0.2.0 | 4 | Personalizar (saludo, patente, modelo A3/S3 8P, carrocería, motor, año, foto propia), CarPlay al contacto, animación opcional, barra lateral configurable. Release sin log ni permiso de internet y con R8 | Incluida en 0.4.0 |
+| 0.3.0 | 5 | Color y llantas por capas, patente sobre la foto, sombra; temas glass y MMI clásico, acentos, modo noche (siempre, atardecer, luces); aviso de velocidad; recordatorios; exportar e importar perfil y packs por pendrive; configurador web | Incluida en 0.4.0 |
+| 0.4.0 | 6 | Se adapta a otras pantallas apaisadas; funciona sin servicios JanCar (oculta la radio, GPS estándar, elegís las apps); inglés y portugués; exportar diagnóstico; menos memoria: sin doble GPS en JanCar, reloj interno más lento en reposo, libera bitmaps con CarPlay adelante | Prerelease: probada en emulador, falta el auto |
 
 ## Build
 
