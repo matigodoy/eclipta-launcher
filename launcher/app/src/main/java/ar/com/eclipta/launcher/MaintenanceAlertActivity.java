@@ -29,7 +29,7 @@ public class MaintenanceAlertActivity extends BaseActivity {
     };
     private List<Reminders.Item> all;
     private TextView btnLater;
-    private boolean fromWake, leftByUser;
+    private boolean fromWake, stopped;
     private int unanswered;
     private float dp;
 
@@ -157,7 +157,8 @@ public class MaintenanceAlertActivity extends BaseActivity {
         if (isFinishing()) return;
         handler.removeCallbacks(timeout);
         finish();
-        Startup.afterAlert(this, fromWake);
+        // Something else is on screen: don't pull the chosen app over it.
+        if (!stopped) Startup.afterAlert(this, fromWake);
     }
 
     @Override
@@ -172,20 +173,23 @@ public class MaintenanceAlertActivity extends BaseActivity {
     }
 
     @Override
-    protected void onUserLeaveHint() {
-        leftByUser = true;
+    protected void onStart() {
+        super.onStart();
+        stopped = false;
     }
 
     /**
      * On the reference unit CarPlay starts itself when the phone connects, which would turn the alert
      * into a flash nobody can answer. So it comes back once on top; the next time it just closes.
+     * The Home key lands here too and can't be told apart: Android reports the same for any app started.
      */
     @Override
     protected void onStop() {
         super.onStop();
+        stopped = true;
         if (isFinishing()) return;
         boolean screenOn = ((PowerManager) getSystemService(POWER_SERVICE)).isInteractive();
-        if (!leftByUser && screenOn && !Startup.alertReshown) {
+        if (screenOn && !Startup.alertReshown) {
             Startup.alertReshown = true;
             startActivity(new Intent(this, MaintenanceAlertActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             return;
