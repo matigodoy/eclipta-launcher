@@ -43,6 +43,8 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
     private static final long JANCAR_GPS_GRACE_MS = 15_000;
     private static final long TICK_PLAYING_MS = 1000, TICK_IDLE_MS = 5000;
     private static final int WIDE_DP = 1180;
+    // Big rail: six 70dp buttons still fit the 600dp-tall reference panel once Home's own button goes.
+    private static final int BIG_RAIL_BUTTON_DP = 70, BIG_RAIL_DP = 76;
     private static final long GPS_STALE_MS = 10_000;
     private static final long GEOCODE_INTERVAL_MS = 10 * 60_000;
     private static final long GPS_LOG_INTERVAL_MS = 30_000;
@@ -222,6 +224,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         radioLabel = findViewById(R.id.radioLabel);
 
         reminderPill = findViewById(R.id.reminderPill);
+        fitRail();
         setupRail();
         setupMedia();
         showCar();
@@ -473,6 +476,39 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
 
     // ---------------------------------------------------------------- rail
 
+    private boolean bigRail() {
+        return profile.bigRail && findViewById(R.id.rail) != null;
+    }
+
+    /** Bigger targets for 7" panels. Home's own button goes: it does nothing on Home. */
+    private void fitRail() {
+        if (!bigRail()) return;
+        View rail = findViewById(R.id.rail);
+        int extra = Math.round(BIG_RAIL_DP * density) - rail.getLayoutParams().width;
+        rail.getLayoutParams().width += extra;
+        findViewById(R.id.carCard).getLayoutParams().width -= extra; // fitWideScreen may still make it a weight
+        findViewById(R.id.btnHome).setVisibility(View.GONE);
+        int size = Math.round(BIG_RAIL_BUTTON_DP * density);
+        for (int id : new int[]{R.id.slot0, R.id.slot1, R.id.slot2, R.id.slot3, R.id.btnApps, R.id.btnSettings}) {
+            View b = findViewById(id);
+            b.getLayoutParams().width = size;
+            b.getLayoutParams().height = size;
+        }
+        railIcon((ImageButton) findViewById(R.id.btnApps), true);
+        railIcon((ImageButton) findViewById(R.id.btnSettings), true);
+    }
+
+    /** Glyphs are small vectors drawn at their size; app icons fill the circle. */
+    private void railIcon(ImageButton b, boolean glyph) {
+        if (!bigRail()) {
+            b.setScaleType(glyph ? ImageView.ScaleType.CENTER : ImageView.ScaleType.FIT_CENTER);
+            return;
+        }
+        int pad = Math.round((glyph ? 21 : 10) * density);
+        b.setPadding(pad, pad, pad, pad);
+        b.setScaleType(ImageView.ScaleType.FIT_CENTER);
+    }
+
     private void setupRail() {
         for (int i = 0; i < Profile.SLOTS; i++) setupSlot(i);
         findViewById(R.id.btnHome).setOnClickListener(new View.OnClickListener() {
@@ -523,8 +559,8 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         if (b instanceof ImageButton) {
             ImageButton ib = (ImageButton) b;
             ib.setImageDrawable(Launch.icon(this, flat));
-            ib.setScaleType(Launch.RADIO.equals(flat) || Launch.MUSIC.equals(flat)
-                    ? ImageView.ScaleType.CENTER : ImageView.ScaleType.FIT_CENTER);
+            // A missing app shows the apps glyph.
+            railIcon(ib, Launch.RADIO.equals(flat) || Launch.MUSIC.equals(flat) || !Launch.installed(this, flat));
         } else {
             ((TextView) b).setText(Launch.label(this, flat));
         }
@@ -638,7 +674,7 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
             speedOver = over;
             speed.setTextColor(Theming.color(this, over ? R.attr.uiAccent : R.attr.uiText));
         }
-        speedBar.setProgress(Math.min(200, v));
+        speedBar.setProgress(Math.min(speedBar.getMax(), v));
     }
 
     private void startLocation() {

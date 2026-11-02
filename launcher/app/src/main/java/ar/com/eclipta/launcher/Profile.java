@@ -24,7 +24,8 @@ final class Profile {
     boolean splash;
     String accApp;                  // flattened component opened on ignition, empty = none
     final String[] slots = new String[SLOTS]; // flattened component, empty = default
-    String paint;                   // pack paint id
+    boolean bigRail;                // bigger rail buttons on the glass layout
+    String paint;                  // pack paint id
     String wheels;                  // wheel id, "original" = the photo's
     String layout;                  // "glass" or "mmi"
     String accent;                  // "red", "blue" or "gray"
@@ -49,6 +50,7 @@ final class Profile {
         o.splash = p.getBoolean("p_splash", true);
         o.accApp = p.getString("p_acc_app", "");
         for (int i = 0; i < SLOTS; i++) o.slots[i] = p.getString("p_slot" + i, "");
+        o.bigRail = p.getBoolean("p_big_rail", true);
         o.paint = p.getString("p_paint", "original");
         o.wheels = p.getString("p_wheels", "original");
         o.layout = p.getString("p_layout", "glass");
@@ -70,6 +72,7 @@ final class Profile {
                 .putBoolean("p_custom_photo", customPhoto).putBoolean("p_splash", splash)
                 .putString("p_acc_app", accApp);
         for (int i = 0; i < SLOTS; i++) e.putString("p_slot" + i, slots[i]);
+        e.putBoolean("p_big_rail", bigRail);
         e.putString("p_paint", paint).putString("p_wheels", wheels).putString("p_layout", layout)
                 .putString("p_accent", accent).putString("p_night", night).putInt("p_speed_limit", speedLimit)
                 .putString("p_lang", lang).putBoolean("p_remind_home", remindHome)
@@ -87,7 +90,7 @@ final class Profile {
         o.put("remindHome", remindHome).put("remindAlert", remindAlert).put("remindLead", remindLead);
         JSONArray rail = new JSONArray();
         for (String s : slots) rail.put(s);
-        o.put("rail", rail);
+        o.put("rail", rail).put("bigRail", bigRail);
         return o;
     }
 
@@ -127,6 +130,7 @@ final class Profile {
         if (rail != null) {
             for (int i = 0; i < SLOTS && i < rail.length(); i++) slots[i] = rail.optString(i, slots[i]);
         }
+        bigRail = o.optBoolean("bigRail", bigRail);
     }
 
     /** perfil.json is a file people share, and this one runs by itself on every ignition. */

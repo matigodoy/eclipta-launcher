@@ -134,6 +134,8 @@
     <string name="rail_slot">Shortcut %1$d</string>
     <string name="rail_change">Change</string>
     <string name="rail_tip">You can also long-press a shortcut on the home screen.</string>
+    <string name="f_big_rail">Big buttons</string>
+    <string name="f_big_rail_desc">Easier to hit while driving. Drops the home button and makes the car card a little narrower.</string>
     <string name="rail_reset">Reset shortcuts</string>
     <string name="rail_reset_desc">Back to CarPlay, Android Auto, radio and music.</string>
     <string name="rail_reset_button">Reset</string>

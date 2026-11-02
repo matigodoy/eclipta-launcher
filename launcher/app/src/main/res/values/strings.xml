@@ -5,7 +5,6 @@
     <string name="greeting_name" translatable="false"></string>
     <string name="kmh" translatable="false">km/h</string>
     <string name="speed_label">VELOCIDAD</string>
-    <string name="gps">GPS</string>
     <string name="no_gps">Sin señal GPS</string>
     <string name="now_playing">AHORA SUENA</string>
     <string name="nothing_playing">Sin reproducción</string>
@@ -145,6 +144,8 @@
     <string name="rail_slot">Acceso %1$d</string>
     <string name="rail_change">Cambiar</string>
     <string name="rail_tip">También podés mantener apretado un acceso en el inicio.</string>
+    <string name="f_big_rail">Botones grandes</string>
+    <string name="f_big_rail_desc">Más fáciles de tocar manejando. Saca el botón de inicio y achica un poco la tarjeta del auto.</string>
     <string name="rail_reset">Restablecer accesos</string>
     <string name="rail_reset_desc">Vuelve a CarPlay, Android Auto, radio y música.</string>
     <string name="rail_reset_button">Restablecer</string>

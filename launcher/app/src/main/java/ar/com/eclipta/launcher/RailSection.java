@@ -27,6 +27,13 @@ final class RailSection extends SettingsSection {
     void build() {
         a.showRailPreview();
         f.group(R.string.grp_rail);
+        // Clásico's menu rows are already big targets.
+        if (!"mmi".equals(p.layout)) {
+            f.switchRow(R.string.f_big_rail, a.getString(R.string.f_big_rail_desc), p.bigRail, on -> {
+                p.bigRail = on;
+                a.saved();
+            });
+        }
         for (int i = 0; i < Profile.SLOTS; i++) {
             final int slot = i;
             f.actionRow(a.getString(R.string.rail_slot, i + 1), Launch.label(a, Launch.slot(a, p, i)).toString(),

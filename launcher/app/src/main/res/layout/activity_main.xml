@@ -132,6 +132,7 @@
 
         <!-- Rail -->
         <LinearLayout
+            android:id="@+id/rail"
             android:layout_width="56dp"
             android:layout_height="match_parent"
             android:gravity="center_horizontal"
@@ -317,32 +318,20 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        style="@style/Label"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:text="@string/speed_label" />
 
-                        <TextView
-                            style="@style/Label"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/speed_label" />
-
-                        <TextView
-                            style="@style/Label"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/gps" />
-                    </LinearLayout>
-
+                    <!-- Up to 130 km/h, the top legal limit in Argentina: city speeds still move the bar. -->
                     <ProgressBar
                         android:id="@+id/speedBar"
                         style="@android:style/Widget.ProgressBar.Horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="6dp"
                         android:layout_marginTop="8dp"
-                        android:max="200"
+                        android:max="130"
                         android:progress="0"
                         android:progressDrawable="@drawable/progress_bar" />
 

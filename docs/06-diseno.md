@@ -16,15 +16,20 @@
 8. **Marca afuera del código**: el logo de los aros y la animación pasaron a `assets/brands/audi`. Cada pack nombra su marca y, sin
    archivos de marca, se ve la marca Eclipta y no hay animación ([packs](08-packs.md)).
 9. El diseño "MMI clásico" ahora se llama **Clásico** en pantalla (el id interno sigue siendo `mmi`).
+10. **Botones grandes** en la barra lateral, por defecto: probado en el auto, en una pantalla de 7" los de 50 eran chicos para
+    tocar CarPlay manejando. Se pueden volver a los normales en Barra lateral.
+11. **Barra de velocidad de 0 a 130** (la máxima en Argentina): de 0 a 200, a 60 km/h casi no se movía. Sin el rótulo "GPS".
 
 ## Medidas (dp = px, 1024x600, densidad 160)
 
 - Padding: 14 arriba, 16 a los costados y abajo. Header de 56. Separación de 12. Cuerpo con el resto.
 - Cuerpo: barra lateral de 56 | tarjeta del auto de 520 | columna derecha con el resto (unos 392), separaciones de 12.
+  Con botones grandes: barra de 76 y tarjeta de 500.
 - Barra lateral: botones circulares de 50, separados 10 (Inicio, CarPlay, Android Auto, Radio, Música | Apps, Ajustes).
+  Con botones grandes (por defecto): de 70 y sin Inicio, que en el inicio no hace nada; así entran los seis en 600 de alto.
 - Header: logo de marca (46x18), hora 34sp light, saludo 15sp medium, fecha 12sp, pastilla de ciudad.
 - Tarjeta del auto: título 26sp, subtítulo 13sp, foto de 440 de ancho con brillo rojo ovalado y línea de piso,
-  panel de velocidad (radio 18) con número de 60sp light y barra de 6dp de 0 a 200.
+  panel de velocidad (radio 18) con número de 60sp light y barra de 6dp de 0 a 130.
 - Columna derecha: "AHORA SUENA" (carátula 84, título 19sp, artista 14sp, barra de 4dp, botón play de 56) y
   "RADIO FM" (frecuencia 44sp light), con el mismo peso.
 - Toques de 44dp como mínimo.

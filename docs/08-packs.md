@@ -60,6 +60,7 @@ Lo exporta el estéreo y lo genera el [configurador](configurador/index.html). N
 | Clave | Valores |
 |---|---|
 | `greeting`, `pack`, `body`, `engine`, `year`, `paint`, `wheels`, `lang`, `splash`, `speedLimit`, `rail` | Como en los ajustes |
+| `bigRail` | Botones grandes en la barra lateral (`true` por defecto) |
 | `title` | Nombre del auto; vacío usa el del pack |
 | `plate` | `{text, show}` |
 | `layout` | `glass`, `mmi` (en pantalla se llama **Clásico**; el id interno sigue siendo `mmi`) |

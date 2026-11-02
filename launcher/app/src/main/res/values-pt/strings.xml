@@ -134,6 +134,8 @@
     <string name="rail_slot">Atalho %1$d</string>
     <string name="rail_change">Trocar</string>
     <string name="rail_tip">Você também pode manter pressionado um atalho no início.</string>
+    <string name="f_big_rail">Botões grandes</string>
+    <string name="f_big_rail_desc">Mais fáceis de tocar dirigindo. Tira o botão de início e estreita um pouco o cartão do carro.</string>
     <string name="rail_reset">Restaurar atalhos</string>
     <string name="rail_reset_desc">Volta para CarPlay, Android Auto, rádio e música.</string>
     <string name="rail_reset_button">Restaurar</string>
