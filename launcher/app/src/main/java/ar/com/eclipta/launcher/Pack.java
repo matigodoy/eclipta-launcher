@@ -74,6 +74,11 @@ final class Pack {
         return key.matches("[a-z0-9-]+") ? key : "";
     }
 
+    /** Shipped in the APK, not imported from a stick. */
+    boolean builtIn() {
+        return dir == null;
+    }
+
     /** A file in an imported pack's folder. Null for built-in packs. */
     File localFile(String name) {
         return dir == null ? null : new File(dir, name);

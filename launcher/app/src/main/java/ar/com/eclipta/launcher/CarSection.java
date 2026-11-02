@@ -5,7 +5,9 @@ import android.text.InputType;
 import android.widget.Toast;
 
 import java.io.File;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Mi auto: which car, its color and wheels, a photo of your own, the plate. */
@@ -136,6 +138,9 @@ final class CarSection extends SettingsSection {
             Pack o = Pack.load(a, id);
             if (o.id.equals(id)) packs.add(o);
         }
+        // Built-in models first, then imported ones by name: the folder order on disk is arbitrary.
+        final Collator byName = Collator.getInstance();
+        Collections.sort(packs, (x, y) -> x.builtIn() != y.builtIn() ? (x.builtIn() ? -1 : 1) : byName.compare(x.title, y.title));
         String brand = a.pack.brand;
         if (!packs.isEmpty() && !SettingsActivity.sameBrand(packs)) {
             List<String> ids = new ArrayList<>(), names = new ArrayList<>();

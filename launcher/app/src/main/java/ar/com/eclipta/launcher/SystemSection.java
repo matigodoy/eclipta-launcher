@@ -105,7 +105,8 @@ final class SystemSection extends SettingsSection {
         final Context app = a.getApplicationContext();
         new Thread(() -> {
             final int n = Files.importPacks(app);
-            a.handler().post(() -> Toast.makeText(app, app.getString(R.string.packs_done, n), Toast.LENGTH_LONG).show());
+            // The text comes from the activity: the app context keeps the system language, not the one picked here.
+            a.handler().post(() -> Toast.makeText(app, a.getString(R.string.packs_done, n), Toast.LENGTH_LONG).show());
         }, "launcher-packs").start();
     }
 }
