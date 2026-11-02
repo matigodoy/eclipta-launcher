@@ -81,7 +81,8 @@ implícitos de JanCar. Por eso la app no puede ir a Play Store; se instala a man
 Casi todo se cambia en el estéreo: tocá el lápiz de la tarjeta del auto y se abre un índice por secciones.
 
 - **Mi auto** (modelo, color, llantas, foto propia, patente), **Apariencia** (diseño, acento, modo noche, saludo) y
-  **Barra lateral** (qué abre cada acceso; también se cambia manteniéndolo apretado en el inicio) muestran el auto al
+  **Barra lateral** (qué abre cada acceso, que también se cambia manteniéndolo apretado en el inicio, y botones grandes o
+  normales) muestran el auto al
   lado de las opciones.
 - **Mantenimiento** (fechas y avisos), **Contacto y manejo** (animación, app que se abre al dar contacto, alerta de
   vencimientos, aviso de velocidad), **Sistema** (idioma, copia de los ajustes, packs, diagnóstico, desinstalar) y

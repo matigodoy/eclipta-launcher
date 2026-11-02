@@ -68,6 +68,15 @@
   la alerta, la foto propia, exportar y el diálogo de desinstalar. Falta el auto (JanCar, CarPlay).
 - En Android 9 los carteles del sistema salen en inglés ("Select a Home app", "Always"): la guía ahora da los dos nombres.
 
+## 02/11/2026: v0.6.0, después de usar la v0.5.1 en el auto
+
+- Mati usó la v0.5.1 en el auto. En la pantalla de 7", los botones de la barra lateral (50) eran chicos para abrir CarPlay
+  manejando, y la barra de velocidad (0 a 200) casi no se movía a 60 km/h.
+- v0.6.0: botones grandes por defecto (70, sin Inicio), barra de 0 a 130 sin el rótulo "GPS", el aviso de Importar packs en el
+  idioma de la app y los modelos de Mi auto ordenados. Probada en el emulador Android 9 con 13 packs importados.
+- "¿Sigue funcionando la animación?": sí, en el emulador. Una foto propia **con nombre** la saca a propósito (se toma como otro
+  auto); sin nombre, la foto propia conserva el logo y la animación del modelo elegido.
+
 ## Correcciones
 
 - "El auto no tiene caja CAN": **falso**, tiene un Simple Soft RP5-AD-001.

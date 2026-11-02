@@ -65,6 +65,7 @@ Tocá el **lápiz** de la tarjeta del auto (o el último botón de la barra de l
 - **Mi auto**: el modelo, el color, las llantas, la patente y la foto de tu auto (más abajo te explico cómo poner la tuya).
 - **Apariencia**: el diseño de la pantalla, el color de los botones, el modo noche y el saludo.
 - **Barra lateral**: qué app abre cada botón de la izquierda. También lo cambiás dejando apretado el botón en el inicio.
+  Vienen en tamaño grande, para tocarlos fácil manejando; si los querés más chicos, apagá **Botones grandes**.
 - **Mantenimiento**: cargá cuándo se vence la VTV, el seguro, el service, la correa o los frenos. Al dar contacto te
   avisa lo que esté vencido, hasta que toques **Ya lo hice**.
 - **Contacto y manejo**: qué pasa al dar contacto (por ejemplo, que se abra CarPlay solo) y el aviso de velocidad.
