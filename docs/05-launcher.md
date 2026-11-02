@@ -2,7 +2,7 @@
 
 App de inicio (HOME) propia, id `ar.com.eclipta.launcher`, etiqueta "Eclipta Launcher". Antes se llamaba
 A3 Launcher (`com.mati.a3launcher`): el motivo está en la [bitácora](bitacora.md). Las filas viejas de abajo quedan como están.
-Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver el [README](../README.md#instalar).
+Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver la [guía](instalar.md).
 
 ## Versiones
 
@@ -13,8 +13,8 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 | 0.1.2 | 3 | La animación también se dispara con `QB_POWERON`; el log solo guarda cambios de media; el nombre de archivo se limpia ("a_b.mp3" pasa a "a b") | Publicada |
 | 0.2.0 | 4 | Personalizar (saludo, patente, modelo A3/S3 8P, carrocería, motor, año, foto propia), CarPlay al contacto, animación opcional, barra lateral configurable. Release sin log ni permiso de internet y con R8 | Incluida en 0.4.0 |
 | 0.3.0 | 5 | Color y llantas por capas, patente sobre la foto, sombra; temas glass y MMI clásico, acentos, modo noche (siempre, atardecer, luces); aviso de velocidad; recordatorios; exportar e importar perfil y packs por pendrive; configurador web | Incluida en 0.4.0 |
-| 0.4.0 | 6 | Se adapta a otras pantallas apaisadas; funciona sin servicios JanCar (oculta la radio, GPS estándar, elegís las apps); inglés y portugués; exportar diagnóstico; menos memoria: sin doble GPS en JanCar, reloj interno más lento en reposo, libera bitmaps con CarPlay adelante | Prerelease: probada en emulador, falta el auto |
-| En desarrollo | 6 | Sin versión nueva: `versionName` sigue en 0.4.0. Nombre e id nuevos (instalación nueva, ajustes de cero, APK `EcliptaLauncher-vX.Y.Z.apk`, carpeta `EcliptaLauncher` en el pendrive, log `launcher-log.txt`); packs con `brand`, logo y animación afuera del código; foto propia con nombre para cualquier auto; ajustes por secciones; mantenimiento con aviso al arrancar; la app de contacto puede ser cualquiera (`accApp`); Acerca de con dos QR | **Sin publicar** |
+| 0.4.0 | 6 | Se adapta a otras pantallas apaisadas; funciona sin servicios JanCar (oculta la radio, GPS estándar, elegís las apps); inglés y portugués; exportar diagnóstico; menos memoria: sin doble GPS en JanCar, reloj interno más lento en reposo, libera bitmaps con CarPlay adelante | No se publicó; incluida en 0.5.0 |
+| 0.5.0 | 7 | Nombre e id nuevos (instalación nueva, ajustes de cero, APK `EcliptaLauncher-vX.Y.Z.apk`, carpeta `EcliptaLauncher` en el pendrive, log `launcher-log.txt`); packs con `brand`, logo y animación afuera del código; foto propia con nombre para cualquier auto; ajustes por secciones; mantenimiento con aviso al arrancar; la app de contacto puede ser cualquiera (`accApp`); Acerca de con dos QR; Sistema > Desinstalar (abre el desinstalador de Android, porque los Ajustes vienen escondidos) | **Publicada** (probada en el auto por Mati) |
 
 ## Build
 
@@ -43,7 +43,7 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 | `SettingsActivity` | Índice de secciones (Personalizar), cada una es una página de esta activity; solo vive mientras está abierta. No se abre con el auto en movimiento |
 | `SettingsSection`, `SettingsForm`, `FlowLayout` | Base de una página; filas que explican cada opción, con el texto en un diálogo; chips que bajan de línea |
 | `CarSection`, `LookSection`, `RailSection` | Mi auto, Apariencia y Barra lateral: el auto al lado de las opciones |
-| `MaintenanceSection`, `DriveSection`, `SystemSection`, `AboutSection` | Mantenimiento, Contacto y manejo, Sistema y Acerca de: pantalla completa |
+| `MaintenanceSection`, `DriveSection`, `SystemSection`, `AboutSection` | Mantenimiento, Contacto y manejo, Sistema (con Desinstalar) y Acerca de: pantalla completa |
 | `BaseActivity`, `Theming`, `Sun` | Paleta del usuario antes de crear vistas; modo noche con cálculo solar offline |
 | `Reminders` | Fechas de mantenimiento: catálogo, repetición, JSON y guardado aparte del perfil (con tests en `app/src/test`) |
 | `PaintMath`, `CityName` | Cuentas puras: tinte de la pintura; qué muestra la pastilla de ciudad (saltea códigos postales y el departamento "Capital") |

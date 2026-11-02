@@ -34,6 +34,7 @@ Si tenés notas personales (IP del estéreo, nombre de tu hotspot, estado de tu 
 | `docs/05-launcher.md` | El launcher: build, código, versiones, rendimiento y pendientes |
 | `docs/06-diseno.md` | Decisiones de diseño, medidas y estilo |
 | `docs/07-logo-arranque.md` | Logo de arranque en frío (AutoChips metalogo) |
+| `docs/instalar.md` | Guía de instalación para usuarios, paso a paso, y cómo poner la foto del auto |
 | `docs/08-packs.md`, `docs/configurador/` | Formato de packs (marca, logo y animación) y perfil; configurador web estático |
 | `docs/vehiculos/` | Datos de otros autos / unidades aportados por la comunidad (con plantilla) |
 | `docs/bitacora.md` | Línea de tiempo y correcciones |

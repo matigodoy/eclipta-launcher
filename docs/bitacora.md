@@ -48,6 +48,14 @@
   Acerca de con QR. El diseño "MMI clásico" pasa a mostrarse como "Clásico".
 - `versionName` sigue en 0.4.0 y no se publicó nada. Probado solo en emulador: la cadena del despertar falta probarla en el auto ([05-launcher.md](05-launcher.md#cadena-del-despertar)).
 
+## 02/11/2026: v0.5.0 publicada
+
+- Mati probó la APK de prueba en el auto y dio el OK para publicar. Sale como **v0.5.0** (versionCode 7), release normal, no prerelease.
+  La 0.4.0 nunca se publicó: todo lo de 0.2 a 0.4 llega al público con esta versión.
+- Nuevo antes de publicar: **Sistema > Desinstalar**, que abre el desinstalador de Android. En estas unidades los Ajustes de
+  Android vienen escondidos y no había otra forma fácil de volver al inicio original. Probado en emulador (abre el diálogo; Cancelar no toca nada).
+- [Guía de instalación](instalar.md) para cualquiera, en castellano rioplatense, con cómo buscar y preparar la foto del auto.
+
 ## Correcciones
 
 - "El auto no tiene caja CAN": **falso**, tiene un Simple Soft RP5-AD-001.

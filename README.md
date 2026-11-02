@@ -8,11 +8,18 @@ Antes se llamaba A3 Launcher.
 plus reverse-engineered notes on their system APIs and CAN-bus decoders. Docs are in Spanish;
 contributions in English are welcome.*
 
+**¿Lo querés en tu auto?** Bajalo de la [última versión](https://github.com/matigodoy/eclipta-launcher/releases/latest)
+y seguí la [guía de instalación paso a paso](docs/instalar.md). Ahí también está cómo poner la foto de tu auto.
+
 ![Eclipta Launcher](design/preview-s3-rojo.png)
 
 | Clásico | Modo noche |
 |---|---|
 | ![Clásico](design/preview-mmi.png) | ![Noche](design/preview-noche.png) |
+
+| Personalizar, por secciones |
+|---|
+| ![Personalizar](design/tutorial-personalizar.png) |
 
 ## Qué hay acá
 
@@ -39,17 +46,19 @@ que exporta el launcher.
 
 ## Instalar
 
-1. Bajá el APK de la última [release](../../releases/latest).
+La [guía paso a paso](docs/instalar.md) lo explica para cualquiera, con capturas. En corto:
+
+1. Bajá el APK de la [última versión](https://github.com/matigodoy/eclipta-launcher/releases/latest).
 2. Copialo a un pendrive, abrilo con el administrador de archivos del estéreo e instalalo
    (o por ADB: `adb install -r -g EcliptaLauncher-vX.Y.Z.apk`).
-3. Tocá Inicio, elegí **Eclipta Launcher** y **Siempre**. Aceptá el permiso de ubicación (velocidad y ciudad).
+3. Tocá Inicio, elegí **Eclipta Launcher** y **Siempre**. Si pide ubicación, aceptá (velocidad y ciudad, sin internet).
 
-Para volver al launcher original: Ajustes > Apps > Eclipta Launcher > Desinstalar.
+Para volver al launcher original: **Personalizar > Sistema > Desinstalar**. Está adentro de la app porque en estos
+estéreos los Ajustes de Android suelen venir escondidos.
 
 **Si venís del A3 Launcher:** cambió el id de la app (ahora `ar.com.eclipta.launcher`), así que no se actualiza encima:
-es una instalación nueva. Desinstalá el viejo a mano (Ajustes > Apps > A3 Launcher > Desinstalar). Los ajustes arrancan
-de cero; si tu versión exporta el perfil, exportalo antes e importalo después. La carpeta vieja `A3Launcher` del pendrive
-se sigue leyendo.
+es una instalación nueva y los ajustes arrancan de cero. Desinstalá el viejo para no tener dos animaciones al dar
+contacto. La carpeta vieja `A3Launcher` del pendrive se sigue leyendo.
 
 > Instalás bajo tu propio riesgo. El launcher no modifica el sistema, pero el proyecto no tiene
 > relación con Audi, JanCar, AutoChips ni ningún fabricante.
@@ -75,11 +84,11 @@ Casi todo se cambia en el estéreo: tocá el lápiz de la tarjeta del auto y se 
   **Barra lateral** (qué abre cada acceso; también se cambia manteniéndolo apretado en el inicio) muestran el auto al
   lado de las opciones.
 - **Mantenimiento** (fechas y avisos), **Contacto y manejo** (animación, app que se abre al dar contacto, alerta de
-  vencimientos, aviso de velocidad), **Sistema** (idioma, copia de los ajustes, packs, diagnóstico) y **Acerca de**
-  (versión y códigos QR) ocupan toda la pantalla.
+  vencimientos, aviso de velocidad), **Sistema** (idioma, copia de los ajustes, packs, diagnóstico, desinstalar) y
+  **Acerca de** (versión y códigos QR) ocupan toda la pantalla.
 
 Con una foto propia y un nombre de auto, el launcher deja de usar el logo, la animación y los datos del pack: sirve
-para cualquier auto.
+para cualquier auto. Cómo buscar y preparar la foto: [guía, "Poner la foto de tu auto"](docs/instalar.md#poner-la-foto-de-tu-auto).
 
 ### Personalizar tu build (recursos)
 

@@ -84,7 +84,7 @@
     <string name="sec_drive">Ignição e direção</string>
     <string name="sec_drive_desc">O que acontece ao ligar o carro e aviso de velocidade.</string>
     <string name="sec_system">Sistema</string>
-    <string name="sec_system_desc">Idioma, cópia dos seus ajustes, packs de carros e diagnóstico.</string>
+    <string name="sec_system_desc">Idioma, cópia dos seus ajustes, packs de carros, diagnóstico e desinstalar.</string>
     <string name="grp_car">O carro</string>
     <string name="f_brand">Marca</string>
     <string name="f_model">Modelo</string>
@@ -196,6 +196,9 @@
     <string name="grp_support">Suporte</string>
     <string name="diag_export">Exportar diagnóstico</string>
     <string name="diag_tip">Salva a placa-mãe, o firmware e a tela para anexar a um relato. Não inclui seriais, MAC nem localização.</string>
+    <string name="uninstall">Desinstalar o Eclipta Launcher</string>
+    <string name="uninstall_desc">Volta a tela inicial original do rádio. Se quiser guardar seus ajustes, exporte antes.</string>
+    <string name="btn_uninstall">Desinstalar</string>
     <string name="btn_export">Exportar</string>
     <string name="btn_import">Importar</string>
     <plurals name="rem_every_years">

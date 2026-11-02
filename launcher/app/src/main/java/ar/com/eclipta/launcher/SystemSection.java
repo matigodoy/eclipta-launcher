@@ -1,6 +1,8 @@
 package ar.com.eclipta.launcher;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -43,6 +45,16 @@ final class SystemSection extends SettingsSection {
         f.actionRow(R.string.backup_import, R.string.backup_import_desc, R.string.btn_import, () -> a.withStorage(this::importProfile));
         f.group(R.string.grp_support);
         f.actionRow(R.string.diag_export, R.string.diag_tip, R.string.btn_export, () -> a.withStorage(this::exportDiagnostics));
+        f.actionRow(R.string.uninstall, R.string.uninstall_desc, R.string.btn_uninstall, this::uninstall);
+    }
+
+    /** These units hide Android's own Settings, so this may be the only way back to the stock home. */
+    private void uninstall() {
+        try {
+            a.startActivity(new Intent(Intent.ACTION_DELETE, Uri.parse("package:" + a.getPackageName())));
+        } catch (RuntimeException e) {
+            Toast.makeText(a, R.string.cannot_open, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showSaved(File file) {

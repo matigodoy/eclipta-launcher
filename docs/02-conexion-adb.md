@@ -54,7 +54,8 @@ A pull /vendor/app/<app>/<app>.apk apks/<pkg>/                  # copiar APK (le
 A install -r -g EcliptaLauncher-vX.Y.Z.apk   # bajado de Releases o compilado
 ```
 
-Para desinstalarlo: Ajustes > Apps > Eclipta Launcher > Desinstalar, o `A uninstall ar.com.eclipta.launcher`.
+Para desinstalarlo: Personalizar > Sistema > Desinstalar (desde la v0.5.0), Ajustes > Apps > Eclipta Launcher > Desinstalar,
+o `A uninstall ar.com.eclipta.launcher`.
 Para volver al launcher original sin desinstalar: Ajustes > Apps > Eclipta Launcher >
 "Abrir de forma predeterminada" > Borrar valores, y al tocar Inicio elegir el original.
 
@@ -62,7 +63,7 @@ Para volver al launcher original sin desinstalar: Ajustes > Apps > Eclipta Launc
 > desinstala a mano, desde Ajustes > Apps, y los ajustes arrancan de cero.
 
 También se puede instalar con un pendrive: copiar la APK a la raíz, abrirla desde el administrador de
-archivos del estéreo (la instalación manual funciona). Detalle en el [README](../README.md#instalar).
+archivos del estéreo (la instalación manual funciona). Detalle en la [guía de instalación](instalar.md).
 
 Volver a una versión anterior: `A install -r -d EcliptaLauncher-vX.Y.Z.apk` (`-d` permite bajar el versionCode). Las
 versiones con el nombre viejo tienen el id viejo: se instalan al lado, no encima.

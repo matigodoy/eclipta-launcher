@@ -95,7 +95,7 @@
     <string name="sec_drive">Contacto y manejo</string>
     <string name="sec_drive_desc">Qué pasa al dar contacto y aviso de velocidad.</string>
     <string name="sec_system">Sistema</string>
-    <string name="sec_system_desc">Idioma, copia de tus ajustes, packs de autos y diagnóstico.</string>
+    <string name="sec_system_desc">Idioma, copia de tus ajustes, packs de autos, diagnóstico y desinstalar.</string>
     <string name="grp_car">El auto</string>
     <string name="f_brand">Marca</string>
     <string name="f_model">Modelo</string>
@@ -207,6 +207,9 @@
     <string name="grp_support">Soporte</string>
     <string name="diag_export">Exportar diagnóstico</string>
     <string name="diag_tip">Guarda la placa, el firmware y la pantalla para adjuntar a un reporte. No incluye seriales, MAC ni ubicación.</string>
+    <string name="uninstall">Desinstalar Eclipta Launcher</string>
+    <string name="uninstall_desc">Vuelve la pantalla de inicio original del estéreo. Si querés guardar tus ajustes, exportalos antes.</string>
+    <string name="btn_uninstall">Desinstalar</string>
     <string name="btn_export">Exportar</string>
     <string name="btn_import">Importar</string>
     <plurals name="rem_every_years">

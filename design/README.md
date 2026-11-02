@@ -18,3 +18,5 @@ Capturas y fotos del proyecto (sin metadatos EXIF). Las de la v0.1.1 son de cuan
 | `canbus-etiqueta.jpg` | Etiqueta del decodificador Simple Soft RP5-AD-001 (recorte de la foto) |
 | `estereo-y-cables.jpg` | Foto del autor: estéreo, arnés, caja CAN y cámara |
 | `preview-home.png` | El launcher en el emulador |
+| `preview-s3-rojo.png`, `preview-mmi.png`, `preview-noche.png` | Vistas previas del README (emulador): S3 rojo, diseño Clásico y modo noche |
+| `tutorial-personalizar.png`, `tutorial-foto-propia.png`, `tutorial-sistema.png` | Capturas de la [guía de instalación](../docs/instalar.md) (emulador, v0.5.0), recortadas sin patente ni nombre |

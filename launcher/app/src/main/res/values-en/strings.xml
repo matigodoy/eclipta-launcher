@@ -84,7 +84,7 @@
     <string name="sec_drive">Ignition and driving</string>
     <string name="sec_drive_desc">What happens when you start the car, and the speed warning.</string>
     <string name="sec_system">System</string>
-    <string name="sec_system_desc">Language, a copy of your settings, car packs and diagnostics.</string>
+    <string name="sec_system_desc">Language, a copy of your settings, car packs, diagnostics and uninstall.</string>
     <string name="grp_car">The car</string>
     <string name="f_brand">Brand</string>
     <string name="f_model">Model</string>
@@ -196,6 +196,9 @@
     <string name="grp_support">Support</string>
     <string name="diag_export">Export diagnostics</string>
     <string name="diag_tip">Saves the board, firmware and screen to attach to a report. No serials, MAC or location.</string>
+    <string name="uninstall">Uninstall Eclipta Launcher</string>
+    <string name="uninstall_desc">Brings back the unit\'s original home screen. Export your settings first if you want to keep them.</string>
+    <string name="btn_uninstall">Uninstall</string>
     <string name="btn_export">Export</string>
     <string name="btn_import">Import</string>
     <plurals name="rem_every_years">
