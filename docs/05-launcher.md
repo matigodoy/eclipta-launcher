@@ -14,7 +14,8 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 | 0.2.0 | 4 | Personalizar (saludo, patente, modelo A3/S3 8P, carrocería, motor, año, foto propia), CarPlay al contacto, animación opcional, barra lateral configurable. Release sin log ni permiso de internet y con R8 | Incluida en 0.4.0 |
 | 0.3.0 | 5 | Color y llantas por capas, patente sobre la foto, sombra; temas glass y MMI clásico, acentos, modo noche (siempre, atardecer, luces); aviso de velocidad; recordatorios; exportar e importar perfil y packs por pendrive; configurador web | Incluida en 0.4.0 |
 | 0.4.0 | 6 | Se adapta a otras pantallas apaisadas; funciona sin servicios JanCar (oculta la radio, GPS estándar, elegís las apps); inglés y portugués; exportar diagnóstico; menos memoria: sin doble GPS en JanCar, reloj interno más lento en reposo, libera bitmaps con CarPlay adelante | No se publicó; incluida en 0.5.0 |
-| 0.5.0 | 7 | Nombre e id nuevos (instalación nueva, ajustes de cero, APK `EcliptaLauncher-vX.Y.Z.apk`, carpeta `EcliptaLauncher` en el pendrive, log `launcher-log.txt`); packs con `brand`, logo y animación afuera del código; foto propia con nombre para cualquier auto; ajustes por secciones; mantenimiento con aviso al arrancar; la app de contacto puede ser cualquiera (`accApp`); Acerca de con dos QR; Sistema > Desinstalar (abre el desinstalador de Android, porque los Ajustes vienen escondidos) | **Publicada** (probada en el auto por Mati) |
+| 0.5.0 | 7 | Nombre e id nuevos (instalación nueva, ajustes de cero, APK `EcliptaLauncher-vX.Y.Z.apk`, carpeta `EcliptaLauncher` en el pendrive, log `launcher-log.txt`); packs con `brand`, logo y animación afuera del código; foto propia con nombre para cualquier auto; ajustes por secciones; mantenimiento con aviso al arrancar; la app de contacto puede ser cualquiera (`accApp`); Acerca de con dos QR; Sistema > Desinstalar (abre el desinstalador de Android, porque los Ajustes vienen escondidos) | Publicada. **Se cierra al abrir en Android 9**: usar 0.5.1 |
+| 0.5.1 | 8 | Arregla el cierre al abrir en Android 9: el brillo detrás del auto era un gradiente radial con color del tema (`?attr`), que Android 9 no sabe aplicar; ahora se arma en código (`Theming.carGlow`). Test `ResourcesTest` para que no vuelva. Guía con los carteles de Android en inglés | Probada en emulador Android 9 (API 28) a 1024x600; falta el auto |
 
 ## Build
 
@@ -23,6 +24,9 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
   implícitos de JanCar; la app se instala a mano, no va a Play Store).
 - Java puro, **sin AndroidX ni librerías externas**. Firma debug (v2).
 - Tamaño de la APK: unos 1,2 MB (la animación WebP ocupa 967 KB; cada pack, unos 40 KB).
+- **Probar siempre en Android 9 antes de publicar**: AVD con `system-images;android-28;default;arm64-v8a`, 1024x600 y
+  densidad 160. Un emulador nuevo (API 36) no reproduce fallas de Android 9: la v0.5.0 andaba en API 36 y se cerraba
+  al abrir en el estéreo. Gradientes radiales: nunca con colores `?attr` en XML (lo controla `ResourcesTest`).
 
 ## Código (`launcher/app/src/main/java/ar/com/eclipta/launcher/`)
 
@@ -129,6 +133,9 @@ debug guardada, así que parte de la mejora viene de pasar a release con R8.
 | Conexiones a JanCar en segundo plano | 0 | 0 |
 | APK | 1,16 MB | 1,2 MB |
 
+En el emulador Android 9 (v0.5.1, Clásico, noche, foto propia) `dumpsys meminfo` da 40–55 MB de PSS total, casi todo
+heap nativo. No se compara con la tabla de arriba: cambian el sistema y el render. Vale la medición en el estéreo.
+
 ## Sin JanCar
 
 `JanCar.available()` decide: si no está, no hay radio ni "qué suena" (hace falta acceso a notificaciones, que no se pide), se usa
@@ -159,6 +166,7 @@ mantenimiento sale igual, porque `Startup.noteBoot` detecta los arranques reales
 
 - Instalar la última versión: id nuevo y firma de release, así que hay que desinstalar a mano el A3 Launcher v0.1.1, y los ajustes arrancan de cero.
 - Probar en el estéreo la cadena del despertar y el aviso de mantenimiento.
+- El selector de fecha muestra los meses en inglés: usa el idioma del sistema (en-US en estas unidades), no el de la app.
 - Medir con CarPlay adelante (**todavía no se midió en segundo plano**).
 - Repetir las mediciones de arriba: la tabla es anterior a estos cambios.
 - Decidir si sacar los aros y la animación del público (`assets/brands/audi`).

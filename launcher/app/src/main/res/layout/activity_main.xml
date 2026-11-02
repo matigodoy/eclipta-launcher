@@ -255,11 +255,11 @@
                 android:layout_weight="1">
 
                 <View
+                    android:id="@+id/carGlow"
                     android:layout_width="440dp"
                     android:layout_height="190dp"
                     android:layout_gravity="center"
-                    android:alpha="0.4"
-                    android:background="@drawable/car_glow" />
+                    android:alpha="0.4" />
 
                 <View
                     android:id="@+id/floor"

@@ -194,6 +194,8 @@ public class MainActivity extends BaseActivity implements JanCar.MediaListener, 
         boolean mmi = "mmi".equals(profile.layout);
         getWindow().setBackgroundDrawable(new GlowBackground(this, !night && !mmi));
         setContentView(mmi ? R.layout.activity_main_mmi : R.layout.activity_main);
+        View glow = findViewById(R.id.carGlow);
+        if (glow != null) glow.setBackground(Theming.carGlow(this));
         prefs = getSharedPreferences(Profile.PREFS, MODE_PRIVATE);
         audio = (AudioManager) getSystemService(AUDIO_SERVICE);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);

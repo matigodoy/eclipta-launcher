@@ -3,6 +3,9 @@ package ar.com.eclipta.launcher;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 
 import java.util.Calendar;
 
@@ -45,5 +48,23 @@ final class Theming {
         int v = a.getColor(0, 0xFFFFFFFF);
         a.recycle();
         return v;
+    }
+
+    /**
+     * The accent glow behind the car, built here instead of in XML: on Android 9 a radial gradient with a
+     * theme color loses its radius when the theme is applied, and inflating the layout crashes.
+     */
+    static Drawable carGlow(Context c) {
+        GradientDrawable g = new GradientDrawable() {
+            @Override
+            protected void onBoundsChange(Rect r) {
+                super.onBoundsChange(r);
+                setGradientRadius(Math.min(r.width(), r.height()) / 2f);
+            }
+        };
+        g.setShape(GradientDrawable.OVAL);
+        g.setGradientType(GradientDrawable.RADIAL_GRADIENT);
+        g.setColors(new int[]{color(c, R.attr.uiAccent), 0});
+        return g;
     }
 }

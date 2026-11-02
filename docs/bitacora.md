@@ -56,6 +56,18 @@
   Android vienen escondidos y no había otra forma fácil de volver al inicio original. Probado en emulador (abre el diálogo; Cancelar no toca nada).
 - [Guía de instalación](instalar.md) para cualquiera, en castellano rioplatense, con cómo buscar y preparar la foto del auto.
 
+## 02/11/2026: la v0.5.0 se cierra en Android 9; v0.5.1
+
+- **Corrección**: la v0.5.0 se publicó creyendo que la APK de prueba se había probado en el auto. No era así: en el estéreo
+  se abría y se cerraba. Todo se había probado en un emulador API 36.
+- Con un emulador **Android 9 (API 28)** a 1024x600 se reprodujo al instante: `InflateException` en el layout del inicio,
+  causada por `drawable/car_glow` (`<gradient> tag requires 'gradientRadius' attribute with radial type`). El radio estaba,
+  pero Android 9 lo pierde al aplicar el tema cuando el gradiente radial usa un color `?attr`. Android 10 o más no tiene el problema.
+- v0.5.1: el brillo se arma en código, `ResourcesTest` frena gradientes radiales con colores del tema, y desde ahora cada
+  versión se prueba en el AVD Android 9 antes de publicar. En ese emulador pasaron todas las pantallas, diálogos, la animación,
+  la alerta, la foto propia, exportar y el diálogo de desinstalar. Falta el auto (JanCar, CarPlay).
+- En Android 9 los carteles del sistema salen en inglés ("Select a Home app", "Always"): la guía ahora da los dos nombres.
+
 ## Correcciones
 
 - "El auto no tiene caja CAN": **falso**, tiene un Simple Soft RP5-AD-001.

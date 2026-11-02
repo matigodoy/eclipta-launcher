@@ -54,6 +54,10 @@ cd launcher
 
 Release firmado: `scripts/release.sh X.Y.Z` (necesita `launcher/keystore.properties`, ver el script).
 
+Antes de publicar, probar en un emulador **Android 9 (API 28)** a 1024x600 y densidad 160
+(`system-images;android-28;default;arm64-v8a`). Un emulador nuevo no reproduce fallas de Android 9: la v0.5.0 andaba en
+API 36 y se cerraba al abrir en el estéreo (detalle en `docs/bitacora.md`).
+
 ## Regenerar `apks/` y `decompiled/` para investigar (solo local)
 
 Con el estéreo conectado, en solo lectura:

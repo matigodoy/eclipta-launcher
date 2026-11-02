@@ -32,22 +32,26 @@ con pantalla apaisada también abre, pero sin radio ni "qué suena". Si lo prob�
 2. Copiá el `.apk` **suelto en el pendrive**, no adentro de una carpeta.
 3. Expulsá el pendrive antes de sacarlo (clic derecho > Expulsar), así no se corrompe.
 
+> Muchos de estos estéreos tienen Android en inglés aunque sus apps estén en castellano, así que los carteles de
+> Android pueden salirte en inglés. Abajo van los dos nombres.
+
 ## 3. Instalalo en el estéreo
 
 1. Con el auto estacionado y en contacto, enchufá el pendrive en el USB del estéreo.
 2. Abrí la app de archivos del estéreo. Según el modelo se llama **Archivos**, **Administrador de archivos** o
    **File Manager**.
 3. Entrá al pendrive (suele aparecer como **USB**) y tocá el archivo `EcliptaLauncher-...apk`.
-4. Si te dice que **no se permiten apps de fuentes desconocidas**, tocá **Configuración**, activá
-   **Permitir de esta fuente** y volvé para atrás.
-5. Tocá **Instalar** y esperá. Cuando termine, tocá **Listo**.
+4. Si te dice que **no se permiten apps de fuentes desconocidas** ("unknown apps"), tocá **Configuración**
+   (**Settings**), activá **Permitir de esta fuente** (**Allow from this source**) y volvé para atrás.
+5. Tocá **Instalar** (**Install**) y esperá. Cuando termine, tocá **Listo** (**Done**).
 
 ## 4. Ponelo como pantalla de inicio
 
 1. Tocá el botón de **Inicio** (la casita) del estéreo.
-2. Te va a preguntar qué app querés usar: elegí **Eclipta Launcher** y después **Siempre**.
-3. Si te pide permiso de **ubicación** o de **archivos**, tocá **Permitir**. La ubicación es para mostrar la velocidad
-   y la ciudad; funciona sin internet.
+2. Te va a preguntar qué app de inicio querés usar (**Select a Home app**): tocá **Eclipta Launcher** y después
+   **Siempre** (**Always**).
+3. Si te pide permiso de **ubicación** o de **archivos**, tocá **Permitir** (**Allow**). La ubicación es para mostrar la
+   velocidad y la ciudad; funciona sin internet.
 
 ¡Listo! Ya tenés el launcher andando.
 
@@ -136,7 +140,8 @@ Si querés, desinstalá el A3 Launcher viejo, así no tenés dos animaciones al 
 
 ## Desinstalarlo
 
-En **Personalizar > Sistema**, tocá **Desinstalar** y confirmá. El estéreo vuelve a su pantalla de inicio de siempre.
+En **Personalizar > Sistema**, tocá **Desinstalar** y confirmá con **Aceptar** (**OK**). El estéreo vuelve a su
+pantalla de inicio de siempre.
 Si querés guardar tus ajustes para más adelante, antes tocá **Exportar perfil** con el pendrive puesto.
 
 ![Sistema, con Exportar perfil y Desinstalar](../design/tutorial-sistema.png)
