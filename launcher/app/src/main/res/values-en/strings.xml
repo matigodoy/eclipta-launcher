@@ -88,12 +88,13 @@
     <string name="grp_car">The car</string>
     <string name="f_brand">Brand</string>
     <string name="f_model">Model</string>
+    <string name="f_model_hint">Add other models with System &gt; Import packs.</string>
     <string name="f_body">Body</string>
     <string name="f_engine">Engine</string>
     <string name="f_year">Year</string>
     <string name="f_title">Car name</string>
     <string name="f_title_desc">The title on the car card. Empty uses the model name. With your own photo, naming it also removes the model\'s logo and animation.</string>
-    <string name="brand_other">Others</string>
+    <string name="brand_other">No brand</string>
     <string name="grp_paint">Color and wheels</string>
     <string name="f_paint">Color</string>
     <string name="f_wheels">Wheels</string>
@@ -172,7 +173,7 @@
     <string name="grp_ignition">When you start the car</string>
     <string name="f_splash">Logo animation</string>
     <string name="f_splash_desc">Plays once when the unit wakes. Tap the screen to skip it.</string>
-    <string name="f_splash_none">This model has no animation.</string>
+    <string name="f_splash_none">This model has no animation. Some packs bring one (System &gt; Import packs).</string>
     <string name="f_acc_app">Open an app</string>
     <string name="f_acc_hint">Opens by itself when you start the car.</string>
     <string name="acc_none">None</string>
@@ -194,7 +195,7 @@
     <string name="backup_import_desc">Reads perfil.json from the USB stick and replaces these settings.</string>
     <string name="grp_packs">Car packs</string>
     <string name="packs_import">Import packs</string>
-    <string name="packs_import_desc">Adds models from the EcliptaLauncher/packs folder on the USB stick. Only images and data, never code.</string>
+    <string name="packs_import_desc">Adds models from EcliptaLauncher/packs on the USB stick, and brand logos and animations from EcliptaLauncher/brands. Only images and data, never code.</string>
     <string name="grp_support">Support</string>
     <string name="diag_export">Export diagnostics</string>
     <string name="diag_tip">Saves the board, firmware and screen to attach to a report. No serials, MAC or location.</string>

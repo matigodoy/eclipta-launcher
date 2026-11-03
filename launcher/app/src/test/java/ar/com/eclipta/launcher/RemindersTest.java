@@ -193,7 +193,7 @@ public class RemindersTest {
 
         Profile p = new Profile();
         p.accApp = "x/.y";
-        p.pack = "audi-a3-8p";
+        p.pack = "generico";
         p.title = "";
         p.remindLead = 30;
         p.applyJson(new JSONObject("{\"carplayOnAcc\":false}"));
@@ -203,7 +203,7 @@ public class RemindersTest {
         p.applyJson(new JSONObject("{\"accApp\":\"" + BuildConfig.APPLICATION_ID + "/.SplashActivity\",\"carplayOnAcc\":false}"));
         assertEquals(Launch.CARPLAY, p.accApp);
         p.applyJson(new JSONObject("{\"pack\":\"../evil\",\"title\":null,\"remindLead\":11}"));
-        assertEquals("audi-a3-8p", p.pack);
+        assertEquals("generico", p.pack);
         assertEquals("", p.title);
         assertEquals(30, p.remindLead);
     }

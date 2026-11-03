@@ -20,6 +20,7 @@ Si tenés notas personales (IP del estéreo, nombre de tu hotspot, estado de tu 
 3. **Solo datos offline** (sin clima, mapas ni nada que dependa de internet).
 4. **Nada personal ni de terceros en git**: sin MACs, seriales, IMEI, nombres de Wi-Fi/BT, coordenadas
    GPS, patentes ni EXIF; sin APKs, firmware ni código descompilado de fabricantes; nunca el keystore.
+   Ni fotos, logos o animaciones de marcas de autos: el APK trae solo el auto dibujado y lo demás llega en packs por pendrive.
 5. zsh: `$path` es el PATH (no usarlo como variable) y `X="adb -s …"; $X` no separa palabras.
    Usar una función: `A(){ adb -s <ip>:5555 "$@"; }`.
 
@@ -41,7 +42,7 @@ Si tenés notas personales (IP del estéreo, nombre de tu hotspot, estado de tu 
 | `design/` | Capturas, foto del auto y animación (ver `design/README.md`) |
 | `launcher/` | Proyecto Android (Gradle). `launcher/private-res/` = overrides locales, no versionados |
 | `scripts/release.sh` | Build firmado + GitHub Release (`PRERELEASE=1` si no se probó en el auto) |
-| `scripts/measure.sh`, `make_pack.py`, `make_wheels.py`, `validate_packs.py`, `make_qr.py` | Medir consumo; crear y validar packs; generar los QR de Acerca de (necesita `segno`) |
+| `scripts/measure.sh`, `make_pack.py`, `make_wheels.py`, `make_generic_car.py`, `validate_packs.py`, `make_qr.py` | Medir consumo; crear y validar packs; dibujar el auto genérico del APK; generar los QR de Acerca de (necesita `segno`) |
 | `apks/`, `decompiled/`, `private/` | Locales, **no versionados** (material propietario o personal) |
 
 ## Build

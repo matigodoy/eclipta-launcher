@@ -12,7 +12,8 @@ import org.json.JSONObject;
 final class Profile {
     static final String PREFS = "launcher";
     static final int SLOTS = 4;
-    static final String DEFAULT_PACK = "audi-a3-8p";
+    /** The drawn, brandless car in assets/packs: every make comes from an imported pack. */
+    static final String DEFAULT_PACK = "generico";
 
     String greeting;
     String pack;

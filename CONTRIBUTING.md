@@ -20,9 +20,10 @@ recursos a CarPlay / Android Auto.
    (`exiftool -all= foto.jpg`).
 5. **Sin material de terceros.** No subas APKs, firmware ni código descompilado de fabricantes
    (JanCar, AutoChips, Simple Soft, etc.), ni logos o animaciones de marcas. Describí el
-   comportamiento con tus palabras y citá clase / método como referencia. La única excepción actual
-   es `assets/brands/audi`, por decisión del dueño del proyecto. `scripts/validate_packs.py` rechaza
-   `logo.webp` y `sting.webp` dentro de `assets/packs`.
+   comportamiento con tus palabras y citá clase / método como referencia. Tampoco fotos de autos de
+   marca: el APK trae solo el auto genérico dibujado y los modelos reales se cargan por pendrive
+   ([packs](docs/08-packs.md)). `scripts/validate_packs.py` rechaza `logo.webp` y `sting.webp` dentro
+   de `assets/packs`, y `ResourcesTest` falla si vuelve `assets/brands`.
 
 ## Aportar datos de otro auto o de otra unidad
 

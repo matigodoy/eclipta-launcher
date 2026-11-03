@@ -77,6 +77,17 @@
 - "¿Sigue funcionando la animación?": sí, en el emulador. Una foto propia **con nombre** la saca a propósito (se toma como otro
   auto); sin nombre, la foto propia conserva el logo y la animación del modelo elegido.
 
+## 03/11/2026: v0.7.0, APK sin marcas (Mac, emulador)
+
+- Pedido de Mati: que todo lo de marca llegue por pack, para poder subir la app a Play Store sin sanciones.
+- Salen del APK y del repo el A3, el S3, los aros, la animación, las capturas que los mostraban y las capas del configurador.
+  Quedan en `private/` de Mati, con un pendrive listo (`private/pendrive-audi/EcliptaLauncher`: 15 packs + `brands/audi`).
+  La historia de git todavía los tiene.
+- El APK trae un auto dibujado sin marca (`scripts/make_generic_car.py`). La marca se puede importar aparte
+  (`EcliptaLauncher/brands/audi/`) y la usan todos los packs de Audi. El APK bajó de 1,3 MB a 300 KB.
+- Probada en emulador Android 9: encima de la 0.6.0 se ve el auto genérico sin aros; al importar el pendrive vuelven el A3 con
+  los aros y la animación al contacto. Si el perfil no tenía modelo guardado, hay que elegirlo en Mi auto.
+
 ## Correcciones
 
 - "El auto no tiene caja CAN": **falso**, tiene un Simple Soft RP5-AD-001.

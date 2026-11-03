@@ -106,7 +106,13 @@ final class SystemSection extends SettingsSection {
         new Thread(() -> {
             final int n = Files.importPacks(app);
             // The text comes from the activity: the app context keeps the system language, not the one picked here.
-            a.handler().post(() -> Toast.makeText(app, a.getString(R.string.packs_done, n), Toast.LENGTH_LONG).show());
+            a.handler().post(() -> {
+                Toast.makeText(app, a.getString(R.string.packs_done, n), Toast.LENGTH_LONG).show();
+                if (n == 0 || !a.alive()) return;
+                // The chosen model may have been missing until now (or got a new logo): show it.
+                a.pack = Pack.load(a, p.pack);
+                a.carChanged();
+            });
         }, "launcher-packs").start();
     }
 }

@@ -98,12 +98,13 @@
     <string name="grp_car">El auto</string>
     <string name="f_brand">Marca</string>
     <string name="f_model">Modelo</string>
+    <string name="f_model_hint">Sumá otros modelos con Sistema &gt; Importar packs.</string>
     <string name="f_body">Carrocería</string>
     <string name="f_engine">Motor</string>
     <string name="f_year">Año</string>
     <string name="f_title">Nombre del auto</string>
     <string name="f_title_desc">El título de la tarjeta del auto. Vacío usa el nombre del modelo. Con foto propia, ponerle nombre también saca el logo y la animación del modelo.</string>
-    <string name="brand_other">Otros</string>
+    <string name="brand_other">Sin marca</string>
     <string name="grp_paint">Color y llantas</string>
     <string name="f_paint">Color</string>
     <string name="f_wheels">Llantas</string>
@@ -182,7 +183,7 @@
     <string name="grp_ignition">Al dar contacto</string>
     <string name="f_splash">Animación del logo</string>
     <string name="f_splash_desc">Se reproduce una vez al despertar el estéreo. Tocá la pantalla para saltearla.</string>
-    <string name="f_splash_none">Este modelo no trae animación.</string>
+    <string name="f_splash_none">Este modelo no trae animación. Algunos packs la traen (Sistema &gt; Importar packs).</string>
     <string name="f_acc_app">Abrir una app</string>
     <string name="f_acc_hint">Se abre sola al dar contacto.</string>
     <string name="acc_none">Ninguna</string>
@@ -204,7 +205,7 @@
     <string name="backup_import_desc">Lee perfil.json del pendrive y reemplaza estos ajustes.</string>
     <string name="grp_packs">Packs de autos</string>
     <string name="packs_import">Importar packs</string>
-    <string name="packs_import_desc">Suma modelos desde la carpeta EcliptaLauncher/packs del pendrive. Solo imágenes y datos, nunca código.</string>
+    <string name="packs_import_desc">Suma modelos desde EcliptaLauncher/packs del pendrive, y logos y animaciones de marca desde EcliptaLauncher/brands. Solo imágenes y datos, nunca código.</string>
     <string name="grp_support">Soporte</string>
     <string name="diag_export">Exportar diagnóstico</string>
     <string name="diag_tip">Guarda la placa, el firmware y la pantalla para adjuntar a un reporte. No incluye seriales, MAC ni ubicación.</string>

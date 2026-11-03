@@ -17,6 +17,7 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 | 0.5.0 | 7 | Nombre e id nuevos (instalación nueva, ajustes de cero, APK `EcliptaLauncher-vX.Y.Z.apk`, carpeta `EcliptaLauncher` en el pendrive, log `launcher-log.txt`); packs con `brand`, logo y animación afuera del código; foto propia con nombre para cualquier auto; ajustes por secciones; mantenimiento con aviso al arrancar; la app de contacto puede ser cualquiera (`accApp`); Acerca de con dos QR; Sistema > Desinstalar (abre el desinstalador de Android, porque los Ajustes vienen escondidos) | Publicada. **Se cierra al abrir en Android 9**: usar 0.5.1 |
 | 0.5.1 | 8 | Arregla el cierre al abrir en Android 9: el brillo detrás del auto era un gradiente radial con color del tema (`?attr`), que Android 9 no sabe aplicar; ahora se arma en código (`Theming.carGlow`). Test `ResourcesTest` para que no vuelva. Guía con los carteles de Android en inglés | Publicada. Mati la usó en el auto: anda; de ahí salieron los cambios de 0.6.0 |
 | 0.6.0 | 9 | El aviso de Importar packs sale en el idioma de la app (antes, en el del sistema); Mi auto ordena los modelos: primero los de la app y después los importados, por nombre. Botones grandes en la barra lateral (70dp, sin Inicio; opción en Barra lateral, activada por defecto; perfil `bigRail`); barra de velocidad de 0 a 130 y sin el rótulo "GPS" | Publicada. Probada en emulador Android 9 con 13 packs importados, 60 y 117 km/h simulados y la animación al contacto; en el auto, solo la base (0.5.1) |
+| 0.7.0 | 10 | **APK sin marcas**, para poder publicarlo en tiendas: salen el A3, el S3, los aros y la animación (`assets/brands`, `assets/packs/audi-*`). Trae un auto dibujado sin marca (`generico`, `scripts/make_generic_car.py`) con 9 colores y las 6 llantas. Logo y animación solo desde packs importados, o desde una marca importada (`EcliptaLauncher/brands/<key>/`, compartida por sus packs). Títulos y nombres de colores y llantas por idioma (`title_en`, `name_pt`, etc.). Sin listas de carrocería o motor, Mi auto las pide como texto. Al importar packs se rehace el auto; al actualizar la app también (la foto horneada podía ser de un pack que ya no está). El teclado se cierra al terminar de escribir: antes quedaba abierto sobre Personalizar (`stateAlwaysHidden`). APK de 300 KB | Sin publicar. Probada en emulador Android 9: actualización desde 0.6.0, instalación limpia, inglés, importar el pendrive Audi (15 packs + marca: aros y animación vuelven), cerrar los diálogos de texto con Aceptar, Cancelar, ✓ y Atrás |
 
 ## Build
 
@@ -41,8 +42,8 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 | `Startup` | Cadena del despertar: animación, aviso de mantenimiento y app elegida (ver [abajo](#cadena-del-despertar)) |
 | `MaintenanceAlertActivity` | Aviso al arrancar con lo vencido; se cierra sola a los 30 s |
 | `Profile` | Preferencias del usuario (SharedPreferences) |
-| `Pack` | Pack de vehículo: `pack.json` + capas, en `assets/packs/` o `files/packs/`. Se lee solo cuando hace falta |
-| `Brand` | Logo y animación del pack: carpeta del pack importado, si no `assets/brands/<key>/`, si no la marca Eclipta y sin animación. En Java no hay ninguna marca |
+| `Pack` | Pack de vehículo: `pack.json` + capas, en `assets/packs/` (solo `generico`) o `files/packs/`. Se lee solo cuando hace falta, con los nombres en el idioma de la app |
+| `Brand` | Logo y animación del pack: carpeta del pack importado, si no la marca importada (`files/brands/<key>/`), si no la marca Eclipta y sin animación. Ni el código ni el APK traen marcas |
 | `CarImage` | Hornea las capas en un solo PNG (`files/car_baked.png`) y carga lo que muestra el inicio |
 | `CarBaker` | Rehornea el auto en un hilo que existe solo mientras hay trabajo; junta pedidos y relee el perfil en cada pasada |
 | `SettingsActivity` | Índice de secciones (Personalizar), cada una es una página de esta activity; solo vive mientras está abierta. No se abre con el auto en movimiento |
@@ -90,7 +91,7 @@ El aviso lista lo que vence hoy o ya venció y vuelve en cada contacto hasta que
 
 ## Diseño ("liquid glass")
 
-![Home](../design/estereo-home-musica.png)
+![Home](../design/preview-home.png)
 
 - Fondo `#060708` con brillos rojos `#E3263A` y gris `#8A93A3`. Paneles de vidrio: relleno `#0DFFFFFF`, borde
   1dp `#1FFFFFFF`, radio 24dp y línea de brillo arriba `#29FFFFFF`. Acento `#E3263A`. Texto `#F1F2F4` / `#A3A9B1`.
@@ -101,8 +102,8 @@ El aviso lista lo que vence hoy o ya venció y vuelve en cada contacto hasta que
   fecha en español, pastilla con la ciudad (Geocoder, cacheada, se oculta si no hay).
 - Barra lateral: Inicio (rojo), CarPlay y Android Auto con **íconos reales** de las apps, Radio, Música; abajo
   Apps y Ajustes.
-- Tarjeta del auto: "Audi A3", "Sportback · 2.0 TDI · 2008", foto 440dp con brillo rojo y línea de piso,
-  panel de velocidad 60sp + barra 0–200 + "Sin señal GPS" si no hay fix por más de 10 s.
+- Tarjeta del auto: título del modelo ("Mi auto" en el genérico), "Carrocería · motor · año", foto 440dp con brillo rojo y línea de piso,
+  panel de velocidad 60sp + barra 0–130 + "Sin señal GPS" si no hay fix por más de 10 s.
 - "Ahora suena": carátula de 84dp (o un degradado con nota musical), título, artista, progreso,
   anterior / play-pausa / siguiente (`AudioManager.dispatchMediaKeyEvent`).
 - Radio: frecuencia 44sp + MHz/kHz + banda; se guarda la última; los botones de búsqueda mandan
@@ -155,10 +156,10 @@ mantenimiento sale igual, porque `Startup.noteBoot` detecta los arranques reales
 
 ## Assets
 
-- Fotos de los autos: `assets/packs/`, ver [packs](08-packs.md). La del A3 es un **3 puertas**, no un Sportback; la del S3 sí es
-  Sportback. Las capas tienen la patente tapada.
-- Marca: `assets/brands/audi/logo.webp` y `sting.webp`. La animación sale de `design/audi-logo-sting.gif` (800x600, 120 cuadros
-  de 30 ms, fondo `#00010C`, 5,8 MB), convertida con `gif2webp -q 80 -m 4 -mixed` (967 KB). Sacar esa carpeta no requiere tocar código.
+- Auto: solo `assets/packs/generico`, dibujado por `scripts/make_generic_car.py` (vista lateral, 640x195, máscara de pintura
+  y `pack.json` con nombres en tres idiomas). Los modelos reales, sus logos y animaciones llegan en packs ([packs](08-packs.md)).
+  `ResourcesTest.noBrandsInTheApk` falla si vuelve `assets/brands` o un logo o animación en `assets/packs`.
+- Una animación de marca para un pack: WebP animado de hasta 1024x600 y 2 MB, por ejemplo con `gif2webp -q 80 -m 4 -mixed`.
 - QR de Acerca de: `scripts/make_qr.py` (necesita `segno`) genera `res/drawable/qr_portfolio.xml` (https://www.matigodoy.com.ar/)
   y `qr_github.xml` (el repo). Se generan acá, nunca en el estéreo.
 - Log de diagnóstico: `/sdcard/Android/data/ar.com.eclipta.launcher/files/launcher-log.txt`, solo en builds debug.
@@ -170,13 +171,12 @@ mantenimiento sale igual, porque `Startup.noteBoot` detecta los arranques reales
 - El selector de fecha muestra los meses en inglés: usa el idioma del sistema (en-US en estas unidades), no el de la app.
 - Medir con CarPlay adelante (**todavía no se midió en segundo plano**).
 - Repetir las mediciones de arriba: la tabla es anterior a estos cambios.
-- Decidir si sacar los aros y la animación del público (`assets/brands/audi`).
-- Packs genéricos sin foto.
+- ~~Decidir si sacar los aros y la animación del público~~: hecho en 0.7.0, el APK no trae marcas.
+- ~~Packs genéricos sin foto~~: hecho, el auto dibujado.
 - Nombre de la emisora (RDS) y presets vía IRadio, sin usar `open()`. No se hizo: no se puede probar sin el auto y tocar la radio a ciegas es riesgoso.
 - Confirmar en el auto si `getHeadLightStatus` cambia con las luces (modo noche experimental).
-- Packs de A3 8V y A4 B8: faltan fotos propias.
+- Packs de A3 8V y A4 B8: faltan fotos propias (son para pendrive, no van en el APK).
 - La temperatura exterior **no se puede** obtener con este protocolo CAN.
-- Conseguir una foto de un Sportback (5 puertas).
 - ~~Nombre neutro antes de sumar más modelos~~: hecho, Eclipta Launcher.
 
 ## Ideas para próximas versiones

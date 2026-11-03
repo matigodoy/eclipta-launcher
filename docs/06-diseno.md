@@ -10,15 +10,18 @@
 4. **Sin botón grande de CarPlay**: CarPlay y Android Auto van en la barra lateral, con los **logos reales**
    de las apps instaladas.
 5. **Cajón de apps** propio (6 columnas), porque el launcher reemplaza al de JanCar.
-6. **Animación "Audi Logo Sting"** (800x600, unos 3,6 s, fondo `#00010C`) al **despertar** el estéreo (ACC on),
-   no en el arranque en frío (ver [07-logo-arranque.md](07-logo-arranque.md)).
+6. **Animación de la marca** al **despertar** el estéreo (ACC on), no en el arranque en frío (ver
+   [07-logo-arranque.md](07-logo-arranque.md)). La primera fue la del logo de Audi (800x600, unos 3,6 s); desde 0.7.0 llega con un pack.
 7. Sin comandos al volante (el auto no los tiene).
 8. **Marca afuera del código**: el logo de los aros y la animación pasaron a `assets/brands/audi`. Cada pack nombra su marca y, sin
-   archivos de marca, se ve la marca Eclipta y no hay animación ([packs](08-packs.md)).
+   archivos de marca, se ve la marca Eclipta y no hay animación ([packs](08-packs.md)). En 0.7.0 salieron también del APK.
 9. El diseño "MMI clásico" ahora se llama **Clásico** en pantalla (el id interno sigue siendo `mmi`).
 10. **Botones grandes** en la barra lateral, por defecto: probado en el auto, en una pantalla de 7" los de 50 eran chicos para
     tocar CarPlay manejando. Se pueden volver a los normales en Barra lateral.
 11. **Barra de velocidad de 0 a 130** (la máxima en Argentina): de 0 a 200, a 60 km/h casi no se movía. Sin el rótulo "GPS".
+12. **APK sin marcas** (0.7.0), para publicarlo en Play Store sin pisar marcas ajenas: el auto por defecto es uno **dibujado**, de
+    costado y mirando a la izquierda como las fotos, plateado, con 9 colores y las 6 llantas. Los modelos reales, logos y
+    animaciones llegan solo en packs por pendrive. El de Audi quedó fuera del repo, en la copia local de Mati.
 
 ## Medidas (dp = px, 1024x600, densidad 160)
 

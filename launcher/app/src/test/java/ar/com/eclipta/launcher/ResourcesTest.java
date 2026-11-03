@@ -1,5 +1,6 @@
 package ar.com.eclipta.launcher;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -37,5 +38,19 @@ public class ResourcesTest {
             }
         }
         assertTrue("Radial gradient with a theme color (crashes on Android 9): " + bad, bad.isEmpty());
+    }
+
+    /** Store-safe APK: makes, logos and wake animations only arrive in imported packs. */
+    @Test
+    public void noBrandsInTheApk() {
+        File assets = new File("src/main/assets");
+        assertTrue("assets not found from " + new File("").getAbsolutePath(), assets.isDirectory());
+        assertFalse("assets/brands is back", new File(assets, "brands").exists());
+        File[] packs = new File(assets, "packs").listFiles(File::isDirectory);
+        assertTrue(packs != null && packs.length > 0);
+        for (File pack : packs) {
+            assertFalse(pack.getName() + " has a logo", new File(pack, "logo.webp").exists());
+            assertFalse(pack.getName() + " has an animation", new File(pack, "sting.webp").exists());
+        }
     }
 }

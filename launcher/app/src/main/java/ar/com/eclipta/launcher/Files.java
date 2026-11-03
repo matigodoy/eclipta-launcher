@@ -23,8 +23,14 @@ final class Files {
     private static final long MAX_LOGO = 100 * 1024, MAX_STING = 2 * 1024 * 1024;
     static final String PACK_ID = "[a-z0-9][a-z0-9-]{0,63}";
     private static final String[] PACK_FILES = {"pack.json", "base.webp", "paint.webp", "logo.webp", "sting.webp"};
+    private static final String[] BRAND_FILES = {"logo.webp", "sting.webp"};
 
     private Files() {}
+
+    /** Imported brands: files/brands/<key>/logo.webp and sting.webp, shared by that brand's packs. */
+    static File brandsDir(Context c) {
+        return new File(c.getFilesDir(), "brands");
+    }
 
     /** Mounted storage roots: every readable /storage/* plus internal storage. */
     static List<File> roots() {
@@ -74,17 +80,44 @@ final class Files {
         return new String(b, "UTF-8");
     }
 
-    /** Copies every EcliptaLauncher/packs/<id>/ with a valid pack.json into private storage. */
+    /** Copies every EcliptaLauncher/packs/<id>/ with a valid pack.json, and every brands/<key>/, into private storage. */
     static int importPacks(Context c) {
         int count = 0;
         for (File root : roots()) {
             for (String folder : READ_FOLDERS) {
                 File[] packs = new File(new File(root, folder), "packs").listFiles();
-                if (packs == null) continue;
-                for (File dir : packs) if (copyPack(c, dir)) count++;
+                if (packs != null) for (File dir : packs) if (copyPack(c, dir)) count++;
+                File[] brands = new File(new File(root, folder), "brands").listFiles();
+                if (brands != null) for (File dir : brands) if (copyBrand(c, dir)) count++;
             }
         }
         return count;
+    }
+
+    /** A brand folder only holds a logo and an animation; it counts when at least one of them is usable. */
+    private static boolean copyBrand(Context c, File src) {
+        if (!src.isDirectory() || !src.getName().matches(PACK_ID)) return false;
+        File dst = new File(brandsDir(c), src.getName());
+        boolean any = false;
+        for (String name : BRAND_FILES) {
+            File from = new File(src, name);
+            if (!acceptable(from, name) || (!dst.isDirectory() && !dst.mkdirs())) continue;
+            try {
+                copy(from, new File(dst, name));
+                any = true;
+            } catch (IOException e) {
+                DebugLog.log("brand import " + from + " error: " + e);
+            }
+        }
+        return any;
+    }
+
+    private static void copy(File from, File to) throws IOException {
+        try (FileInputStream in = new FileInputStream(from); FileOutputStream out = new FileOutputStream(to)) {
+            byte[] buf = new byte[8192];
+            int n;
+            while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+        }
     }
 
     private static boolean copyPack(Context c, File src) {
@@ -96,13 +129,7 @@ final class Files {
             if (!dst.isDirectory() && !dst.mkdirs()) return false;
             for (String name : PACK_FILES) {
                 File from = new File(src, name);
-                if (!acceptable(from, name)) continue;
-                try (FileInputStream in = new FileInputStream(from);
-                     FileOutputStream out = new FileOutputStream(new File(dst, name))) {
-                    byte[] buf = new byte[8192];
-                    int n;
-                    while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
-                }
+                if (acceptable(from, name)) copy(from, new File(dst, name));
             }
             return new File(dst, "base.webp").isFile();
         } catch (Exception e) {

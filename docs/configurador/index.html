@@ -43,9 +43,10 @@ ol { color:var(--muted); padding-left:20px; }
     </div>
     <div class="card">
       <label class="h">Modelo</label><div class="chips" id="pack"></div>
+      <p class="m">Otros modelos llegan con packs: se importan en el estéreo y se eligen ahí.</p>
       <label class="h">Color</label><div class="chips" id="paint"></div>
       <label class="h">Llantas</label><div class="chips" id="wheels"></div>
-      <label class="h">Carrocería</label><div class="chips" id="body"></div>
+      <label class="h" for="body">Carrocería</label><input type="text" id="body" maxlength="24">
       <label class="h" for="engine">Motor</label><input type="text" id="engine" maxlength="32">
       <label class="h" for="year">Año</label><input type="text" id="year" maxlength="4" inputmode="numeric">
       <label class="h" for="greeting">Nombre en el saludo</label><input type="text" id="greeting" maxlength="20">
@@ -64,14 +65,13 @@ ol { color:var(--muted); padding-left:20px; }
   </div>
 </main>
 <script>
-const PAINTS=[["original","Original"],["negro","Negro","#16171A"],["blanco","Blanco Ibis","#F2F2F0"],["plata","Plata Hielo","#B9BDC2"],["gris","Gris Daytona","#4A4D52"],["rojo","Rojo Brillante","#B5121B"],["azul","Azul Sepang","#143C8C"],["verde","Verde Oscuro","#123A2C"],["naranja","Naranja Samoa","#D9571A"]];
+const PAINTS=[["original","Plata"],["negro","Negro","#16171A"],["blanco","Blanco","#F2F2F0"],["gris","Gris","#4A4D52"],["rojo","Rojo","#B5121B"],["azul","Azul","#143C8C"],["verde","Verde","#123A2C"],["naranja","Naranja","#D9571A"],["amarillo","Amarillo","#D8A514"]];
 const WHEELS=[["original","Originales"],["5-rayos","5 rayos"],["5-doble-rayo","5 doble rayo"],["7-doble-rayo","7 doble rayo"],["10-rayos","10 rayos"],["5-rayos-antracita","5 rayos antracita"],["5-doble-negra","5 doble negra"]];
-// Same numbers as each pack.json in launcher/app/src/main/assets/packs.
+// Same numbers as launcher/app/src/main/assets/packs/generico/pack.json (scripts/make_generic_car.py).
 const PACKS={
- "audi-a3-8p":{dir:"a3",title:"Audi A3",body:"Sportback",engine:"2.0 TDI",year:"2008",gain:1.7,gamma:1.25,spec:.28,wheels:[[505,318,60,72,0],[880,282,27,58,0]],plate:[66,261,198,261,198,296,66,296]},
- "audi-s3-8p":{dir:"s3",title:"Audi S3",body:"Sportback",engine:"2.0 TFSI quattro",year:"2010",gain:.92,gamma:1.5,spec:.22,wheels:[[494,378,62,92,3],[880,245,29,60,2]],plate:[33,303,90,318,87,374,31,352]}
+ "generico":{dir:"generico",title:"Mi auto",body:"",engine:"",year:"",gain:1.4,gamma:1.35,spec:.24,wheels:[[200,208,46,46,0],[722,208,46,46,0]],plate:null}
 };
-const s={pack:"audi-a3-8p",paint:"original",wheels:"original",body:"",layout:"glass",accent:"red",night:"off"};
+const s={pack:"generico",paint:"original",wheels:"original",layout:"glass",accent:"red",night:"off"};
 const $=id=>document.getElementById(id);
 const images={};
 function img(src){return images[src]||(images[src]=new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=src;}));}
@@ -93,25 +93,24 @@ async function draw(){
   const k=c.width/920;
   if(s.wheels!=="original"){const w=await img(`img/${s.wheels}.webp`);if(id!==drawn)return;for(const[cx,cy,rx,ry,an]of p.wheels){x.save();x.translate(cx*k,cy*k);x.rotate(an*Math.PI/180);x.drawImage(w,-rx*k,-ry*k,rx*2*k,ry*2*k);x.restore();}}
   const text=normalizePlate($("plate").value);
-  if($("plateShow").checked&&text){const q=p.plate.map(v=>v*k),merc=/^[A-Z]{2} \d{3} [A-Z]{2}$/.test(text),w=Math.hypot(q[2]-q[0],q[3]-q[1]),h=Math.hypot(q[6]-q[0],q[7]-q[1]);
+  if($("plateShow").checked&&text&&p.plate){const q=p.plate.map(v=>v*k),merc=/^[A-Z]{2} \d{3} [A-Z]{2}$/.test(text),w=Math.hypot(q[2]-q[0],q[3]-q[1]),h=Math.hypot(q[6]-q[0],q[7]-q[1]);
     x.save();x.transform((q[2]-q[0])/w,(q[3]-q[1])/w,(q[6]-q[0])/h,(q[7]-q[1])/h,q[0],q[1]);x.fillStyle=merc?"#f4f4f4":"#111114";x.fillRect(0,0,w,h);x.fillStyle=merc?"#111":"#f4f4f4";x.font=`bold ${h*.6}px monospace`;x.textAlign="center";x.textBaseline="middle";x.fillText(text,w/2,h/2,w*.92);x.restore();}
 }
 function normalizePlate(raw){const t=raw.toUpperCase().replace(/[^A-Z0-9]/g,"");if(/^[A-Z]{3}\d{3}$/.test(t))return t.slice(0,3)+" "+t.slice(3);if(/^[A-Z]{2}\d{3}[A-Z]{2}$/.test(t))return t.slice(0,2)+" "+t.slice(2,5)+" "+t.slice(5);return raw.trim().toUpperCase();}
 function render(){
   const p=PACKS[s.pack];
   chips("pack",Object.entries(PACKS).map(([k,v])=>[k,v.title]),"pack");chips("paint",PAINTS,"paint");chips("wheels",WHEELS,"wheels");
-  chips("body",["3 puertas","Sportback","Cabrio"].map(b=>[b,b]),"body");
   chips("layout",[["glass","Liquid glass"],["mmi","Clásico"]],"layout");chips("accent",[["red","Rojo"],["blue","Azul"],["gray","Gris"]],"accent");
   chips("night",[["off","Apagado"],["on","Siempre"],["sun","Al atardecer"],["lights","Con las luces"]],"night");
-  $("engine").placeholder=p.engine;$("year").placeholder=p.year;
+  $("body").placeholder=p.body;$("engine").placeholder=p.engine;$("year").placeholder=p.year;
   $("title").textContent=p.title;
-  $("sub").textContent=[s.body||p.body,$("engine").value||p.engine,$("year").value||p.year].join(" · ");
+  $("sub").textContent=[$("body").value||p.body,$("engine").value||p.engine,$("year").value||p.year].filter(Boolean).join(" · ");
   $("hello").textContent=$("greeting").value?`Hola, ${$("greeting").value}`:"";
   draw();
 }
-for(const id of["engine","year","greeting","plate","plateShow"])$(id).addEventListener("input",render);
+for(const id of["body","engine","year","greeting","plate","plateShow"])$(id).addEventListener("input",render);
 $("save").onclick=()=>{
-  const o={greeting:$("greeting").value.trim(),pack:s.pack,body:s.body,engine:$("engine").value.trim(),year:$("year").value.trim(),
+  const o={greeting:$("greeting").value.trim(),pack:s.pack,body:$("body").value.trim(),engine:$("engine").value.trim(),year:$("year").value.trim(),
     plate:{text:$("plate").value.trim(),show:$("plateShow").checked},paint:s.paint,wheels:s.wheels,layout:s.layout,accent:s.accent,night:s.night,carplayOnAcc:$("carplay").checked};
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(o,null,2)],{type:"application/json"}));a.download="perfil.json";a.click();URL.revokeObjectURL(a.href);
 };

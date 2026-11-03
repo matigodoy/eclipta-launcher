@@ -88,12 +88,13 @@
     <string name="grp_car">O carro</string>
     <string name="f_brand">Marca</string>
     <string name="f_model">Modelo</string>
+    <string name="f_model_hint">Adicione outros modelos em Sistema &gt; Importar packs.</string>
     <string name="f_body">Carroceria</string>
     <string name="f_engine">Motor</string>
     <string name="f_year">Ano</string>
     <string name="f_title">Nome do carro</string>
     <string name="f_title_desc">O título do cartão do carro. Vazio usa o nome do modelo. Com foto própria, dar um nome também remove o logo e a animação do modelo.</string>
-    <string name="brand_other">Outros</string>
+    <string name="brand_other">Sem marca</string>
     <string name="grp_paint">Cor e rodas</string>
     <string name="f_paint">Cor</string>
     <string name="f_wheels">Rodas</string>
@@ -172,7 +173,7 @@
     <string name="grp_ignition">Ao ligar o carro</string>
     <string name="f_splash">Animação do logo</string>
     <string name="f_splash_desc">Toca uma vez quando o aparelho desperta. Toque na tela para pular.</string>
-    <string name="f_splash_none">Este modelo não tem animação.</string>
+    <string name="f_splash_none">Este modelo não tem animação. Alguns packs trazem uma (Sistema &gt; Importar packs).</string>
     <string name="f_acc_app">Abrir um app</string>
     <string name="f_acc_hint">Abre sozinho ao ligar o carro.</string>
     <string name="acc_none">Nenhum</string>
@@ -194,7 +195,7 @@
     <string name="backup_import_desc">Lê perfil.json do pendrive e substitui estes ajustes.</string>
     <string name="grp_packs">Packs de carros</string>
     <string name="packs_import">Importar packs</string>
-    <string name="packs_import_desc">Adiciona modelos da pasta EcliptaLauncher/packs do pendrive. Só imagens e dados, nunca código.</string>
+    <string name="packs_import_desc">Adiciona modelos de EcliptaLauncher/packs do pendrive, e logos e animações de marca de EcliptaLauncher/brands. Só imagens e dados, nunca código.</string>
     <string name="grp_support">Suporte</string>
     <string name="diag_export">Exportar diagnóstico</string>
     <string name="diag_tip">Salva a placa-mãe, o firmware e a tela para anexar a um relato. Não inclui seriais, MAC nem localização.</string>

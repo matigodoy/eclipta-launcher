@@ -1,0 +1,142 @@
+{
+ "id": "generico",
+ "brand": "",
+ "title": "Mi auto",
+ "title_en": "My car",
+ "title_pt": "Meu carro",
+ "ref_width": 920,
+ "defaults": {
+  "body": "",
+  "engine": "",
+  "year": ""
+ },
+ "paint": {
+  "gain": 1.4,
+  "gamma": 1.35,
+  "spec": 0.24
+ },
+ "paints": [
+  {
+   "id": "original",
+   "name": "Plata",
+   "name_en": "Silver",
+   "name_pt": "Prata"
+  },
+  {
+   "id": "negro",
+   "name": "Negro",
+   "name_en": "Black",
+   "name_pt": "Preto",
+   "color": "#16171A"
+  },
+  {
+   "id": "blanco",
+   "name": "Blanco",
+   "name_en": "White",
+   "name_pt": "Branco",
+   "color": "#F2F2F0"
+  },
+  {
+   "id": "gris",
+   "name": "Gris",
+   "name_en": "Grey",
+   "name_pt": "Cinza",
+   "color": "#4A4D52"
+  },
+  {
+   "id": "rojo",
+   "name": "Rojo",
+   "name_en": "Red",
+   "name_pt": "Vermelho",
+   "color": "#B5121B"
+  },
+  {
+   "id": "azul",
+   "name": "Azul",
+   "name_en": "Blue",
+   "name_pt": "Azul",
+   "color": "#143C8C"
+  },
+  {
+   "id": "verde",
+   "name": "Verde",
+   "name_en": "Green",
+   "name_pt": "Verde",
+   "color": "#123A2C"
+  },
+  {
+   "id": "naranja",
+   "name": "Naranja",
+   "name_en": "Orange",
+   "name_pt": "Laranja",
+   "color": "#D9571A"
+  },
+  {
+   "id": "amarillo",
+   "name": "Amarillo",
+   "name_en": "Yellow",
+   "name_pt": "Amarelo",
+   "color": "#D8A514"
+  }
+ ],
+ "wheels": [
+  {
+   "id": "original",
+   "name": "Originales",
+   "name_en": "Original",
+   "name_pt": "Originais"
+  },
+  {
+   "id": "5-rayos",
+   "name": "5 rayos",
+   "name_en": "5-spoke",
+   "name_pt": "5 raios"
+  },
+  {
+   "id": "5-doble-rayo",
+   "name": "5 doble rayo",
+   "name_en": "5 double-spoke",
+   "name_pt": "5 raios duplos"
+  },
+  {
+   "id": "7-doble-rayo",
+   "name": "7 doble rayo",
+   "name_en": "7 double-spoke",
+   "name_pt": "7 raios duplos"
+  },
+  {
+   "id": "10-rayos",
+   "name": "10 rayos",
+   "name_en": "10-spoke",
+   "name_pt": "10 raios"
+  },
+  {
+   "id": "5-rayos-antracita",
+   "name": "5 rayos antracita",
+   "name_en": "5-spoke anthracite",
+   "name_pt": "5 raios grafite"
+  },
+  {
+   "id": "5-doble-negra",
+   "name": "5 doble negra",
+   "name_en": "5 double-spoke black",
+   "name_pt": "5 raios duplos pretos"
+  }
+ ],
+ "wheel_centers": [
+  {
+   "cx": 200,
+   "cy": 208,
+   "rx": 46,
+   "ry": 46,
+   "angle": 0
+  },
+  {
+   "cx": 722,
+   "cy": 208,
+   "rx": 46,
+   "ry": 46,
+   "angle": 0
+  }
+ ]
+}

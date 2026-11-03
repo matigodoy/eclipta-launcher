@@ -68,7 +68,7 @@ final class Pack {
         return p != null ? p : new Pack();
     }
 
-    /** Folder name under assets/brands: "Alfa Romeo" is alfa-romeo. Empty when the pack has no usable brand. */
+    /** Folder name under brands/: "Alfa Romeo" is alfa-romeo. Empty when the pack has no usable brand. */
     String brandKey() {
         String key = brand.trim().toLowerCase(java.util.Locale.ROOT).replace(' ', '-');
         return key.matches("[a-z0-9-]+") ? key : "";
@@ -87,7 +87,7 @@ final class Pack {
     /** Whether a pack.json would load, for import. */
     static boolean parses(String json, String id) {
         try {
-            new Pack().parse(new JSONObject(json), id);
+            new Pack().parse(new JSONObject(json), id, "");
             return true;
         } catch (Throwable t) {
             return false;
@@ -99,7 +99,8 @@ final class Pack {
             Pack p = new Pack();
             File ext = new File(new File(c.getFilesDir(), "packs"), id);
             if (new File(ext, "pack.json").isFile()) p.dir = ext;
-            p.parse(new JSONObject(new String(readAll(p.open(c, "pack.json", id)), "UTF-8")), id);
+            String lang = c.getResources().getConfiguration().getLocales().get(0).getLanguage();
+            p.parse(new JSONObject(new String(readAll(p.open(c, "pack.json", id)), "UTF-8")), id, lang);
             return p;
         } catch (Throwable t) {
             DebugLog.log("pack " + id + " error: " + t);
@@ -107,9 +108,9 @@ final class Pack {
         }
     }
 
-    private void parse(JSONObject o, String fallbackId) throws JSONException {
+    private void parse(JSONObject o, String fallbackId, String lang) throws JSONException {
         id = o.optString("id", fallbackId);
-        title = o.getString("title");
+        title = local(o, "title", lang);
         brand = o.optString("brand", "").trim();
         refWidth = (float) o.optDouble("ref_width", 920);
         JSONObject d = o.optJSONObject("defaults");
@@ -122,8 +123,8 @@ final class Pack {
         gain = paint == null ? 1f : (float) paint.optDouble("gain", 1);
         gamma = paint == null ? 1.5f : (float) paint.optDouble("gamma", 1.5);
         spec = paint == null ? 0.25f : (float) paint.optDouble("spec", 0.25);
-        options(o.optJSONArray("paints"), paints);
-        options(o.optJSONArray("wheels"), wheels);
+        options(o.optJSONArray("paints"), paints, lang);
+        options(o.optJSONArray("wheels"), wheels, lang);
         JSONArray wc = o.optJSONArray("wheel_centers");
         if (wc != null) {
             wheelCenters = new float[wc.length()][];
@@ -147,14 +148,20 @@ final class Pack {
         return out;
     }
 
-    private static void options(JSONArray a, List<Option> out) throws JSONException {
+    private static void options(JSONArray a, List<Option> out, String lang) throws JSONException {
         if (a == null) return;
         for (int i = 0; i < a.length(); i++) {
             JSONObject o = a.getJSONObject(i);
             int color = 0;
             if (o.has("color")) color = android.graphics.Color.parseColor(o.getString("color"));
-            out.add(new Option(o.getString("id"), o.getString("name"), color));
+            out.add(new Option(o.getString("id"), local(o, "name", lang), color));
         }
+    }
+
+    /** "title_en" over "title" when the app is in English. The plain key is required. */
+    private static String local(JSONObject o, String key, String lang) throws JSONException {
+        String v = lang.isEmpty() ? "" : o.optString(key + "_" + lang, "");
+        return v.isEmpty() ? o.getString(key) : v;
     }
 
     Option paint(String paintId) {

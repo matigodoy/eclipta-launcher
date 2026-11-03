@@ -23,7 +23,8 @@ def check(path):
             errors.append(f"pack.json: missing {key}")
     if pack.get("id", name) != name:
         errors.append("pack.json: id must match the folder name")
-    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 -]{0,23}", str(pack.get("brand", "x"))):
+    brand = str(pack.get("brand", ""))
+    if brand and not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 -]{0,23}", brand):  # empty: no make (the generic car)
         errors.append("pack.json: bad brand")
     for f in ("logo.webp", "sting.webp"):
         if os.path.exists(os.path.join(path, f)):

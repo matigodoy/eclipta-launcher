@@ -1,5 +1,5 @@
 name: Pack nuevo
-description: Pedí o proponé un pack para otro modelo
+description: Pedí ayuda para armar el pack de tu modelo (se carga por pendrive; los modelos reales no van en el APK)
 title: "[Pack] "
 labels: [pack]
 body:
@@ -11,4 +11,4 @@ body:
     id: photo
     attributes:
       label: Foto
-      description: "Foto propia, de 3/4 de frente, entera y bien iluminada. Tapá la patente antes de subirla. Guía en docs/08-packs.md."
+      description: "Foto propia, de 3/4 de frente, entera y bien iluminada. Tapá la patente antes de subirla. Guía en docs/08-packs.md: el pack queda para tu pendrive, no se suma al repo."

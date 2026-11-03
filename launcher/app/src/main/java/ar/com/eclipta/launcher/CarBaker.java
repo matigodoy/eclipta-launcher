@@ -13,7 +13,7 @@ final class CarBaker {
         void onBaked();
     }
 
-    private static final String KEY_DIRTY = "bake_dirty";
+    private static final String KEY_DIRTY = "bake_dirty", KEY_VERSION = "bake_version";
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
     private static final Object LOCK = new Object();
     private static boolean running, again;
@@ -42,8 +42,10 @@ final class CarBaker {
         prefs(c).edit().putBoolean(KEY_DIRTY, true).apply();
     }
 
+    /** Also after an update: a picture baked by an older version can show a pack that is gone (0.7.0 took the built-in Audi out). */
     static boolean isDirty(Context c) {
-        return prefs(c).getBoolean(KEY_DIRTY, false);
+        android.content.SharedPreferences p = prefs(c);
+        return p.getBoolean(KEY_DIRTY, false) || p.getInt(KEY_VERSION, 0) != BuildConfig.VERSION_CODE;
     }
 
     static boolean needsBake(Context c) {
@@ -72,7 +74,7 @@ final class CarBaker {
                         running = false;
                     }
                     // Even if it failed: a pack that can't be baked won't get better by retrying.
-                    prefs(app).edit().putBoolean(KEY_DIRTY, false).apply();
+                    prefs(app).edit().putBoolean(KEY_DIRTY, false).putInt(KEY_VERSION, BuildConfig.VERSION_CODE).apply();
                     break;
                 }
                 MAIN.post(new Runnable() {

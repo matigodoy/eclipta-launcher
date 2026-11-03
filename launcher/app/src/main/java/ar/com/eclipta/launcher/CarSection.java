@@ -36,14 +36,18 @@ final class CarSection extends SettingsSection {
         Pack pack = a.pack;
         f.group(R.string.grp_car);
         modelChips();
-        if (p.customPhoto) {
+        // A photo of your own, or a pack with no list (the generic car), takes free text.
+        if (p.customPhoto || pack.bodies.length == 0) {
             textField(R.string.f_body, p.body, 24, v -> p.body = v);
-            textField(R.string.f_engine, p.engine, 32, v -> p.engine = v);
         } else {
             f.chips(R.string.f_body, 0, SettingsForm.list(pack.bodies), SettingsForm.list(pack.bodies), pick(p.body, pack.defBody), id -> {
                 p.body = id;
                 a.carChanged();
             });
+        }
+        if (p.customPhoto || pack.engines.length == 0) {
+            textField(R.string.f_engine, p.engine, 32, v -> p.engine = v);
+        } else {
             f.chips(R.string.f_engine, 0, SettingsForm.list(pack.engines), SettingsForm.list(pack.engines), pick(p.engine, pack.defEngine), id -> {
                 p.engine = id;
                 a.carChanged();
@@ -165,7 +169,8 @@ final class CarSection extends SettingsSection {
             ids.add(o.id);
             names.add(o.title);
         }
-        f.chips(R.string.f_model, 0, ids, names, p.pack, this::choose);
+        // Only the generic car: say where the others come from.
+        f.chips(R.string.f_model, packs.size() < 2 ? R.string.f_model_hint : 0, ids, names, p.pack, this::choose);
     }
 
     private void choose(String id) {

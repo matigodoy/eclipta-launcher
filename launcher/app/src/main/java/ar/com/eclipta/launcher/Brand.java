@@ -13,8 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * A pack's brand: header logo and wake animation. No brand lives in the code: files come from an
- * imported pack's folder or assets/brands/<key>/, and without them the app shows its own mark.
+ * A pack's brand: header logo and wake animation. None ships in the APK: files come from an
+ * imported pack's folder or an imported brand folder (files/brands/<key>/), and without them the
+ * app shows its own mark.
  */
 final class Brand {
     private static final String LOGO = "logo.webp", STING = "sting.webp";
@@ -38,16 +39,8 @@ final class Brand {
     /** Null when there is no animation to play. */
     static ImageDecoder.Source sting(Context c, Pack pack, Profile p) {
         if (p.customCar()) return null;
-        File local = pack.localFile(STING);
-        if (local != null && local.isFile()) return ImageDecoder.createSource(local);
-        String path = assetPath(pack, STING);
-        if (path == null) return null;
-        try {
-            c.getAssets().open(path).close();
-            return ImageDecoder.createSource(c.getAssets(), path);
-        } catch (IOException e) {
-            return null;
-        }
+        File f = find(c, pack, STING);
+        return f == null ? null : ImageDecoder.createSource(f);
     }
 
     private static Bitmap decodeLogo(Context c, Pack pack) throws IOException {
@@ -66,19 +59,17 @@ final class Brand {
     }
 
     private static InputStream openLogo(Context c, Pack pack) throws IOException {
-        File local = pack.localFile(LOGO);
-        if (local != null && local.isFile()) return new FileInputStream(local);
-        String path = assetPath(pack, LOGO);
-        if (path == null) return null;
-        try {
-            return c.getAssets().open(path);
-        } catch (IOException e) {
-            return null;
-        }
+        File f = find(c, pack, LOGO);
+        return f == null ? null : new FileInputStream(f);
     }
 
-    private static String assetPath(Pack pack, String file) {
+    /** The pack's own file first, then the one its brand shares with the other packs. */
+    private static File find(Context c, Pack pack, String name) {
+        File local = pack.localFile(name);
+        if (local != null && local.isFile()) return local;
         String key = pack.brandKey();
-        return key.isEmpty() ? null : "brands/" + key + "/" + file;
+        if (key.isEmpty()) return null;
+        File shared = new File(new File(Files.brandsDir(c), key), name);
+        return shared.isFile() ? shared : null;
     }
 }

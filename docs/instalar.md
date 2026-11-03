@@ -62,7 +62,7 @@ Tocá el **lápiz** de la tarjeta del auto (o el último botón de la barra de l
 
 ![Pantalla Personalizar con sus secciones](../design/tutorial-personalizar.png)
 
-- **Mi auto**: el modelo, el color, las llantas, la patente y la foto de tu auto (más abajo te explico cómo poner la tuya).
+- **Mi auto**: el modelo, el color, las llantas, la patente y la foto de tu auto (más abajo te explico cómo poner el tuyo).
 - **Apariencia**: el diseño de la pantalla, el color de los botones, el modo noche y el saludo.
 - **Barra lateral**: qué app abre cada botón de la izquierda. También lo cambiás dejando apretado el botón en el inicio.
   Vienen en tamaño grande, para tocarlos fácil manejando; si los querés más chicos, apagá **Botones grandes**.
@@ -73,10 +73,15 @@ Tocá el **lápiz** de la tarjeta del auto (o el último botón de la barra de l
 
 Con el auto en movimiento, Personalizar no se abre: hacelo estacionado.
 
-## Poner la foto de tu auto
+## Poner tu auto
 
-El launcher trae fotos del Audi A3 y S3 (8P). Si tenés otro auto, le ponés una foto del tuyo y un nombre, y listo:
-desaparecen el logo y la animación de Audi.
+El launcher trae un auto dibujado, sin marca, que podés pintar y cambiarle las llantas. Para ver el tuyo hay dos caminos:
+
+- **Un pack de tu modelo**, si alguien te lo pasó o lo armaste con la [guía de packs](08-packs.md). Trae la foto y los
+  colores, y a veces el logo y la animación de la marca. Copiá al pendrive la carpeta `EcliptaLauncher` tal como te la
+  dieron (adentro van `packs` y, a veces, `brands`). En **Personalizar > Sistema** tocá **Importar packs** y después
+  elegí la marca y el modelo en **Mi auto**. La app no trae modelos reales ni logos de marcas: llegan solo así.
+- **Una foto de tu auto**, como se explica abajo.
 
 ### Qué foto buscar
 
@@ -129,10 +134,10 @@ posible, y después le sacás el fondo igual que arriba.
    ![Foto propia en Mi auto](../design/tutorial-foto-propia.png)
 
 4. Más arriba, en **Nombre del auto**, escribí cómo se llama (por ejemplo "Gol Trend"). Con foto propia y nombre,
-   el launcher saca el logo y la animación de Audi.
+   el launcher saca el logo y la animación del pack que tenías elegido.
 
-Para volver a la foto que traía, tocá **Usar la foto del modelo**. El color y las llantas solo cambian las fotos que
-trae el launcher, no la tuya.
+Para volver a la foto que traía, tocá **Usar la foto del modelo**. El color y las llantas cambian el auto dibujado y
+los packs, no tu foto.
 
 ## Si ya tenías el "A3 Launcher"
 

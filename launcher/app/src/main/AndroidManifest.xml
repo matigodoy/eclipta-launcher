@@ -39,13 +39,15 @@
             android:exported="false"
             android:screenOrientation="landscape" />
 
+        <!-- Text is only typed in dialogs. "Always" hides the keyboard each time a dialog closes;
+             plain stateHidden only does it on entry, and Android 9 kept it open over the settings. -->
         <activity
             android:name=".SettingsActivity"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode"
             android:excludeFromRecents="true"
             android:exported="false"
             android:screenOrientation="landscape"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden" />
 
         <activity
             android:name=".SplashActivity"

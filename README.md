@@ -11,7 +11,7 @@ contributions in English are welcome.*
 **¿Lo querés en tu auto?** Bajalo de la [última versión](https://github.com/matigodoy/eclipta-launcher/releases/latest)
 y seguí la [guía de instalación paso a paso](docs/instalar.md). Ahí también está cómo poner la foto de tu auto.
 
-![Eclipta Launcher](design/preview-s3-rojo.png)
+![Eclipta Launcher](design/preview-home.png)
 
 | Clásico | Modo noche |
 |---|---|
@@ -23,9 +23,10 @@ y seguí la [guía de instalación paso a paso](docs/instalar.md). Ahí también
 
 ## Qué hay acá
 
-- **`launcher/`**: Eclipta Launcher, una app HOME en Java puro (sin AndroidX), ~1 MB, que muestra hora,
-  fecha, velocidad GPS, lo que suena, la radio y accesos a CarPlay / Android Auto. Elegís modelo (A3 o S3 8P) o
-  ponés la foto y el nombre de tu auto, color, llantas, patente, saludo y diseño (liquid glass o Clásico), con modo
+- **`launcher/`**: Eclipta Launcher, una app HOME en Java puro (sin AndroidX), ~300 KB, que muestra hora,
+  fecha, velocidad GPS, lo que suena, la radio y accesos a CarPlay / Android Auto. Trae un auto dibujado, sin marca,
+  con colores y llantas; tu modelo real llega con un [pack](docs/08-packs.md) por pendrive (foto, logo y animación) o con
+  tu foto y su nombre. También patente, saludo y diseño (liquid glass o Clásico), con modo
   noche y avisos de mantenimiento por fecha. En español, inglés y portugués. No corre nada en segundo plano para no
   quitarle recursos a CarPlay.
 - **`docs/`**: lo que se sabe de estas unidades, verificado por ADB en solo lectura:
@@ -109,6 +110,7 @@ Lo más útil: datos de otros autos, decodificadores CAN y unidades. Ver [CONTRI
 ## Licencia
 
 Copyright (C) 2026 matigodoy y contribuidores. Código bajo [GPL-3.0](LICENSE). Documentación de `docs/` bajo [CC BY 4.0](docs/LICENSE).
-Audi, el logo de los cuatro aros y la animación del logo son marcas y material de AUDI AG y se
-incluyen solo con fines ilustrativos; no están cubiertos por las licencias de arriba. Este proyecto
-no está afiliado ni respaldado por AUDI AG.
+El repo y el APK no incluyen logos, animaciones ni fotos de marcas de autos: el auto que trae la app está
+dibujado desde cero ([`scripts/make_generic_car.py`](scripts/make_generic_car.py)). Audi y las demás marcas
+que se nombran son de sus dueños y aparecen solo para describir en qué autos se probó; este proyecto no
+está afiliado ni respaldado por ninguno de ellos.
