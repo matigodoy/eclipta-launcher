@@ -17,7 +17,7 @@ Proyecto: `launcher/`. APKs: en [Releases](../../../releases). Instalación: ver
 | 0.5.0 | 7 | Nombre e id nuevos (instalación nueva, ajustes de cero, APK `EcliptaLauncher-vX.Y.Z.apk`, carpeta `EcliptaLauncher` en el pendrive, log `launcher-log.txt`); packs con `brand`, logo y animación afuera del código; foto propia con nombre para cualquier auto; ajustes por secciones; mantenimiento con aviso al arrancar; la app de contacto puede ser cualquiera (`accApp`); Acerca de con dos QR; Sistema > Desinstalar (abre el desinstalador de Android, porque los Ajustes vienen escondidos) | Publicada. **Se cierra al abrir en Android 9**: usar 0.5.1 |
 | 0.5.1 | 8 | Arregla el cierre al abrir en Android 9: el brillo detrás del auto era un gradiente radial con color del tema (`?attr`), que Android 9 no sabe aplicar; ahora se arma en código (`Theming.carGlow`). Test `ResourcesTest` para que no vuelva. Guía con los carteles de Android en inglés | Publicada. Mati la usó en el auto: anda; de ahí salieron los cambios de 0.6.0 |
 | 0.6.0 | 9 | El aviso de Importar packs sale en el idioma de la app (antes, en el del sistema); Mi auto ordena los modelos: primero los de la app y después los importados, por nombre. Botones grandes en la barra lateral (70dp, sin Inicio; opción en Barra lateral, activada por defecto; perfil `bigRail`); barra de velocidad de 0 a 130 y sin el rótulo "GPS" | Publicada. Probada en emulador Android 9 con 13 packs importados, 60 y 117 km/h simulados y la animación al contacto; en el auto, solo la base (0.5.1) |
-| 0.7.0 | 10 | **APK sin marcas**, para poder publicarlo en tiendas: salen el A3, el S3, los aros y la animación (`assets/brands`, `assets/packs/audi-*`). Trae un auto dibujado sin marca (`generico`, `scripts/make_generic_car.py`) con 9 colores y las 6 llantas. Logo y animación solo desde packs importados, o desde una marca importada (`EcliptaLauncher/brands/<key>/`, compartida por sus packs). Títulos y nombres de colores y llantas por idioma (`title_en`, `name_pt`, etc.). Sin listas de carrocería o motor, Mi auto las pide como texto. Al importar packs se rehace el auto; al actualizar la app también (la foto horneada podía ser de un pack que ya no está). El teclado se cierra al terminar de escribir: antes quedaba abierto sobre Personalizar (`stateAlwaysHidden`). APK de 300 KB | Sin publicar. Probada en emulador Android 9: actualización desde 0.6.0, instalación limpia, inglés, importar el pendrive Audi (15 packs + marca: aros y animación vuelven), cerrar los diálogos de texto con Aceptar, Cancelar, ✓ y Atrás |
+| 0.7.0 | 10 | **APK sin marcas**, para poder publicarlo en tiendas: salen el A3, el S3, los aros y la animación (`assets/brands`, `assets/packs/audi-*`). Trae un auto dibujado sin marca (`generico`, `scripts/make_generic_car.py`) con 9 colores y las 6 llantas. Logo y animación solo desde packs importados, o desde una marca importada (`EcliptaLauncher/brands/<key>/`, compartida por sus packs). Títulos y nombres de colores y llantas por idioma (`title_en`, `name_pt`, etc.). Sin listas de carrocería o motor, Mi auto las pide como texto. Al importar packs se rehace el auto; al actualizar la app también (la foto horneada podía ser de un pack que ya no está). El teclado se cierra al terminar de escribir: antes quedaba abierto sobre Personalizar (`stateAlwaysHidden`). APK de 300 KB | Publicada. Probada en el estéreo: actualización desde 0.4.0 sin perder ajustes, pendrive Audi (15 packs + marca: vuelven la foto y los aros), teclado y animación al dar contacto. En emulador Android 9: instalación limpia, inglés, cerrar los diálogos de texto con Aceptar, Cancelar, ✓ y Atrás |
 
 ## Build
 
@@ -144,6 +144,19 @@ heap nativo. No se compara con la tabla de arriba: cambian el sistema y el rende
 el GPS estándar y un acceso cuya app falta abre el selector. Sin señal de contacto no hay animación ni app automática; el aviso de
 mantenimiento sale igual, porque `Startup.noteBoot` detecta los arranques reales. Las pantallas verticales no están soportadas.
 
+## Resultados en el estéreo (03/11/2026, v0.7.0)
+
+- `install -r` encima de la 0.4.0 (misma firma): OK, sin perder ajustes. Inicio pasado a Eclipta con
+  `cmd package set-home-activity` (aprobado por Mati); la v0.1.1 sigue instalada de respaldo.
+- Arranque `TotalTime` 450–680 ms. Sin crashes de Eclipta (los del logcat eran de Google Play Services).
+- Sin packs: auto genérico y marca Eclipta. Importar desde el pendrive (exFAT, montado como `udisk2p1`): 15 packs y
+  `brands/audi`; vuelven la foto del A3, los aros y el subtítulo del perfil.
+- Teclado: se abre en el diálogo y baja al cerrarlo, con Personalizar todavía adelante.
+- Contacto: la animación de los aros se mostró (lo vio Mati; ADB se cortó con el contacto, no hay log).
+- `measure.sh`: PSS 23,5 MB visible y 23,3 MB con CarPlay adelante (la 0.1.1 daba 43,4 MB visible). CPU 3 % al abrir, 0,0 % atrás.
+- CarPlay **sin iPhone conectado** muestra una pantalla de espera translúcida (`DIM_BEHIND`): el launcher queda `PAUSED` y
+  visible debajo, no pasa por `onStop` y sigue con 6 conexiones a JanCar, con 0 % de CPU. Falta medir con CarPlay conectado.
+
 ## Resultados en el estéreo (sesión 2, v0.1.1)
 
 - Instalación OK (`versionCode=2 minSdk=28 targetSdk=25`). Mati eligió "A3 Launcher" como Inicio, "Siempre".
@@ -167,9 +180,9 @@ mantenimiento sale igual, porque `Startup.noteBoot` detecta los arranques reales
 ## Pendientes conocidos
 
 - Instalar la última versión: id nuevo y firma de release, así que hay que desinstalar a mano el A3 Launcher v0.1.1, y los ajustes arrancan de cero.
-- Probar en el estéreo la cadena del despertar y el aviso de mantenimiento.
+- Probar en el estéreo el aviso de mantenimiento al dar contacto (la animación ya anduvo en 0.7.0).
 - El selector de fecha muestra los meses en inglés: usa el idioma del sistema (en-US en estas unidades), no el de la app.
-- Medir con CarPlay adelante (**todavía no se midió en segundo plano**).
+- Medir con CarPlay **conectado**: con su pantalla de espera el launcher no se detiene (resultados de la 0.7.0, arriba).
 - Repetir las mediciones de arriba: la tabla es anterior a estos cambios.
 - ~~Decidir si sacar los aros y la animación del público~~: hecho en 0.7.0, el APK no trae marcas.
 - ~~Packs genéricos sin foto~~: hecho, el auto dibujado.

@@ -88,6 +88,13 @@
 - Probada en emulador Android 9: encima de la 0.6.0 se ve el auto genérico sin aros; al importar el pendrive vuelven el A3 con
   los aros y la animación al contacto. Si el perfil no tenía modelo guardado, hay que elegirlo en Mi auto.
 
+## 03/11/2026: v0.7.0 en el auto
+
+- El estéreo tenía la 0.4.0 de Eclipta y la v0.1.1 como Inicio. La 0.7.0 se instaló encima de la 0.4.0 y Eclipta pasó a ser el Inicio.
+- Anduvieron el auto genérico, el pendrive (15 packs + marca Audi), el teclado de Personalizar y la animación al dar contacto.
+- 23,5 MB visible, 0 % de CPU atrás. Con la pantalla de espera de CarPlay (sin iPhone) el launcher no se detiene y sigue
+  conectado a JanCar: queda medir con CarPlay conectado. Publicada como versión estable.
+
 ## Correcciones
 
 - "El auto no tiene caja CAN": **falso**, tiene un Simple Soft RP5-AD-001.
